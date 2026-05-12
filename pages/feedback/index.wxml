@@ -1,0 +1,21 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">帮助与反馈</view>
+    </view>
+
+    <view class="form-card">
+      <view class="form-label">问题描述</view>
+      <textarea
+        class="form-textarea"
+        placeholder="告诉我们你遇到的问题或建议"
+        value="{{content}}"
+        bindinput="handleInput"
+      />
+      <view class="form-actions">
+        <view class="form-btn form-btn--primary" bindtap="submit">提交反馈</view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

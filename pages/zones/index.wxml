@@ -1,0 +1,20 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">专区</view>
+    </view>
+
+    <view class="zone-list">
+      <view class="zone-card" wx:for="{{zones}}" wx:key="id" bindtap="goForum">
+        <view class="zone-card__cover zone-card__cover--{{item.coverStyle}}"></view>
+        <view class="zone-card__body">
+          <view class="zone-card__title">{{item.title}}</view>
+          <view class="zone-card__desc">{{item.desc}}</view>
+          <view class="zone-card__members">{{item.members}}</view>
+        </view>
+        <view class="zone-card__arrow">›</view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

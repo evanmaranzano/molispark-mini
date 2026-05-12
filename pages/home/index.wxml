@@ -1,48 +1,78 @@
-<nav nav-type="search" />
-<view class="home-container">
-  <view class="home-content">
-    <t-tabs defaultValue="recommend">
-      <t-tab-panel label="推荐" value="recommend">
-        <t-pull-down-refresh
-          value="{{enable}}"
-          bind:refresh="onRefresh"
-          loadingTexts="{{['下拉刷新', '松手刷新', '正在刷新', '刷新完成']}}"
-        >
-          <view class="home-card-list">
-            <t-swiper
-              list="{{swiperList}}"
-              navigation="{{ { type: 'dots-bar' } }}"
-              height="488rpx"
-              style="width: 340rpx"
-            />
-            <card
-              wx:for="{{cardInfo}}"
-              wx:key="index"
-              desc="{{item.desc}}"
-              url="{{item.url}}"
-              tags="{{item.tags}}"
-            />
-          </view>
-        </t-pull-down-refresh>
-      </t-tab-panel>
-      <t-tab-panel label="我的关注" value="follow">
-        <view class="home-card-list">
-          <card
-            wx:for="{{focusCardInfo}}"
-            wx:key="index"
-            desc="{{item.desc}}"
-            url="{{item.url}}"
-            tags="{{item.tags}}"
-          />
+<scroll-view
+  class="home-page"
+  scroll-y
+  enhanced
+  show-scrollbar="{{false}}"
+  refresher-enabled
+  refresher-triggered="{{enable}}"
+  bindrefresherrefresh="onRefresh"
+>
+  <view class="page-shell">
+    <view class="topbar">
+      <view class="brand">
+        <view class="brand__logo">☘</view>
+        <view>
+          <view class="brand__name">知行社</view>
+          <view class="brand__sub">连接知识 · 启发成长</view>
         </view>
-      </t-tab-panel>
-    </t-tabs>
-  </view>
-</view>
+      </view>
+      <view class="topbar__actions">
+        <view class="icon-btn" bindtap="goMessages">
+          🔔
+          <view wx:if="{{unreadCount}}" class="dot"></view>
+        </view>
+        <view class="icon-btn" bindtap="goMy">👤</view>
+      </view>
+    </view>
 
-<view class="home-release">
-  <t-button theme="primary" size="large" icon="add" shape="round" bindtap="goRelease">
-    发布
-  </t-button>
-</view>
+    <view class="search-box" bindtap="goSearch">🔍 <text>搜索帖子、专区或内容</text></view>
+
+    <view class="hero-card">
+      <view class="hero-card__content">
+        <view class="hero-card__title">深度思考，<text>\n</text>共同成长</view>
+        <view class="hero-card__desc">与优秀的人一起，探索知识的边界</view>
+        <view class="hero-card__button" bindtap="goZones">了解专区</view>
+      </view>
+    </view>
+
+    <view class="feature-panel">
+      <view
+        class="feature-item"
+        wx:for="{{quickActions}}"
+        wx:key="key"
+        data-path="{{item.path}}"
+        bindtap="handleFeatureTap"
+      >
+        <view class="feature-item__icon feature-item__icon--{{item.icon}}" style="background: {{item.color}};">
+          <text wx:if="{{item.icon === 'chat'}}">💬</text>
+          <text wx:elif="{{item.icon === 'diamond'}}">◆</text>
+          <text wx:else>★</text>
+        </view>
+        <view class="feature-item__title">{{item.title}}</view>
+        <view class="feature-item__desc">{{item.desc}}</view>
+      </view>
+    </view>
+
+    <view class="section-head">
+      <view class="section-head__title">推荐内容</view>
+      <view class="section-head__more" bindtap="goForum">更多 ›</view>
+    </view>
+
+    <view class="post-list">
+      <view class="post-card" wx:for="{{recommendList}}" wx:key="id" bindtap="handlePostTap" data-id="{{item.id}}">
+        <view class="post-card__body">
+          <view class="post-card__title">{{item.title}}</view>
+          <view class="post-card__desc">{{item.desc}}</view>
+          <view class="post-card__meta">
+            <view class="post-card__avatar">{{item.author.slice(0, 1)}}</view>
+            <text>{{item.author}}</text>
+            <text>·</text>
+            <text>{{item.time}}</text>
+          </view>
+        </view>
+        <view class="post-card__cover post-card__cover--{{item.coverStyle}}"></view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
 <t-message id="t-message" />

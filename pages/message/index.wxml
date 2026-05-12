@@ -1,25 +1,41 @@
-<wxs src="./index.wxs" module="utils" />
+<scroll-view class="message-scroll" scroll-y show-scrollbar="{{false}}">
+  <view class="message-hero">
+    <view class="message-hero__eyebrow">Inbox Center</view>
+    <view class="message-hero__title">消息</view>
+    <view class="message-hero__desc">把论坛回复、星球通知和私信会话收进一个可快速处理的消息面板。</view>
 
-<nav nav-type="title" title-text="全部消息"></nav>
-<scroll-view
-  class="message-list"
-  scroll-y
-  refresher-enabled
-  refresher-triggered="{{ loading }}"
-  bindrefresherrefresh="getMessageList"
->
-  <t-cell
-    wx:for="{{ messageList }}"
-    wx:key="index"
-    t-class-image="avatar"
-    t-class-description="content {{ utils.isRead(item.messages) ? '' : 'unread' }}"
-    image="{{ item.avatar }}"
-    title="{{ item.name }}"
-    description="{{ item.messages[item.messages.length - 1].content }}"
-    hover
-    bind:tap="toChat"
-    data-user-id="{{ item.userId }}"
-  >
-    <t-badge slot="right-icon" count="{{ utils.computeUnreadNum(item.messages) }}" class="wrapper" />
-  </t-cell>
+    <view class="message-hero__stats">
+      <view class="message-hero__stat" wx:for="{{summaryCards}}" wx:key="label">
+        <view class="message-hero__value">{{item.value}}</view>
+        <view class="message-hero__label">{{item.label}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="message-section">
+    <view class="message-section__head">
+      <view class="message-section__title">优先处理</view>
+      <view class="message-section__hint">{{messageList.length}} 个会话</view>
+    </view>
+
+    <view class="message-list">
+      <view wx:for="{{messageList}}" wx:key="id" class="message-card" bindtap="goDetail">
+        <view class="message-card__avatar">{{item.avatarText}}</view>
+        <view class="message-card__body">
+          <view class="message-card__top">
+            <view class="message-card__name">{{item.name}}</view>
+            <view class="message-card__time">{{item.time}}</view>
+          </view>
+          <view class="message-card__preview">{{item.preview}}</view>
+          <view class="message-card__meta">
+            <view class="message-card__tag">{{item.scene}}</view>
+            <view class="message-card__status">{{item.unreadCount > 0 ? item.unreadCount + ' 条待处理' : '已读完'}}</view>
+          </view>
+        </view>
+        <view wx:if="{{item.unreadCount > 0}}" class="message-card__badge">
+          {{item.unreadCount > 99 ? '99+' : item.unreadCount}}
+        </view>
+      </view>
+    </view>
+  </view>
 </scroll-view>

@@ -1,3 +1,45 @@
-.cell-group-class {
-  margin: 32rpx !important;
+@import '/pages/drafts/index.less';
+
+.menu-card {
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  border-radius: 24rpx;
+  background: #fff;
+  box-shadow: 0 10rpx 30rpx rgba(31, 45, 61, 0.08);
+}
+
+.menu-row {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  min-height: 96rpx;
+  padding: 20rpx 24rpx;
+
+  &:not(:last-child) {
+    border-bottom: 1rpx solid #eff2f1;
+  }
+
+  &__icon {
+    width: 42rpx;
+    height: 42rpx;
+    border-radius: 50%;
+    background: #f0f2f4;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    color: #17202a;
+    font-size: 28rpx;
+    font-weight: 800;
+  }
+
+  &__arrow {
+    color: #aab3bc;
+    font-size: 38rpx;
+  }
 }

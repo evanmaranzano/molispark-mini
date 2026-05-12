@@ -1,0 +1,20 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">草稿箱</view>
+    </view>
+
+    <view class="draft-list">
+      <view class="draft-card" wx:for="{{drafts}}" wx:key="id">
+        <view class="draft-card__title">{{item.title}}</view>
+        <view class="draft-card__desc">{{item.desc}}</view>
+        <view class="draft-card__time">{{item.time}}</view>
+        <view class="draft-card__actions">
+          <view class="draft-card__button draft-card__button--outline" bindtap="editDraft">继续编辑</view>
+          <view class="draft-card__button draft-card__button--gray" bindtap="deleteDraft">删除</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
