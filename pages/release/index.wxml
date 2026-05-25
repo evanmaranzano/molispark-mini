@@ -28,6 +28,7 @@
           <view class="option-card__title">{{item.title}}</view>
           <view class="option-card__desc">{{item.desc}}</view>
         </view>
+        <view wx:if="{{item.id === 'draft' && draftCount > 0}}" class="option-card__badge">{{draftCount}}</view>
         <view class="option-card__arrow">›</view>
       </view>
     </view>
@@ -37,16 +38,6 @@
       <view class="notice-card__line">请发布积极、真实、原创的内容</view>
       <view class="notice-card__line">尊重他人，文明交流，禁止恶意攻击</view>
       <view class="notice-card__line">遵守相关法律法规，不发布违规内容</view>
-    </view>
-
-    <view class="draft-card" wx:for="{{draftList}}" wx:key="title">
-      <view class="draft-card__title">{{item.title}}</view>
-      <view class="draft-card__desc">{{item.desc}}</view>
-      <view class="draft-card__time">{{item.time}}</view>
-      <view class="draft-card__actions">
-        <view class="draft-card__button" bindtap="saveDraft">保存草稿</view>
-        <view class="draft-card__button draft-card__button--primary" bindtap="release">发布</view>
-      </view>
     </view>
   </view>
 </scroll-view>

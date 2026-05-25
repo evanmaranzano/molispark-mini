@@ -14,9 +14,6 @@
     "pages/history/index",
     "pages/feedback/index"
   ],
-  "usingComponents": {
-    "t-toast": "/miniprogram_npm/tdesign-miniprogram/toast/toast"
-  },
   "subpackages": [
     {
       "root": "pages/search",

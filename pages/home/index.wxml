@@ -59,12 +59,12 @@
     </view>
 
     <view class="post-list">
-      <view class="post-card" wx:for="{{recommendList}}" wx:key="id" bindtap="handlePostTap" data-id="{{item.id}}">
+      <view class="post-card" wx:for="{{recommendList}}" wx:key="id" bindtap="handlePostTap" data-id="{{item._id || item.id}}">
         <view class="post-card__body">
           <view class="post-card__title">{{item.title}}</view>
           <view class="post-card__desc">{{item.desc}}</view>
           <view class="post-card__meta">
-            <view class="post-card__avatar">{{item.author.slice(0, 1)}}</view>
+            <view class="post-card__avatar">{{item.authorInitial}}</view>
             <text>{{item.author}}</text>
             <text>·</text>
             <text>{{item.time}}</text>

@@ -5,34 +5,36 @@
       <view class="sub-topbar__title">论坛</view>
     </view>
 
+    <view wx:if="{{zoneTitle}}" class="section-title">{{zoneTitle}}</view>
+
     <view class="segment">
       <view
-        class="segment__item {{currentTab === item ? 'segment__item--active' : ''}}"
+        class="{{item.className}}"
         wx:for="{{tabs}}"
-        wx:key="*this"
-        data-value="{{item}}"
+        wx:key="value"
+        data-value="{{item.value}}"
         bindtap="handleTabTap"
       >
-        {{item}}
+        {{item.label}}
       </view>
     </view>
 
     <scroll-view class="tag-scroll" scroll-x show-scrollbar="{{false}}">
       <view class="tag-scroll__inner">
         <view
-          class="tag {{currentCategory === item ? 'tag--active' : ''}}"
+          class="{{item.className}}"
           wx:for="{{categoryTabs}}"
-          wx:key="*this"
-          data-value="{{item}}"
+          wx:key="value"
+          data-value="{{item.value}}"
           bindtap="handleCategoryTap"
         >
-          {{item}}
+          {{item.label}}
         </view>
       </view>
     </scroll-view>
 
     <view class="post-list">
-      <view class="post-card" wx:for="{{posts}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
+      <view class="post-card" wx:for="{{posts}}" wx:key="id" data-id="{{item._id || item.id}}" bindtap="goDetail">
         <view class="post-card__body">
           <view class="post-card__title">{{item.title}}</view>
           <view class="post-card__desc">{{item.desc}}</view>

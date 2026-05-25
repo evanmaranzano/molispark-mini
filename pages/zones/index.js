@@ -9,9 +9,8 @@ Page({
     wx.navigateBack();
   },
 
-  goForum() {
-    wx.navigateTo({
-      url: '/pages/forum/index',
-    });
+  goForum(e) {
+    const { title } = e.currentTarget.dataset;
+    wx.navigateTo({ url: `/pages/forum/index?zone=${title || ''}` });
   },
 });

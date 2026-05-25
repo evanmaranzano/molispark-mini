@@ -185,6 +185,7 @@ const messages = [
     time: '8 分钟前',
     scene: '论坛回复',
     unreadCount: 3,
+    postId: 1,
   },
   {
     id: 'msg-2',
@@ -194,6 +195,7 @@ const messages = [
     time: '1 小时前',
     scene: '星球通知',
     unreadCount: 1,
+    postId: 4,
   },
   {
     id: 'msg-3',
@@ -203,6 +205,7 @@ const messages = [
     time: '昨天',
     scene: '私信会话',
     unreadCount: 0,
+    postId: 3,
   },
   {
     id: 'msg-4',
@@ -212,6 +215,7 @@ const messages = [
     time: '昨天',
     scene: '头条提醒',
     unreadCount: 2,
+    postId: 2,
   },
 ];
 

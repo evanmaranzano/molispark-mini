@@ -75,6 +75,11 @@
     color: #fff;
     font-size: 40rpx;
     flex-shrink: 0;
+
+    &--image {
+      display: block;
+      overflow: hidden;
+    }
   }
 
   &__body {
@@ -107,9 +112,23 @@
     font-size: 22rpx;
   }
 
-  &__arrow {
-    color: #93a19a;
-    font-size: 42rpx;
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 132rpx;
+    height: 56rpx;
+    padding: 0 24rpx;
+    border-radius: 999rpx;
+    background: #2eb986;
+    color: #fff;
+    font-size: 22rpx;
+    font-weight: 700;
+
+    &--ghost {
+      background: #edf7f2;
+      color: #2e8f6a;
+    }
   }
 }
 

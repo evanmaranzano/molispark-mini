@@ -1,26 +1,75 @@
 import Message from 'tdesign-miniprogram/message/index';
+import { getPosts, count } from '~/utils/db';
+import { withMockFallback } from '~/utils/mockFallback';
 import { getPublishedPosts, quickActions } from '~/mock/community';
+
+function withAuthorInitial(list = []) {
+  return list.map((item) => ({
+    ...item,
+    authorInitial: item.author ? item.author.slice(0, 1) : '',
+  }));
+}
 
 Page({
   data: {
     enable: false,
     quickActions,
-    recommendList: getPublishedPosts().slice(0, 4),
-    unreadCount: 6,
+    recommendList: [],
+    unreadCount: 0,
+    loading: true,
   },
+
   onLoad(option) {
-    if (option.oper === 'release') {
-      this.showOperMsg('发布成功');
-    } else if (option.oper === 'save') {
-      this.showOperMsg('草稿已保存');
+    this.consumeOperResult(option.oper);
+    this.loadRecommend();
+  },
+
+  onShow() {
+    this.consumeOperResult();
+    this.loadUnreadCount();
+  },
+
+  async loadRecommend() {
+    const posts = await withMockFallback(
+      () => getPosts({ limit: 4 }),
+      () => getPublishedPosts().slice(0, 4)
+    );
+    this.setData({ recommendList: withAuthorInitial(posts), loading: false });
+  },
+
+  async loadUnreadCount() {
+    try {
+      const app = getApp();
+      const { openid } = app.globalData;
+      if (!openid) return;
+      const total = await count('messages', { toOpenid: openid, read: false });
+      this.setData({ unreadCount: total });
+    } catch (err) {
+      // 静默失败
     }
   },
-  onRefresh() {
+
+  async onRefresh() {
     this.setData({ enable: true });
-    setTimeout(() => {
+    try {
+      await this.loadRecommend();
+      await this.loadUnreadCount();
+    } finally {
       this.setData({ enable: false });
-    }, 500);
+    }
   },
+
+  consumeOperResult(fallbackOper) {
+    const oper = fallbackOper || wx.getStorageSync('homeOper');
+    if (!oper) return;
+    if (oper === 'release') {
+      this.showOperMsg('发布成功');
+    } else if (oper === 'save') {
+      this.showOperMsg('草稿已保存');
+    }
+    wx.removeStorageSync('homeOper');
+  },
+
   showOperMsg(content) {
     Message.success({
       context: this,
@@ -29,44 +78,38 @@ Page({
       content,
     });
   },
+
   handleFeatureTap(e) {
     const { path } = e.currentTarget.dataset;
     wx.navigateTo({ url: path });
   },
+
   handlePostTap(e) {
     const { id } = e.currentTarget.dataset;
-    wx.navigateTo({
-      url: `/pages/detail/index?id=${id}`,
-    });
+    wx.navigateTo({ url: `/pages/detail/index?id=${id}` });
   },
+
   goSearch() {
-    wx.navigateTo({
-      url: '/pages/search/index',
-    });
+    wx.navigateTo({ url: '/pages/search/index' });
   },
+
   goZones() {
-    wx.navigateTo({
-      url: '/pages/zones/index',
-    });
+    wx.navigateTo({ url: '/pages/zones/index' });
   },
+
   goForum() {
-    wx.navigateTo({
-      url: '/pages/forum/index',
-    });
+    wx.navigateTo({ url: '/pages/forum/index' });
   },
+
   goMessages() {
-    wx.navigateTo({
-      url: '/pages/message/index',
-    });
+    wx.navigateTo({ url: '/pages/message/index' });
   },
+
   goMy() {
-    wx.switchTab({
-      url: '/pages/my/index',
-    });
+    wx.switchTab({ url: '/pages/my/index' });
   },
+
   goRelease() {
-    wx.switchTab({
-      url: '/pages/release/index',
-    });
+    wx.switchTab({ url: '/pages/release/index' });
   },
 });

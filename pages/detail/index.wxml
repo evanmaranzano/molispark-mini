@@ -8,7 +8,7 @@
 
     <view class="article-card">
       <view class="article-meta">
-        <view class="avatar">{{post.author.slice(0, 1)}}</view>
+        <view class="avatar">{{post.authorInitial}}</view>
         <view class="article-meta__body">
           <view class="article-meta__name">{{post.author}}</view>
           <view class="article-meta__info">{{post.category}} · {{post.time}}</view>
@@ -21,36 +21,61 @@
         <view class="hero__label">{{post.heroTitle}}</view>
       </view>
 
+      <view wx:if="{{post.images && post.images.length}}" class="article-images">
+        <image wx:for="{{post.images}}" wx:key="*this" class="article-images__item" src="{{item}}" mode="widthFix" />
+      </view>
+
       <view class="article-content">
         <view class="article-content__paragraph" wx:for="{{post.content}}" wx:key="*this">{{item}}</view>
       </view>
 
+      <view class="article-stats">
+        <text>{{post.views || 0}} 阅读</text>
+        <text>{{post.likes || 0}} 点赞</text>
+        <text>{{post.commentCount || 0}} 评论</text>
+      </view>
+
       <view class="sticky-actions">
         <view
-          class="sticky-actions__item"
+          class="sticky-actions__item {{liked ? 'sticky-actions__item--active' : ''}}"
           wx:for="{{actionList}}"
           wx:key="key"
-          data-label="{{item.label}}"
+          data-key="{{item.key}}"
           bindtap="handleAction"
         >
-          {{item.label}}
+          <text class="sticky-actions__icon">{{item.icon}}</text>
+          <text>{{liked && item.key === 'like' ? '已赞' : (collected && item.key === 'collect' ? '已藏' : item.label)}}</text>
         </view>
       </view>
     </view>
 
     <view class="comment-section">
-      <view class="section-title">评论区</view>
-      <view class="comment" wx:for="{{comments}}" wx:key="name">
-        <view class="comment__avatar">{{item.name.slice(0, 1)}}</view>
+      <view class="section-title">评论区（{{comments.length}}）</view>
+      <view wx:if="{{!comments.length}}" class="empty-hint">暂无评论，快来抢沙发吧</view>
+      <view class="comment" wx:for="{{comments}}" wx:key="index">
+        <view class="comment__avatar">{{item.nameInitial}}</view>
         <view class="comment__body">
           <view class="comment__head">
             {{item.name}}
-            <text class="comment__time">{{item.time}}</text>
+            <text class="comment__time">{{item.time || item.createdAt}}</text>
           </view>
           <view class="comment__text">{{item.body}}</view>
-          <view class="reply" wx:if="{{item.reply}}">{{item.reply}}</view>
+          <view class="reply" wx:if="{{item.reply}}">作者回复：{{item.reply}}</view>
         </view>
       </view>
     </view>
   </view>
 </scroll-view>
+
+<view class="comment-input-bar" wx:if="{{showCommentInput}}">
+  <input
+    class="comment-input-bar__field"
+    placeholder="写评论..."
+    value="{{commentText}}"
+    bindinput="onCommentInput"
+    confirm-type="send"
+    bindconfirm="submitComment"
+    focus="{{showCommentInput}}"
+  />
+  <view class="comment-input-bar__btn" bindtap="submitComment">发送</view>
+</view>

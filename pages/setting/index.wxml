@@ -10,6 +10,7 @@
         <view class="menu-row__icon"></view>
         <view class="menu-row__body">
           <view class="menu-row__title">{{item}}</view>
+          <view class="menu-row__desc">{{values[item]}}</view>
         </view>
         <view class="menu-row__arrow">›</view>
       </view>

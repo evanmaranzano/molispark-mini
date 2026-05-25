@@ -13,7 +13,8 @@
     </view>
 
     <view class="profile-card">
-      <view class="profile-card__avatar">{{profile.avatarText}}</view>
+      <image wx:if="{{profile.avatarUrl}}" class="profile-card__avatar profile-card__avatar--image" src="{{profile.avatarUrl}}" mode="aspectFill" />
+      <view wx:else class="profile-card__avatar">{{profile.avatarText}}</view>
       <view class="profile-card__body">
         <view class="profile-card__name-row">
           <text class="profile-card__name">{{profile.name}}</text>
@@ -21,7 +22,8 @@
         </view>
         <view class="profile-card__brief">{{profile.brief}}</view>
       </view>
-      <view class="profile-card__arrow">›</view>
+      <view wx:if="{{isAuthed}}" class="profile-card__action profile-card__action--ghost" bindtap="handleLogout">退出</view>
+      <view wx:else class="profile-card__action" bindtap="handleLogin">微信登录</view>
     </view>
 
     <view class="stats-card">

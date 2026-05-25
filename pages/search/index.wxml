@@ -21,24 +21,24 @@
     <scroll-view class="keyword-scroll" scroll-x show-scrollbar="{{false}}">
       <view class="keyword-scroll__inner">
         <view
-          class="keyword {{activeSearch === item ? 'keyword--active' : ''}}"
+          class="{{item.className}}"
           wx:for="{{hotKeywords}}"
-          wx:key="*this"
-          data-keyword="{{item}}"
+          wx:key="value"
+          data-keyword="{{item.value}}"
           bindtap="applyKeyword"
         >
-          {{item}}
+          {{item.label}}
         </view>
       </view>
     </scroll-view>
 
     <view class="result-head">
-      <text>找到 {{posts.length ? posts.length * 32 : fallbackCount * 32}} 篇相关内容</text>
+      <text>{{resultText}}</text>
       <text>最新⌄</text>
     </view>
 
     <view class="post-list">
-      <view class="post-card" wx:for="{{posts}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
+      <view class="post-card" wx:for="{{posts}}" wx:key="id" data-id="{{item._id || item.id}}" bindtap="goDetail">
         <view class="post-card__body">
           <view class="post-card__title">{{item.title}}</view>
           <view class="post-card__desc">{{item.desc}}</view>

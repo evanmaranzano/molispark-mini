@@ -6,7 +6,7 @@
     </view>
 
     <view class="zone-list">
-      <view class="zone-card" wx:for="{{zones}}" wx:key="id" bindtap="goForum">
+      <view class="zone-card" wx:for="{{zones}}" wx:key="id" bindtap="goForum" data-title="{{item.title}}">
         <view class="zone-card__cover zone-card__cover--{{item.coverStyle}}"></view>
         <view class="zone-card__body">
           <view class="zone-card__title">{{item.title}}</view>

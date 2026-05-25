@@ -1,4 +1,5 @@
-import { drafts } from '~/mock/community';
+import { getDrafts } from '~/utils/db';
+import { drafts as mockDrafts } from '~/mock/community';
 
 const publishOptions = [
   { id: 'post', title: '发帖子', desc: '分享观点、经验和见解', color: '#2fb67d', icon: '✎' },
@@ -10,30 +11,30 @@ const publishOptions = [
 Page({
   data: {
     publishOptions,
-    draftList: drafts.slice(0, 1),
+    draftCount: 0,
   },
+
+  onShow() {
+    this.loadDraftCount();
+  },
+
+  async loadDraftCount() {
+    const app = getApp();
+    const { openid } = app.globalData;
+    try {
+      const drafts = await getDrafts(openid);
+      this.setData({ draftCount: drafts.length || mockDrafts.length });
+    } catch (err) {
+      this.setData({ draftCount: mockDrafts.length });
+    }
+  },
+
   handleOptionTap(e) {
     const { id } = e.currentTarget.dataset;
     if (id === 'draft') {
-      wx.navigateTo({
-        url: '/pages/drafts/index',
-      });
+      wx.navigateTo({ url: '/pages/drafts/index' });
       return;
     }
-    wx.navigateTo({
-      url: '/pages/publishForm/index',
-    });
-  },
-  saveDraft() {
-    wx.showToast({
-      title: '草稿已保存',
-      icon: 'none',
-    });
-  },
-  release() {
-    wx.showToast({
-      title: '发布成功',
-      icon: 'none',
-    });
+    wx.navigateTo({ url: `/pages/publishForm/index?type=${id}` });
   },
 });

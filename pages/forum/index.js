@@ -1,20 +1,76 @@
+import { getPosts } from '~/utils/db';
+import { withMockFallback } from '~/utils/mockFallback';
 import { getPublishedPosts } from '~/mock/community';
+
+function buildTabItems(list, currentValue) {
+  return list.map((item) => ({
+    label: item,
+    value: item,
+    className: item === currentValue ? 'segment__item segment__item--active' : 'segment__item',
+  }));
+}
+
+function buildCategoryItems(list, currentValue) {
+  return list.map((item) => ({
+    label: item,
+    value: item,
+    className: item === currentValue ? 'tag tag--active' : 'tag',
+  }));
+}
+
+const TAB_VALUES = ['推荐', '最新', '关注'];
+const CATEGORY_VALUES = ['全部', '学习', '职场', 'AI', '读书'];
+const DEFAULT_TAB = '推荐';
+const DEFAULT_CATEGORY = '全部';
 
 Page({
   data: {
-    tabs: ['推荐', '最新', '关注'],
-    categoryTabs: ['学习', '职场', 'AI', '读书'],
-    currentTab: '推荐',
-    currentCategory: '学习',
-    posts: getPublishedPosts(),
+    tabs: buildTabItems(TAB_VALUES, DEFAULT_TAB),
+    categoryTabs: buildCategoryItems(CATEGORY_VALUES, DEFAULT_CATEGORY),
+    currentTab: DEFAULT_TAB,
+    currentCategory: DEFAULT_CATEGORY,
+    zoneTitle: '',
+    posts: [],
+    loading: true,
+  },
+
+  onLoad(options) {
+    if (options.zone) {
+      this.setData({ zoneTitle: options.zone });
+    }
+    this.loadPosts();
+  },
+
+  async loadPosts() {
+    this.setData({ loading: true });
+    const { currentTab, currentCategory } = this.data;
+    const where = { status: 'published' };
+    if (currentCategory !== '全部') {
+      where.category = currentCategory;
+    }
+    const posts = await withMockFallback(
+      () => getPosts({ where, orderBy: 'createdAt', limit: 50 }),
+      () => getPublishedPosts().filter((item) => currentCategory === '全部' || item.category.includes(currentCategory))
+    );
+    this.setData({ posts, loading: false });
   },
 
   handleTabTap(e) {
-    this.setData({ currentTab: e.currentTarget.dataset.value });
+    const { value } = e.currentTarget.dataset;
+    this.setData({
+      currentTab: value,
+      tabs: buildTabItems(TAB_VALUES, value),
+    });
+    this.loadPosts();
   },
 
   handleCategoryTap(e) {
-    this.setData({ currentCategory: e.currentTarget.dataset.value });
+    const { value } = e.currentTarget.dataset;
+    this.setData({
+      currentCategory: value,
+      categoryTabs: buildCategoryItems(CATEGORY_VALUES, value),
+    });
+    this.loadPosts();
   },
 
   navigateBack() {
