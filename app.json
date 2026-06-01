@@ -1,8 +1,19 @@
 {
-  "pages": ["pages/home/index", "pages/message/index", "pages/my/index"],
-  "usingComponents": {
-    "t-toast": "tdesign-miniprogram/toast/toast"
-  },
+  "pages": [
+    "pages/home/index",
+    "pages/release/index",
+    "pages/my/index",
+    "pages/detail/index",
+    "pages/forum/index",
+    "pages/zones/index",
+    "pages/message/index",
+    "pages/publishForm/index",
+    "pages/drafts/index",
+    "pages/myPosts/index",
+    "pages/favorites/index",
+    "pages/history/index",
+    "pages/feedback/index"
+  ],
   "subpackages": [
     {
       "root": "pages/search",
@@ -10,38 +21,8 @@
       "pages": ["index"]
     },
     {
-      "root": "pages/my/info-edit",
-      "name": "edit",
-      "pages": ["index"]
-    },
-    {
-      "root": "pages/chat",
-      "name": "chat",
-      "pages": ["index"]
-    },
-    {
-      "root": "pages/login",
-      "name": "login",
-      "pages": ["login"]
-    },
-    {
-      "root": "pages/loginCode",
-      "name": "loginCode",
-      "pages": ["loginCode"]
-    },
-    {
-      "root": "pages/dataCenter",
-      "name": "dataCenter",
-      "pages": ["index"]
-    },
-    {
       "root": "pages/setting",
       "name": "setting",
-      "pages": ["index"]
-    },
-    {
-      "root": "pages/release",
-      "name": "release",
       "pages": ["index"]
     }
   ],
@@ -59,8 +40,8 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/message/index",
-        "text": "消息"
+        "pagePath": "pages/release/index",
+        "text": "发布"
       },
       {
         "pagePath": "pages/my/index",

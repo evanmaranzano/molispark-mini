@@ -1,0 +1,47 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">论坛</view>
+    </view>
+
+    <view wx:if="{{zoneTitle}}" class="section-title">{{zoneTitle}}</view>
+
+    <view class="segment">
+      <view
+        class="{{item.className}}"
+        wx:for="{{tabs}}"
+        wx:key="value"
+        data-value="{{item.value}}"
+        bindtap="handleTabTap"
+      >
+        {{item.label}}
+      </view>
+    </view>
+
+    <scroll-view class="tag-scroll" scroll-x show-scrollbar="{{false}}">
+      <view class="tag-scroll__inner">
+        <view
+          class="{{item.className}}"
+          wx:for="{{categoryTabs}}"
+          wx:key="value"
+          data-value="{{item.value}}"
+          bindtap="handleCategoryTap"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="post-list">
+      <view class="post-card" wx:for="{{posts}}" wx:key="id" data-id="{{item._id || item.id}}" bindtap="goDetail">
+        <view class="post-card__body">
+          <view class="post-card__title">{{item.title}}</view>
+          <view class="post-card__desc">{{item.desc}}</view>
+          <view class="post-card__meta">{{item.author}} · {{item.time}}</view>
+        </view>
+        <view class="post-card__cover post-card__cover--{{item.coverStyle}}"></view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

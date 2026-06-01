@@ -1,21 +1,40 @@
-// app.js
-import config from './config';
-import Mock from './mock/index';
-import createBus from './utils/eventBus';
-import { connectSocket, fetchUnreadNum } from './mock/chat';
-
-if (config.isMock) {
-  Mock();
-}
+const auth = require('./utils/auth');
 
 App({
+  globalData: {
+    userInfo: null,
+    openid: '',
+    cloudReady: false,
+  },
+
   onLaunch() {
-    const updateManager = wx.getUpdateManager();
+    this.initCloud();
+    this.checkUpdate();
+    this.restoreSession();
+  },
 
-    updateManager.onCheckForUpdate((res) => {
-      // console.log(res.hasUpdate)
+  initCloud() {
+    if (!wx.cloud) {
+      console.warn('请使用 2.2.3 及以上基础库以支持云开发能力');
+      return;
+    }
+
+    const envId = 'your-cloud-env-id';
+    if (!envId || envId === 'your-cloud-env-id') {
+      console.warn('请先在 app.js 中替换微信云开发环境 ID');
+      return;
+    }
+
+    wx.cloud.init({
+      env: envId,
+      traceUser: true,
     });
+    this.globalData.cloudReady = true;
+  },
 
+  checkUpdate() {
+    const updateManager = wx.getUpdateManager();
+    updateManager.onCheckForUpdate(() => {});
     updateManager.onUpdateReady(() => {
       wx.showModal({
         title: '更新提示',
@@ -27,40 +46,13 @@ App({
         },
       });
     });
-
-    this.getUnreadNum();
-    this.connect();
-  },
-  globalData: {
-    userInfo: null,
-    unreadNum: 0, // 未读消息数量
-    socket: null, // SocketTask 对象
   },
 
-  /** 全局事件总线 */
-  eventBus: createBus(),
-
-  /** 初始化WebSocket */
-  connect() {
-    const socket = connectSocket();
-    socket.onMessage((data) => {
-      data = JSON.parse(data);
-      if (data.type === 'message' && !data.data.message.read) this.setUnreadNum(this.globalData.unreadNum + 1);
-    });
-    this.globalData.socket = socket;
-  },
-
-  /** 获取未读消息数量 */
-  getUnreadNum() {
-    fetchUnreadNum().then(({ data }) => {
-      this.globalData.unreadNum = data;
-      this.eventBus.emit('unread-num-change', data);
-    });
-  },
-
-  /** 设置未读消息数量 */
-  setUnreadNum(unreadNum) {
-    this.globalData.unreadNum = unreadNum;
-    this.eventBus.emit('unread-num-change', unreadNum);
+  restoreSession() {
+    const session = auth.getSession();
+    if (session) {
+      this.globalData.openid = session.openid;
+      this.globalData.userInfo = session.profile;
+    }
   },
 });

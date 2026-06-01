@@ -1,0 +1,22 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">我的帖子</view>
+    </view>
+
+    <view wx:if="{{!posts.length && !loading}}" class="empty-hint">暂无帖子</view>
+    <view class="draft-list">
+      <view class="draft-card" wx:for="{{posts}}" wx:key="index">
+        <view class="draft-card__title">{{item.title}}</view>
+        <view class="draft-card__desc">{{item.desc}}</view>
+        <view class="draft-card__time">{{item.status === 'draft' ? '草稿' : (item.time || item.updatedAt)}}</view>
+        <view class="draft-card__actions">
+          <view class="draft-card__button draft-card__button--outline" data-id="{{item._id || item.id}}" bindtap="goDetail">查看</view>
+          <view class="draft-card__button draft-card__button--gray" data-id="{{item._id || item.id}}" bindtap="editPost">编辑</view>
+          <view class="draft-card__button draft-card__button--gray" data-id="{{item._id || item.id}}" bindtap="deletePost">删除</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

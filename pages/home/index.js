@@ -1,82 +1,115 @@
 import Message from 'tdesign-miniprogram/message/index';
-import request from '~/api/request';
+import { getPosts, count } from '~/utils/db';
+import { withMockFallback } from '~/utils/mockFallback';
+import { getPublishedPosts, quickActions } from '~/mock/community';
 
-// 获取应用实例
-// const app = getApp()
+function withAuthorInitial(list = []) {
+  return list.map((item) => ({
+    ...item,
+    authorInitial: item.author ? item.author.slice(0, 1) : '',
+  }));
+}
 
 Page({
   data: {
     enable: false,
-    swiperList: [],
-    cardInfo: [],
-    // 发布
-    motto: 'Hello World',
-    userInfo: {},
-    hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo'),
-    canIUseGetUserProfile: false,
-    canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName'), // 如需尝试获取用户信息可改为false
+    quickActions,
+    recommendList: [],
+    unreadCount: 0,
+    loading: true,
   },
-  // 生命周期
-  async onReady() {
-    const [cardRes, swiperRes] = await Promise.all([
-      request('/home/cards').then((res) => res.data),
-      request('/home/swipers').then((res) => res.data),
-    ]);
 
-    this.setData({
-      cardInfo: cardRes.data,
-      focusCardInfo: cardRes.data.slice(0, 3),
-      swiperList: swiperRes.data,
-    });
-  },
   onLoad(option) {
-    if (wx.getUserProfile) {
-      this.setData({
-        canIUseGetUserProfile: true,
-      });
-    }
-    if (option.oper) {
-      let content = '';
-      if (option.oper === 'release') {
-        content = '发布成功';
-      } else if (option.oper === 'save') {
-        content = '保存成功';
-      }
-      this.showOperMsg(content);
-    }
+    this.consumeOperResult(option.oper);
+    this.loadRecommend();
   },
-  onRefresh() {
-    this.refresh();
-  },
-  async refresh() {
-    this.setData({
-      enable: true,
-    });
-    const [cardRes, swiperRes] = await Promise.all([
-      request('/home/cards').then((res) => res.data),
-      request('/home/swipers').then((res) => res.data),
-    ]);
 
-    setTimeout(() => {
-      this.setData({
-        enable: false,
-        cardInfo: cardRes.data,
-        swiperList: swiperRes.data,
-      });
-    }, 1500);
+  onShow() {
+    this.consumeOperResult();
+    this.loadUnreadCount();
   },
+
+  async loadRecommend() {
+    const posts = await withMockFallback(
+      () => getPosts({ limit: 4 }),
+      () => getPublishedPosts().slice(0, 4)
+    );
+    this.setData({ recommendList: withAuthorInitial(posts), loading: false });
+  },
+
+  async loadUnreadCount() {
+    try {
+      const app = getApp();
+      const { openid } = app.globalData;
+      if (!openid) return;
+      const total = await count('messages', { toOpenid: openid, read: false });
+      this.setData({ unreadCount: total });
+    } catch (err) {
+      // 静默失败
+    }
+  },
+
+  async onRefresh() {
+    this.setData({ enable: true });
+    try {
+      await this.loadRecommend();
+      await this.loadUnreadCount();
+    } finally {
+      this.setData({ enable: false });
+    }
+  },
+
+  consumeOperResult(fallbackOper) {
+    const oper = fallbackOper || wx.getStorageSync('homeOper');
+    if (!oper) return;
+    if (oper === 'release') {
+      this.showOperMsg('发布成功');
+    } else if (oper === 'save') {
+      this.showOperMsg('草稿已保存');
+    }
+    wx.removeStorageSync('homeOper');
+  },
+
   showOperMsg(content) {
     Message.success({
       context: this,
-      offset: [120, 32],
-      duration: 4000,
+      offset: [96, 24],
+      duration: 2400,
       content,
     });
   },
+
+  handleFeatureTap(e) {
+    const { path } = e.currentTarget.dataset;
+    wx.navigateTo({ url: path });
+  },
+
+  handlePostTap(e) {
+    const { id } = e.currentTarget.dataset;
+    wx.navigateTo({ url: `/pages/detail/index?id=${id}` });
+  },
+
+  goSearch() {
+    wx.navigateTo({ url: '/pages/search/index' });
+  },
+
+  goZones() {
+    wx.navigateTo({ url: '/pages/zones/index' });
+  },
+
+  goForum() {
+    wx.navigateTo({ url: '/pages/forum/index' });
+  },
+
+  goMessages() {
+    wx.navigateTo({ url: '/pages/message/index' });
+  },
+
+  goMy() {
+    wx.switchTab({ url: '/pages/my/index' });
+  },
+
   goRelease() {
-    wx.navigateTo({
-      url: '/pages/release/index',
-    });
+    wx.switchTab({ url: '/pages/release/index' });
   },
 });

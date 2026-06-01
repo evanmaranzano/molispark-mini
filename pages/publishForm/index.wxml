@@ -1,0 +1,43 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">发布内容</view>
+    </view>
+
+    <view class="form-card">
+      <view class="form-label">标题</view>
+      <input class="form-input" placeholder="请输入标题" value="{{title}}" data-field="title" bindinput="handleInput" />
+
+      <view class="form-label">分类</view>
+      <input class="form-input" placeholder="请输入分类" value="{{category}}" data-field="category" bindinput="handleInput" />
+
+      <view class="form-label">正文</view>
+      <textarea
+        class="form-textarea"
+        placeholder="分享你的观点、经验和见解"
+        value="{{content}}"
+        data-field="content"
+        bindinput="handleInput"
+      />
+
+      <view class="form-label">图片（可选）</view>
+      <view class="image-grid">
+        <view class="image-item" wx:for="{{images}}" wx:key="*this">
+          <image class="image-item__img" src="{{item}}" mode="aspectFill" />
+          <view class="image-item__remove" data-index="{{index}}" bindtap="removeImage">✕</view>
+        </view>
+        <view class="image-item image-item--add" bindtap="handleChooseImage" wx:if="{{images.length < 9}}">
+          <view class="image-item__plus">+</view>
+        </view>
+      </view>
+
+      <view class="form-actions">
+        <view class="form-btn form-btn--light" bindtap="saveDraft">保存草稿</view>
+        <view class="form-btn form-btn--primary" bindtap="publish" disabled="{{publishing}}">
+          {{publishing ? '发布中...' : '立即发布'}}
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

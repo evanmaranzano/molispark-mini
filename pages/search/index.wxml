@@ -1,65 +1,51 @@
-<t-navbar title="搜索" left-arrow />
-<view class="page search-page">
-  <view class="search-input">
-    <t-search
-      t-class-input-container="t-class__input-container"
-      t-class-input="t-search__input"
-      value="{{searchValue}}"
-      leftIcon="search"
-      action="取消"
-      shape="round"
-      placeholder="请搜索你想要的内容"
-      bind:submit="handleSubmit"
-      bind:action-click="actionHandle"
-      focus
-    ></t-search>
-  </view>
-  <view class="search-wrap">
-    <view class="history-wrap">
-      <view class="search-header">
-        <text class="search-title">历史记录</text>
-        <t-icon name="delete" size="large" class="search-clear" bind:click="handleClearHistory" />
+<scroll-view class="search-page" scroll-y show-scrollbar="{{false}}">
+  <view class="search-shell">
+    <view class="search-head">
+      <view class="search-head__back" bindtap="goBack">‹</view>
+      <view class="search-input">
+        <text>🔍</text>
+        <input
+          class="search-input__field"
+          placeholder="搜索帖子、专区或内容"
+          value="{{activeSearch}}"
+          bindinput="handleInput"
+          confirm-type="search"
+          bindconfirm="doSearch"
+        />
+        <view class="search-input__clear" bindtap="clearSearch">✕</view>
       </view>
-      <view class="search-content">
-        <view
-          class="search-item"
-          hover-class="hover-history-item"
-          wx:for="{{historyWords}}"
-          bind:tap="handleHistoryTap"
-          bindlongpress="deleteCurr"
-          data-index="{{index}}"
-          wx:key="*this"
-        >
-          <t-tag class="history-item margin-12" max-width="{{343}}" variant="light">{{item}}</t-tag>
-        </view>
-      </view>
+      <view class="search-head__action" bindtap="doSearch">搜索</view>
     </view>
-    <view class="popular-wrap">
-      <view class="search-header">
-        <text class="search-title">搜索发现</text>
-      </view>
-      <view class="search-content">
+
+    <view class="section-title">热门搜索</view>
+    <scroll-view class="keyword-scroll" scroll-x show-scrollbar="{{false}}">
+      <view class="keyword-scroll__inner">
         <view
-          class="search-item"
-          hover-class="hover-history-item"
-          wx:for="{{popularWords}}"
-          bind:tap="handlePopularTap"
-          data-index="{{index}}"
-          wx:key="*this"
+          class="{{item.className}}"
+          wx:for="{{hotKeywords}}"
+          wx:key="value"
+          data-keyword="{{item.value}}"
+          bindtap="applyKeyword"
         >
-          <t-tag class="popular-item margin-12" max-width="{{343}}" variant="light" icon="search"> {{item}} </t-tag>
+          {{item.label}}
         </view>
+      </view>
+    </scroll-view>
+
+    <view class="result-head">
+      <text>{{resultText}}</text>
+      <text>最新⌄</text>
+    </view>
+
+    <view class="post-list">
+      <view class="post-card" wx:for="{{posts}}" wx:key="id" data-id="{{item._id || item.id}}" bindtap="goDetail">
+        <view class="post-card__body">
+          <view class="post-card__title">{{item.title}}</view>
+          <view class="post-card__desc">{{item.desc}}</view>
+          <view class="post-card__meta">{{item.author}} · {{item.time}}</view>
+        </view>
+        <view class="post-card__cover post-card__cover--{{item.coverStyle}}"></view>
       </view>
     </view>
   </view>
-  <t-dialog
-    visible="{{dialogShow}}"
-    content="{{dialog.message}}"
-    bindconfirm="confirm"
-    bind:close="close"
-    confirm-btn="确定"
-    cancel-btn="{{dialog.showCancelButton ? '取消' : null}}"
-    t-class-confirm="dialog__button-confirm"
-    t-class-cancel="dialog__button-cancel"
-  />
-</view>
+</scroll-view>

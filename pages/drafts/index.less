@@ -1,0 +1,161 @@
+.sub-page {
+  height: 100vh;
+  background: #f5f7f8;
+}
+
+.sub-shell {
+  padding: calc(24rpx + env(safe-area-inset-top)) 24rpx 40rpx;
+}
+
+.sub-topbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72rpx;
+  margin-bottom: 22rpx;
+
+  &__back {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 64rpx;
+    height: 64rpx;
+    transform: translateY(-50%);
+    color: #17202a;
+    font-size: 46rpx;
+    line-height: 64rpx;
+    text-align: center;
+  }
+
+  &__title {
+    color: #17202a;
+    font-size: 34rpx;
+    font-weight: 800;
+  }
+
+  &__right {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #2fb67d;
+    font-size: 24rpx;
+    font-weight: 700;
+  }
+}
+
+.draft-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.draft-card,
+.form-card {
+  border-radius: 24rpx;
+  background: #fff;
+  box-shadow: 0 10rpx 30rpx rgba(31, 45, 61, 0.08);
+}
+
+.draft-card {
+  padding: 24rpx;
+
+  &__title {
+    color: #17202a;
+    font-size: 28rpx;
+    font-weight: 800;
+  }
+
+  &__desc {
+    margin-top: 10rpx;
+    color: #6f7c86;
+    font-size: 22rpx;
+    line-height: 1.55;
+  }
+
+  &__time {
+    margin-top: 14rpx;
+    color: #8a949e;
+    font-size: 20rpx;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12rpx;
+    margin-top: 18rpx;
+  }
+
+  &__button {
+    flex: 1;
+    padding: 18rpx 0;
+    border-radius: 999rpx;
+    text-align: center;
+    font-size: 22rpx;
+    font-weight: 700;
+
+    &--outline {
+      color: #2fb67d;
+      background: #fff;
+      border: 1rpx solid rgba(47, 182, 125, 0.35);
+    }
+
+    &--gray {
+      color: #55616c;
+      background: #f1f3f5;
+    }
+  }
+}
+
+.form-card {
+  padding: 24rpx;
+}
+
+.form-label {
+  margin: 18rpx 0 10rpx;
+  color: #17202a;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1rpx solid #e2e7ea;
+  border-radius: 18rpx;
+  padding: 18rpx 20rpx;
+  color: #17202a;
+  background: #fff;
+  font-size: 24rpx;
+}
+
+.form-textarea {
+  min-height: 320rpx;
+  line-height: 1.7;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 24rpx;
+}
+
+.form-btn {
+  flex: 1;
+  padding: 22rpx 0;
+  border-radius: 999rpx;
+  text-align: center;
+  font-size: 24rpx;
+  font-weight: 700;
+
+  &--light {
+    color: #1e8e61;
+    background: #eaf8f1;
+  }
+
+  &--primary {
+    color: #fff;
+    background: #2fb67d;
+  }
+}

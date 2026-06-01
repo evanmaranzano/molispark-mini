@@ -1,108 +1,84 @@
-// pages/message/message.js
-import { fetchMessageList, markMessagesRead } from '~/mock/chat';
-
-const app = getApp();
-const { socket } = app.globalData; // 获取已连接的 socketTask
-let currentUser = null; // 当前打开的聊天用户 { userId, eventChannel }
+import { getMessages, markMessageRead, count } from '~/utils/db';
+import { withMockFallback } from '~/utils/mockFallback';
+import { messages as mockMessages, getMessageSummary } from '~/mock/community';
 
 Page({
-  /** 页面的初始数据 */
   data: {
-    messageList: [], // 完整消息列表 { userId, name, avatar, messages }
-    loading: true, // 是否正在加载（用于下拉刷新）
+    messageList: [],
+    summaryCards: [],
+    loading: true,
   },
 
-  /** 生命周期函数--监听页面加载 */
-  onLoad(options) {
-    this.getMessageList();
-    // 处理接收到的数据
-    socket.onMessage((data) => {
-      data = JSON.parse(data);
-      if (data.type === 'message') {
-        const { userId, message } = data.data;
-        const { user, index } = this.getUserById(userId);
-        this.data.messageList.splice(index, 1);
-        this.data.messageList.unshift(user);
-        user.messages.push(message);
-        if (currentUser && userId === currentUser.userId) {
-          this.setMessagesRead(userId);
-          currentUser.eventChannel.emit('update', user);
-        }
-        this.setData({ messageList: this.data.messageList });
-        app.setUnreadNum(this.computeUnreadNum());
-      }
-    });
-  },
-
-  /** 生命周期函数--监听页面初次渲染完成 */
-  onReady() {},
-
-  /** 生命周期函数--监听页面显示 */
   onShow() {
-    currentUser = null;
+    this.loadMessages();
   },
 
-  /** 生命周期函数--监听页面隐藏 */
-  onHide() {},
-
-  /** 生命周期函数--监听页面卸载 */
-  onUnload() {},
-
-  /** 页面相关事件处理函数--监听用户下拉动作 */
-  onPullDownRefresh() {},
-
-  /** 页面上拉触底事件的处理函数 */
-  onReachBottom() {},
-
-  /** 用户点击右上角分享 */
-  onShareAppMessage() {},
-
-  /** 获取完整消息列表 */
-  getMessageList() {
-    fetchMessageList().then(({ data }) => {
-      this.setData({ messageList: data, loading: false });
-    });
-  },
-
-  /** 通过 userId 获取 user 对象和下标 */
-  getUserById(userId) {
-    let index = 0;
-    while (index < this.data.messageList.length) {
-      const user = this.data.messageList[index];
-      if (user.userId === userId) return { user, index };
-      index += 1;
+  async loadMessages() {
+    const app = getApp();
+    const { openid } = app.globalData;
+    if (!openid) {
+      // 未登录，降级到 mock
+      const list = mockMessages.map((item) => ({
+        ...item,
+        fromName: item.name,
+        avatarText: item.avatarText,
+        statusText: item.unreadCount > 0 ? '未读' : '已读完',
+        showBadge: item.unreadCount > 0,
+      }));
+      this.setData({ messageList: list, summaryCards: getMessageSummary(), loading: false });
+      return;
     }
-    // TODO：处理 userId 在列表中不存在的情况（）
+    const renderMock = () => {
+      // 降级到 mock
+      const list = mockMessages.map((item) => ({
+        ...item,
+        fromName: item.name,
+        avatarText: item.avatarText,
+        statusText: item.unreadCount > 0 ? '未读' : '已读完',
+        showBadge: item.unreadCount > 0,
+      }));
+      this.setData({ messageList: list, summaryCards: getMessageSummary(), loading: false });
+    };
+
+    try {
+      const messages = await getMessages(openid);
+      if (!messages.length) {
+        renderMock();
+        return;
+      }
+      const unreadTotal = messages.filter((item) => !item.read).length;
+      const messageList = messages.map((item) => ({
+        ...item,
+        avatarText: item.avatarText || (item.fromName ? item.fromName.slice(0, 1) : '消'),
+        statusText: item.read ? '已读完' : '未读',
+        showBadge: !item.read,
+      }));
+      this.setData({
+        messageList,
+        summaryCards: this.buildSummary(unreadTotal, messages.length),
+        loading: false,
+      });
+    } catch (err) {
+      renderMock();
+    }
   },
 
-  /** 计算未读消息数量 */
-  computeUnreadNum() {
-    let unreadNum = 0;
-    this.data.messageList.forEach(({ messages }) => {
-      unreadNum += messages.filter((item) => !item.read).length;
-    });
-    return unreadNum;
+  buildSummary(unread, total) {
+    return [
+      { label: '未读', value: String(unread).padStart(2, '0') },
+      { label: '会话数', value: String(total).padStart(2, '0') },
+    ];
   },
 
-  /** 打开对话页 */
-  toChat(event) {
-    const { userId } = event.currentTarget.dataset;
-    wx.navigateTo({ url: `/pages/chat/index?userId${userId}` }).then(({ eventChannel }) => {
-      currentUser = { userId, eventChannel };
-      const { user } = this.getUserById(userId);
-      eventChannel.emit('update', user);
-    });
-    this.setMessagesRead(userId);
-  },
-
-  /** 将用户的所有消息标记为已读 */
-  setMessagesRead(userId) {
-    const { user } = this.getUserById(userId);
-    user.messages.forEach((message) => {
-      message.read = true;
-    });
-    this.setData({ messageList: this.data.messageList });
-    app.setUnreadNum(this.computeUnreadNum());
-    markMessagesRead(userId);
+  async goDetail(e) {
+    const { id, msgId } = e.currentTarget.dataset;
+    if (msgId) {
+      try {
+        await markMessageRead(msgId);
+      } catch (err) {
+        // 静默失败
+      }
+    }
+    wx.navigateTo({ url: `/pages/detail/index?id=${id}` });
   },
 });
