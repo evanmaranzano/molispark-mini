@@ -1,4 +1,5 @@
 import {
+  _,
   addComment,
   getComments,
   getPostById,
@@ -87,9 +88,8 @@ Page({
 
   async incrementViews(post) {
     try {
-      const nextViews = (post.views || 0) + 1;
-      await updatePost(this.postId, { views: nextViews });
-      this.setData({ 'post.views': nextViews });
+      await updatePost(this.postId, { views: _.inc(1) });
+      this.setData({ 'post.views': (post.views || 0) + 1 });
     } catch (err) {
       // 静默失败
     }
@@ -132,8 +132,8 @@ Page({
     if (key === 'like') {
       try {
         const result = await toggleLike(this.postId, openid);
-        const nextLikes = Math.max((this.data.post.likes || 0) + (result.liked ? 1 : -1), 0);
-        this.setData({ liked: result.liked, 'post.likes': nextLikes });
+        const delta = result.liked ? 1 : -1;
+        this.setData({ liked: result.liked, 'post.likes': Math.max((this.data.post.likes || 0) + delta, 0) });
         wx.showToast({ title: result.liked ? '点赞成功' : '已取消点赞', icon: 'none' });
       } catch (err) {
         wx.showToast({ title: '操作失败', icon: 'none' });

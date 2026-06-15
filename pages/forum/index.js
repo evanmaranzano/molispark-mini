@@ -48,9 +48,18 @@ Page({
     if (currentCategory !== '全部') {
       where.category = currentCategory;
     }
+    const orderBy = currentTab === '最新' ? 'createdAt' : 'likes';
     const posts = await withMockFallback(
-      () => getPosts({ where, orderBy: 'createdAt', limit: 50 }),
-      () => getPublishedPosts().filter((item) => currentCategory === '全部' || item.category.includes(currentCategory))
+      () => getPosts({ where, orderBy, limit: 50 }),
+      () => {
+        const filtered = getPublishedPosts().filter(
+          (item) => currentCategory === '全部' || item.category.includes(currentCategory)
+        );
+        if (currentTab === '最新') {
+          return filtered;
+        }
+        return filtered.slice().sort((a, b) => (b.likes || 0) - (a.likes || 0));
+      }
     );
     this.setData({ posts, loading: false });
   },

@@ -17,33 +17,14 @@ Page({
     const app = getApp();
     const { openid } = app.globalData;
     if (!openid) {
-      // 未登录，降级到 mock
-      const list = mockMessages.map((item) => ({
-        ...item,
-        fromName: item.name,
-        avatarText: item.avatarText,
-        statusText: item.unreadCount > 0 ? '未读' : '已读完',
-        showBadge: item.unreadCount > 0,
-      }));
-      this.setData({ messageList: list, summaryCards: getMessageSummary(), loading: false });
+      this.renderMock();
       return;
     }
-    const renderMock = () => {
-      // 降级到 mock
-      const list = mockMessages.map((item) => ({
-        ...item,
-        fromName: item.name,
-        avatarText: item.avatarText,
-        statusText: item.unreadCount > 0 ? '未读' : '已读完',
-        showBadge: item.unreadCount > 0,
-      }));
-      this.setData({ messageList: list, summaryCards: getMessageSummary(), loading: false });
-    };
 
     try {
       const messages = await getMessages(openid);
       if (!messages.length) {
-        renderMock();
+        this.renderMock();
         return;
       }
       const unreadTotal = messages.filter((item) => !item.read).length;
@@ -59,8 +40,19 @@ Page({
         loading: false,
       });
     } catch (err) {
-      renderMock();
+      this.renderMock();
     }
+  },
+
+  renderMock() {
+    const list = mockMessages.map((item) => ({
+      ...item,
+      fromName: item.name,
+      avatarText: item.avatarText,
+      statusText: item.unreadCount > 0 ? '未读' : '已读完',
+      showBadge: item.unreadCount > 0,
+    }));
+    this.setData({ messageList: list, summaryCards: getMessageSummary(), loading: false });
   },
 
   buildSummary(unread, total) {

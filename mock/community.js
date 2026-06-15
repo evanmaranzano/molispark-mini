@@ -236,7 +236,6 @@ const myMenus = [
   { title: '我的帖子', desc: '查看已发布与草稿内容', color: '#2fb67d' },
   { title: '我的收藏', desc: '管理收藏的内容详情', color: '#ffb74a' },
   { title: '浏览记录', desc: '继续阅读最近浏览内容', color: '#4f9df7' },
-  { title: '下载管理', desc: '查看图片、文件下载记录', color: '#2fb67d' },
 ];
 
 const myServices = [
