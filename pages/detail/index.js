@@ -1,6 +1,7 @@
 import {
   _,
   addComment,
+  callInteract,
   getComments,
   getPostById,
   isCollected,
@@ -88,6 +89,11 @@ Page({
 
   async incrementViews(post) {
     try {
+      const result = await callInteract({ action: 'view', postId: this.postId });
+      if (result && result.success) {
+        this.setData({ 'post.views': result.counts.views });
+        return;
+      }
       await updatePost(this.postId, { views: _.inc(1) });
       this.setData({ 'post.views': (post.views || 0) + 1 });
     } catch (err) {
@@ -132,8 +138,14 @@ Page({
     if (key === 'like') {
       try {
         const result = await toggleLike(this.postId, openid);
-        const delta = result.liked ? 1 : -1;
-        this.setData({ liked: result.liked, 'post.likes': Math.max((this.data.post.likes || 0) + delta, 0) });
+        const updateData = { liked: result.liked };
+        if (result.likes !== undefined) {
+          updateData['post.likes'] = result.likes;
+        } else {
+          const delta = result.liked ? 1 : -1;
+          updateData['post.likes'] = Math.max((this.data.post.likes || 0) + delta, 0);
+        }
+        this.setData(updateData);
         wx.showToast({ title: result.liked ? '点赞成功' : '已取消点赞', icon: 'none' });
       } catch (err) {
         wx.showToast({ title: '操作失败', icon: 'none' });
@@ -144,7 +156,11 @@ Page({
     if (key === 'collect') {
       try {
         const result = await toggleCollect(this.postId, openid);
-        this.setData({ collected: result.collected });
+        const updateData = { collected: result.collected };
+        if (result.collectCount !== undefined) {
+          updateData['post.collectCount'] = result.collectCount;
+        }
+        this.setData(updateData);
         wx.showToast({ title: result.collected ? '收藏成功' : '已取消收藏', icon: 'none' });
       } catch (err) {
         wx.showToast({ title: '操作失败', icon: 'none' });
@@ -170,13 +186,17 @@ Page({
     }
     try {
       const { userInfo: profile = {} } = app.globalData;
-      await addComment({
+      const result = await addComment({
         postId: this.postId,
         name: profile.nickName || '微信用户',
         body: commentText,
       });
       this.setData({ commentText: '', showCommentInput: false });
-      this.setData({ 'post.commentCount': (this.data.post.commentCount || 0) + 1 });
+      if (result && result.commentCount !== undefined) {
+        this.setData({ 'post.commentCount': result.commentCount });
+      } else {
+        this.setData({ 'post.commentCount': (this.data.post.commentCount || 0) + 1 });
+      }
       wx.showToast({ title: '评论成功', icon: 'success' });
       this.loadComments();
     } catch (err) {
