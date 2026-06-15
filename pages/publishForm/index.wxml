@@ -8,15 +8,16 @@
 
     <view class="form-card">
       <view class="form-label">标题</view>
-      <input class="form-input" placeholder="请输入标题" value="{{title}}" data-field="title" bindinput="handleInput" />
+      <input class="form-input" placeholder="请输入标题" placeholder-class="form-placeholder" value="{{title}}" data-field="title" bindinput="handleInput" />
 
       <view class="form-label">分类</view>
-      <input class="form-input" placeholder="请输入分类" value="{{category}}" data-field="category" bindinput="handleInput" />
+      <input class="form-input" placeholder="请输入分类" placeholder-class="form-placeholder" value="{{category}}" data-field="category" bindinput="handleInput" />
 
       <view class="form-label">正文</view>
       <textarea
         class="form-textarea"
         placeholder="分享你的观点、经验和见解"
+        placeholder-class="form-placeholder"
         value="{{content}}"
         data-field="content"
         bindinput="handleInput"
