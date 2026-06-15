@@ -2,7 +2,16 @@ import useToastBehavior from '~/behaviors/useToast';
 import { myMenus, myServices, myStats, profile } from '~/mock/community';
 import { getUserStats } from '~/utils/db';
 
-const { clearSession, getDefaultProfile, getSession, loginWithCloud } = require('~/utils/auth');
+const {
+  clearSession,
+  getDefaultProfile,
+  getSession,
+  isProfileComplete,
+  loginWithCloud,
+  updateUserProfile,
+} = require('~/utils/auth');
+const { isCloudReady } = require('~/utils/cloud');
+const { uploadFile } = require('~/utils/storage');
 
 function buildProfile(authSession) {
   if (!authSession) return profile;
@@ -10,7 +19,7 @@ function buildProfile(authSession) {
   return {
     name: nickName,
     level: '已登录',
-    brief: authSession.openid ? `openid：${authSession.openid.slice(0, 10)}...` : '微信登录用户',
+    brief: '微信登录用户',
     avatarText: nickName.slice(0, 1) || '微',
     avatarUrl: authSession.profile.avatarUrl || '',
   };
@@ -29,6 +38,11 @@ Page({
     menuList: myMenus,
     serviceList: myServices,
     isAuthed: false,
+    showProfileSetup: false,
+    setupAvatarUrl: '',
+    setupNickname: '',
+    setupAvatarFileID: '',
+    setupSubmitting: false,
   },
 
   onShow() {
@@ -37,10 +51,18 @@ Page({
 
   syncAuthState() {
     const authSession = getSession();
-    const isAuthed = Boolean(authSession);
+    const isAuthed = Boolean(authSession && isProfileComplete(authSession.profile));
+    const app = getApp();
+    if (isAuthed) {
+      app.globalData.openid = authSession.openid;
+      app.globalData.userInfo = authSession.profile;
+    } else {
+      app.globalData.openid = '';
+      app.globalData.userInfo = null;
+    }
     this.setData({
       isAuthed,
-      profile: buildProfile(authSession),
+      profile: buildProfile(isAuthed ? authSession : null),
     });
     if (isAuthed) {
       this.loadStats();
@@ -66,30 +88,105 @@ Page({
   },
 
   handleLogin() {
+    wx.showLoading({ title: '登录中', mask: true });
     const fallbackProfile = getDefaultProfile();
-    const finishLogin = (userProfile) => {
-      wx.showLoading({ title: '登录中', mask: true });
-      loginWithCloud(userProfile)
-        .then(() => {
-          const app = getApp();
-          app.globalData.openid = getSession().openid;
-          app.globalData.userInfo = userProfile;
-          this.syncAuthState();
-          wx.hideLoading();
+    loginWithCloud(fallbackProfile)
+      .then((session) => {
+        wx.hideLoading();
+        const cloudProfile = isProfileComplete(session.profile) ? session.profile : null;
+        this.syncAuthState();
+        if (cloudProfile) {
           wx.showToast({ title: '登录成功', icon: 'success' });
-        })
-        .catch((error) => {
-          wx.hideLoading();
-          console.error('cloud login failed', error);
-          wx.showToast({ title: '登录失败', icon: 'none' });
-        });
-    };
+        } else {
+          this.setData({
+            showProfileSetup: true,
+            setupAvatarUrl: '',
+            setupNickname: '',
+            setupAvatarFileID: '',
+          });
+        }
+      })
+      .catch((error) => {
+        wx.hideLoading();
+        console.error('[handleLogin] error:', error);
+        wx.showToast({ title: `登录失败: ${error && error.message || error && error.errMsg || '未知'}`, icon: 'none', duration: 3000 });
+      });
+  },
 
-    wx.getUserProfile({
-      desc: '用于完善会员资料展示',
-      success: (res) => finishLogin(res.userInfo || fallbackProfile),
-      fail: () => finishLogin(fallbackProfile),
+  handleEditProfile() {
+    const authSession = getSession();
+    if (!authSession) return;
+    const avatarUrl = authSession.profile.avatarUrl || '';
+    this.setData({
+      showProfileSetup: true,
+      setupAvatarUrl: avatarUrl,
+      setupNickname: authSession.profile.nickName || '',
+      setupAvatarFileID: avatarUrl.indexOf('cloud://') === 0 ? avatarUrl : '',
     });
+  },
+
+  onSetupAvatarChoose(e) {
+    const avatarUrl = e.detail.avatarUrl || '';
+    if (!avatarUrl) return;
+    this.setData({ setupAvatarUrl: avatarUrl });
+    if (!isCloudReady()) {
+      this.setData({ setupAvatarFileID: avatarUrl });
+      return;
+    }
+    wx.showLoading({ title: '上传头像中', mask: true });
+    const openid = getApp().globalData.openid || 'unknown';
+    const extMatch = avatarUrl.split('?')[0].match(/\.([a-zA-Z0-9]{1,4})$/);
+    const ext = extMatch ? extMatch[1].toLowerCase() : 'png';
+    uploadFile(avatarUrl, `avatars/${openid}.${ext}`)
+      .then((fileID) => {
+        this.setData({ setupAvatarFileID: fileID });
+      })
+      .catch((err) => {
+        console.error('头像上传失败:', err);
+        wx.showToast({ title: '头像上传失败', icon: 'none' });
+        this.setData({ setupAvatarUrl: '', setupAvatarFileID: '' });
+      })
+      .finally(() => {
+        wx.hideLoading();
+      });
+  },
+
+  onSetupNicknameInput(e) {
+    this.setData({ setupNickname: e.detail.value || '' });
+  },
+
+  closeProfileSetup() {
+    this.setData({
+      showProfileSetup: false,
+      setupAvatarUrl: '',
+      setupNickname: '',
+      setupAvatarFileID: '',
+    });
+  },
+
+  noop() {},
+
+  submitProfileSetup() {
+    const { setupNickname, setupAvatarFileID, setupSubmitting } = this.data;
+    const nickName = (setupNickname || '').trim();
+    if (!nickName) {
+      wx.showToast({ title: '请输入昵称', icon: 'none' });
+      return;
+    }
+    if (setupSubmitting) return;
+    this.setData({ setupSubmitting: true });
+
+    updateUserProfile(nickName, setupAvatarFileID)
+      .then((session) => {
+        this.setData({ showProfileSetup: false, setupSubmitting: false });
+        this.syncAuthState();
+        wx.showToast({ title: '保存成功', icon: 'success' });
+      })
+      .catch((err) => {
+        this.setData({ setupSubmitting: false });
+        console.error('updateUserProfile failed:', err);
+        wx.showToast({ title: '保存失败', icon: 'none' });
+      });
   },
 
   handleLogout() {
@@ -107,7 +204,6 @@ Page({
       我的帖子: '/pages/myPosts/index',
       我的收藏: '/pages/favorites/index',
       浏览记录: '/pages/history/index',
-      下载管理: '/pages/history/index',
     };
     const targetUrl = url || routeMap[title];
     if (targetUrl) {

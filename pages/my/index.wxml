@@ -1,6 +1,7 @@
 <t-toast id="t-toast" />
 
 <scroll-view class="my-page" scroll-y show-scrollbar="{{false}}">
+  <status-bar compact />
   <view class="page-shell">
     <view class="topbar">
       <view class="brand">
@@ -19,6 +20,7 @@
         <view class="profile-card__name-row">
           <text class="profile-card__name">{{profile.name}}</text>
           <text class="profile-card__level">{{profile.level}}</text>
+          <view wx:if="{{isAuthed}}" class="profile-card__edit" bindtap="handleEditProfile">编辑资料</view>
         </view>
         <view class="profile-card__brief">{{profile.brief}}</view>
       </view>
@@ -70,3 +72,37 @@
     </view>
   </view>
 </scroll-view>
+
+<view wx:if="{{showProfileSetup}}" class="profile-setup-overlay" bindtap="closeProfileSetup">
+  <view class="profile-setup-dialog" catchtap="noop">
+    <view class="profile-setup-dialog__title">完善个人资料</view>
+    <view class="profile-setup-dialog__subtitle">设置你的头像和昵称</view>
+
+    <button class="profile-setup-dialog__avatar-btn" open-type="chooseAvatar" bindchooseavatar="onSetupAvatarChoose">
+      <image wx:if="{{setupAvatarUrl}}" class="profile-setup-dialog__avatar-img" src="{{setupAvatarUrl}}" mode="aspectFill" />
+      <view wx:else class="profile-setup-dialog__avatar-placeholder">
+        <text class="profile-setup-dialog__avatar-icon">📷</text>
+        <text class="profile-setup-dialog__avatar-hint">选择头像</text>
+      </view>
+    </button>
+
+    <view class="profile-setup-dialog__field">
+      <text class="profile-setup-dialog__label">昵称</text>
+      <input
+        class="profile-setup-dialog__input"
+        type="nickname"
+        placeholder="请输入昵称"
+        value="{{setupNickname}}"
+        bindinput="onSetupNicknameInput"
+        maxlength="20"
+      />
+    </view>
+
+    <view class="profile-setup-dialog__actions">
+      <view class="profile-setup-dialog__btn profile-setup-dialog__btn--cancel" bindtap="closeProfileSetup">取消</view>
+      <view class="profile-setup-dialog__btn profile-setup-dialog__btn--confirm {{setupSubmitting || !setupNickname ? 'profile-setup-dialog__btn--disabled' : ''}}" bindtap="submitProfileSetup">
+        {{setupSubmitting ? '保存中...' : '完成'}}
+      </view>
+    </view>
+  </view>
+</view>
