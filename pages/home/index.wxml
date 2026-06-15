@@ -7,6 +7,7 @@
   refresher-triggered="{{enable}}"
   bindrefresherrefresh="onRefresh"
 >
+  <status-bar />
   <view class="page-shell">
     <view class="topbar">
       <view class="brand">
@@ -15,13 +16,6 @@
           <view class="brand__name">知行社</view>
           <view class="brand__sub">连接知识 · 启发成长</view>
         </view>
-      </view>
-      <view class="topbar__actions">
-        <view class="icon-btn" bindtap="goMessages">
-          🔔
-          <view wx:if="{{unreadCount}}" class="dot"></view>
-        </view>
-        <view class="icon-btn" bindtap="goMy">👤</view>
       </view>
     </view>
 
