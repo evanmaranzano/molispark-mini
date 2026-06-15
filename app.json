@@ -49,6 +49,7 @@
       }
     ]
   },
+  "lazyCodeLoading": "requiredComponents",
   "resolveAlias": {
     "~/*": "/*"
   },

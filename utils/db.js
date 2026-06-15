@@ -4,6 +4,7 @@
  */
 
 const mock = require('~/mock/community');
+const { isCloudReady } = require('~/utils/cloud');
 
 const LOCAL_DB_KEY = 'miniLocalDb';
 const LOCAL_OPENID = 'local-openid';
@@ -30,11 +31,6 @@ function getAppSafe() {
   } catch (err) {
     return null;
   }
-}
-
-function isCloudReady() {
-  const app = getAppSafe();
-  return Boolean(wx.cloud && app && app.globalData && app.globalData.cloudReady);
 }
 
 let cloudDb;
@@ -113,7 +109,6 @@ function seedPost(item, index, extra = {}) {
     type: item.type || '文章',
     views: item.views || 0,
     likes: item.likes || 0,
-    comments: item.comments || 0,
     commentCount: item.commentCount || item.comments || 0,
     status: item.status || 'published',
     coverStyle: item.coverStyle || 'book',
@@ -460,7 +455,7 @@ async function addComment(data) {
     _openid: getCurrentOpenid(),
     createdAt: serverDate(),
   });
-  await updateById('posts', data.postId, { comments: _.inc(1), commentCount: _.inc(1) });
+  await updateById('posts', data.postId, { commentCount: _.inc(1) });
   return result;
 }
 

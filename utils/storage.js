@@ -2,14 +2,7 @@
  * 云存储上传封装
  * 支持图片和文件上传到微信云存储
  */
-function isCloudReady() {
-  try {
-    const app = getApp();
-    return Boolean(wx.cloud && app.globalData && app.globalData.cloudReady);
-  } catch (err) {
-    return false;
-  }
-}
+const { isCloudReady } = require('~/utils/cloud');
 
 /**
  * 上传文件到云存储

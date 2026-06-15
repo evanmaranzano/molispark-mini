@@ -1,6 +1,6 @@
 {
   "description": "项目配置文件，详见文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html",
-  "cloudfunctionRoot": "cloudfunctions",
+  "cloudfunctionRoot": "cloudfunctions/",
   "packOptions": {
     "ignore": [],
     "include": []
@@ -45,7 +45,7 @@
     "useCompilerPlugins": [
       "less"
     ],
-    "condition": false,
+    "condition": true,
     "ignoreUploadUnusedFiles": true,
     "compileWorklet": false,
     "localPlugins": false,
@@ -54,7 +54,7 @@
   },
   "compileType": "miniprogram",
   "libVersion": "3.7.8",
-  "appid": "wxcca21c172886217e",
+  "appid": "wxba805d188c9a4151",
   "projectname": "miniprogram-starter",
   "condition": {
     "miniprogram": {
