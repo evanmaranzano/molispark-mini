@@ -425,7 +425,7 @@ async function createPost(data) {
     time: '刚刚',
     views: 0,
     likes: 0,
-    comments: 0,
+    collectCount: 0,
     commentCount: 0,
     _openid: getCurrentOpenid(),
     createdAt: serverDate(),
