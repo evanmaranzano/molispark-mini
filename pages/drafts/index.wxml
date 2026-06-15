@@ -1,4 +1,5 @@
 <scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <status-bar compact />
   <view class="sub-shell">
     <view class="sub-topbar">
       <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
@@ -7,7 +8,7 @@
 
     <view wx:if="{{!drafts.length && !loading}}" class="empty-hint">暂无草稿</view>
     <view class="draft-list">
-      <view class="draft-card" wx:for="{{drafts}}" wx:key="index">
+      <view class="draft-card" wx:for="{{drafts}}" wx:key="_id">
         <view class="draft-card__title">{{item.title}}</view>
         <view class="draft-card__desc">{{item.desc}}</view>
         <view class="draft-card__time">{{item.time || item.updatedAt}}</view>

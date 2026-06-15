@@ -1,4 +1,7 @@
 {
   "navigationStyle": "custom",
-  "disableScroll": true
+  "disableScroll": true,
+  "usingComponents": {
+    "status-bar": "/components/status-bar/index"
+  }
 }

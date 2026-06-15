@@ -1,4 +1,5 @@
 <scroll-view class="detail-page" scroll-y show-scrollbar="{{false}}">
+  <status-bar compact />
   <view class="page-shell" wx:if="{{post}}">
     <view class="topbar">
       <view class="back" bindtap="navigateBack">‹</view>
@@ -52,7 +53,7 @@
     <view class="comment-section">
       <view class="section-title">评论区（{{comments.length}}）</view>
       <view wx:if="{{!comments.length}}" class="empty-hint">暂无评论，快来抢沙发吧</view>
-      <view class="comment" wx:for="{{comments}}" wx:key="index">
+      <view class="comment" wx:for="{{comments}}" wx:key="_id">
         <view class="comment__avatar">{{item.nameInitial}}</view>
         <view class="comment__body">
           <view class="comment__head">

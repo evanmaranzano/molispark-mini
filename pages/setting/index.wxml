@@ -1,16 +1,17 @@
 <scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <status-bar compact />
   <view class="sub-shell">
     <view class="sub-topbar">
       <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
       <view class="sub-topbar__title">设置</view>
     </view>
 
-    <view class="menu-card" wx:for="{{groups}}" wx:key="index">
-      <view class="menu-row" wx:for="{{item}}" wx:key="*this" data-title="{{item}}" bindtap="handleTap">
+    <view class="menu-card" wx:for="{{groups}}" wx:key="index" wx:for-item="group">
+      <view class="menu-row" wx:for="{{group}}" wx:key="*this" wx:for-item="menuTitle" data-title="{{menuTitle}}" bindtap="handleTap">
         <view class="menu-row__icon"></view>
         <view class="menu-row__body">
-          <view class="menu-row__title">{{item}}</view>
-          <view class="menu-row__desc">{{values[item]}}</view>
+          <view class="menu-row__title">{{menuTitle}}</view>
+          <view class="menu-row__desc">{{values[menuTitle]}}</view>
         </view>
         <view class="menu-row__arrow">›</view>
       </view>

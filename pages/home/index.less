@@ -1,19 +1,17 @@
 @import '/variable.less';
 
 .home-page {
-  height: calc(100vh - @tab-bar-height);
+  height: calc(100vh - @tab-bar-height - env(safe-area-inset-bottom));
   background: #f5f7f8;
 }
 
 .page-shell {
-  padding: calc(32rpx + env(safe-area-inset-top)) 32rpx 96rpx;
+  padding: 0 32rpx 96rpx;
 }
 
 .topbar,
 .brand,
-.post-card__meta,
-.topbar__actions,
-.icon-btn {
+.post-card__meta {
   display: flex;
   align-items: center;
 }
@@ -48,32 +46,6 @@
     color: #17202a;
     font-weight: 800;
   }
-}
-
-.topbar__actions {
-  gap: 12rpx;
-}
-
-.icon-btn {
-  position: relative;
-  justify-content: center;
-  width: 76rpx;
-  height: 76rpx;
-  border-radius: 28rpx;
-  background: #fff;
-  border: 1rpx solid #edf0f2;
-  box-shadow: 0 10rpx 30rpx rgba(31, 45, 61, 0.08);
-  font-size: 34rpx;
-}
-
-.dot {
-  position: absolute;
-  right: 12rpx;
-  top: 12rpx;
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 50%;
-  background: #ff5b5b;
 }
 
 .search-box,

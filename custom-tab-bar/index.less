@@ -6,8 +6,9 @@
   align-items: flex-start;
   justify-content: center;
   gap: 64rpx;
-  height: @tab-bar-height;
-  padding: 18rpx 42rpx calc(8rpx + env(safe-area-inset-bottom));
+  min-height: @tab-bar-height;
+  padding: 18rpx 42rpx;
+  padding-bottom: calc(8rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
   background: rgba(255, 255, 255, 0.98);
   border-top: 1rpx solid rgba(31, 41, 55, 0.08);

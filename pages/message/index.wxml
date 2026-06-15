@@ -1,4 +1,5 @@
 <scroll-view class="message-scroll" scroll-y show-scrollbar="{{false}}">
+  <status-bar compact />
   <view class="message-hero">
     <view class="message-hero__eyebrow">Inbox Center</view>
     <view class="message-hero__title">消息</view>
@@ -20,7 +21,7 @@
 
     <view wx:if="{{!messageList.length && !loading}}" class="empty-hint">暂无消息</view>
     <view class="message-list">
-      <view wx:for="{{messageList}}" wx:key="index" class="message-card" bindtap="goDetail" data-id="{{item.postId}}" data-msg-id="{{item._id || item.id}}">
+      <view wx:for="{{messageList}}" wx:key="_id" class="message-card" bindtap="goDetail" data-id="{{item.postId}}" data-msg-id="{{item._id || item.id}}">
         <view class="message-card__avatar">{{item.avatarText}}</view>
         <view class="message-card__body">
           <view class="message-card__top">

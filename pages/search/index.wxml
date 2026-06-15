@@ -1,4 +1,5 @@
 <scroll-view class="search-page" scroll-y show-scrollbar="{{false}}">
+  <status-bar compact />
   <view class="search-shell">
     <view class="search-head">
       <view class="search-head__back" bindtap="goBack">‹</view>

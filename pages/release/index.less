@@ -1,12 +1,12 @@
 @import '/variable.less';
 
 .release-page {
-  height: calc(100vh - @tab-bar-height);
+  height: calc(100vh - @tab-bar-height - env(safe-area-inset-bottom));
   background: #f5f7f8;
 }
 
 .page-shell {
-  padding: calc(32rpx + env(safe-area-inset-top)) 32rpx 96rpx;
+  padding: 0 32rpx 96rpx;
 }
 
 .topbar,
