@@ -243,6 +243,17 @@ function col(name) {
   return db ? db.collection(name) : null;
 }
 
+async function callInteract(payload) {
+  if (!isCloudReady()) return null;
+  try {
+    const res = await wx.cloud.callFunction({ name: 'interact', data: payload });
+    return res.result;
+  } catch (err) {
+    console.error('callInteract failed:', err);
+    return null;
+  }
+}
+
 async function add(collection, data) {
   const db = getCloudDb();
   if (db) {
@@ -450,6 +461,13 @@ async function getComments(postId, options = {}) {
 }
 
 async function addComment(data) {
+  if (isCloudReady()) {
+    const result = await callInteract({ action: 'comment', postId: data.postId, content: data.content });
+    if (result && result.success) {
+      return { _id: result.data.commentId, commentCount: result.counts.commentCount };
+    }
+  }
+
   const result = await add('comments', {
     ...data,
     _openid: getCurrentOpenid(),
@@ -461,14 +479,26 @@ async function addComment(data) {
 
 async function toggleLike(postId, openid) {
   const existing = await query('likes', { postId, openid }, { limit: 1 });
-  if (existing.length > 0) {
-    await removeById('likes', existing[0]._id);
-    await updateById('posts', postId, { likes: _.inc(-1) });
-    return { liked: false };
+  const willLike = existing.length === 0;
+
+  if (isCloudReady()) {
+    const result = await callInteract({ action: willLike ? 'like' : 'unlike', postId });
+    if (result && result.success) {
+      return {
+        liked: result.state.liked,
+        likes: result.counts.likes,
+      };
+    }
   }
-  await add('likes', { postId, openid, createdAt: serverDate() });
-  await updateById('posts', postId, { likes: _.inc(1) });
-  return { liked: true };
+
+  if (willLike) {
+    await add('likes', { postId, openid, createdAt: serverDate() });
+    await updateById('posts', postId, { likes: _.inc(1) });
+    return { liked: true };
+  }
+  await removeById('likes', existing[0]._id);
+  await updateById('posts', postId, { likes: _.inc(-1) });
+  return { liked: false };
 }
 
 async function isLiked(postId, openid) {
@@ -478,12 +508,24 @@ async function isLiked(postId, openid) {
 
 async function toggleCollect(postId, openid) {
   const existing = await query('collects', { postId, openid }, { limit: 1 });
-  if (existing.length > 0) {
-    await removeById('collects', existing[0]._id);
-    return { collected: false };
+  const willCollect = existing.length === 0;
+
+  if (isCloudReady()) {
+    const result = await callInteract({ action: willCollect ? 'collect' : 'uncollect', postId });
+    if (result && result.success) {
+      return {
+        collected: result.state.collected,
+        collectCount: result.counts.collectCount,
+      };
+    }
   }
-  await add('collects', { postId, openid, createdAt: serverDate() });
-  return { collected: true };
+
+  if (willCollect) {
+    await add('collects', { postId, openid, createdAt: serverDate() });
+    return { collected: true };
+  }
+  await removeById('collects', existing[0]._id);
+  return { collected: false };
 }
 
 async function isCollected(postId, openid) {
@@ -574,6 +616,7 @@ module.exports = {
   $,
   add,
   aggregate,
+  callInteract,
   col,
   count,
   createPost,
