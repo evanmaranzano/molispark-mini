@@ -24,7 +24,7 @@ function listPageDirs() {
 
 function collectPageMethods(js) {
   const methods = new Set();
-  const methodRe = /^\s{2}(?:async\s+)?([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{/gm;
+  const methodRe = /^[ \t]{2}(?:async\s+)?([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{/gm;
   let match = methodRe.exec(js);
   while (match) {
     methods.add(match[1]);

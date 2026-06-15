@@ -4,7 +4,7 @@
 - 微信小程序 + TDesign miniprogram v1.11.2
 - LESS 样式（project.config.json 已启用 `useCompilerPlugins: ["less"]`）
 - 云开发（cloudfunctions/ 目录已配置）
-- appid: wxcca21c172886217e
+- appid: wxba805d188c9a4151
 
 ## 模块系统
 - pages/*.js 用 ES module（import/export）
@@ -28,10 +28,16 @@
 - 云数据库用 `_id`，mock 数据用 `id`；wxml 中用 `wx:key="index"` + `item._id || item.id` 兼容
 
 ## 云开发接入
-- app.js 中 `'your-cloud-env-id'` 需替换为实际环境 ID
-- 7 个集合: posts, comments, likes, collects, messages, feedback, users
+- 环境 ID 已配置: cloud1-d4gtpsssef2dcbcf8（app.js 第 22 行）
+- 集合需在云开发控制台手动创建（7 个: posts, comments, likes, collects, messages, feedback, users）
+- 首次加载可能 timeout（冷启动），重编译即可
 - 权限设置见 docs/database-schema.md
 - cloudfunctions/login/index.js 用 wx-server-sdk，返回 openid/appid/unionid
+
+## 自定义导航栏
+- 所有页面 `navigationStyle: custom`，隐藏系统导航栏
+- components/status-bar/: 只做状态栏安全区占位，自动读取 statusBarHeight，不渲染 logo
+- 主 Tab 页各自渲染统一的品牌 logo + 知行社文字；子页面标题行紧跟 status-bar，避免重复叠加 env(safe-area-inset-top)
 
 ## 自定义 Tab Bar
 - custom-tab-bar/ 组件，3 个 tab: home, release, my
@@ -41,3 +47,22 @@
 ## 常用命令
 - 微信开发者工具中编译运行（无 CLI 构建）
 - npm install 安装依赖后需在开发者工具中"构建 npm"
+- 云函数部署: 右键 cloudfunctions/login → 上传并部署：云端安装依赖
+- DevTools CLI 部署云函数: `& "F:\微信web开发者工具\cli.bat" cloud functions deploy --project "F:\molispark\mini" --env cloud1-d4gtpsssef2dcbcf8 --names <函数名> --remote-npm-install`
+- 绕过 project.config 解析: `& "F:\微信web开发者工具\cli.bat" cloud functions deploy --appid wxba805d188c9a4151 --env cloud1-d4gtpsssef2dcbcf8 --paths "F:\molispark\mini\cloudfunctions\<name>" --remote-npm-install`
+- 页面配置校验: `npm --prefix "F:/molispark/mini" run validate:pages`
+
+## 开发者工具坑点
+- `project.config.json` 的 `cloudfunctionRoot` 必须带尾部 `/`（`"cloudfunctions/"` 不是 `"cloudfunctions"`），否则 UI 增量上传可能报 `Cannot read property 'region' of undefined`
+- 云函数目录不应包含 `node_modules`；上传时用"云端安装依赖"
+- CLI 调用需先开启服务端口：`设置 → 安全设置 → 服务端口 → 开启`；否则报 `IDE service port disabled`
+- 项目缓存/文件树异常时：`cli.bat close --project <path>` → `reset-fileutils --project <path>` → `open --project <path>`
+
+## WXML 事件冒泡
+- `catchtap=""` 空字符串不可靠，弹窗内层拦截点击用 `catchtap="noop"` 并在 JS 定义 `noop() {}`
+
+## 登录流程设计原则
+- 拿到 openid ≠ 登录完成；"已登录"仅当用户资料完整（真实昵称，非默认"微信用户"）
+- `login` 云函数应返回已保存的用户资料，避免客户端直接读 users 集合权限问题
+- 头像选择后客户端 `wx.cloud.uploadFile` 拿 `fileID`，不把临时路径交给云函数上传
+- 无云环境时头像路径直接作为本地 fallback
