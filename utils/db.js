@@ -260,7 +260,7 @@ async function add(collection, data) {
     try {
       return await db.collection(collection).add({ data: toCloudObject(data, db) });
     } catch (err) {
-      // 云端失败时落到本地，保证预览流程不断。
+      console.error(`[db] cloud add to "${collection}" failed, falling back to local:`, err.errMsg || err.message || err);
     }
   }
 
@@ -438,7 +438,6 @@ async function createPost(data) {
     likes: 0,
     collectCount: 0,
     commentCount: 0,
-    _openid: getCurrentOpenid(),
     createdAt: serverDate(),
     updatedAt: serverDate(),
   });
