@@ -1,126 +1,797 @@
-# 知行社小程序 · 登录完善与后端对接迭代设计
+# molispark-mini 小版本更新计划
 
 - 日期：2026-06-15
-- 状态：已评审（brainstorming），待转实施计划
-- 范围：未来三个小版本（v0.1 / v0.2 / v0.3）迭代规划
+- 状态：已定稿
+- 范围：v0.1 / v0.2 / v0.3 三大版本，每版拆成可验收小版本
 - 仓库：evanmaranzano/molispark-mini（分支 feature/update）
 
-## 1. 背景与目标
+## 总目标
 
-知行社小程序（molispark/mini）数据层代码（`utils/db.js` 双路径 CRUD）与登录骨架已就绪，但云端基础设施未上线，团队无法真实体验。本设计规划三个小版本，递进主线为「能用 → 好用 → 想用」：
+项目后续按「能用 → 好用 → 想用」推进，但每个大版本再拆成可验收的小版本，避免一次性改动过大。
 
-- **v0.1 能用**：核心内容闭环（登录+发帖+评论+点赞/收藏）走真实云，体验成员可体验
-- **v0.2 好用**：周边功能真实化 + 稳定化
-- **v0.3 想用**：社交与运营增强
+核心原则：
 
-目标用户：团队内部人员（微信「体验成员」机制准入）。
+1. v0.1 先跑通真实云端核心闭环。
+2. v0.2 清掉 mock / 静默降级，让所有页面真实、稳定、可排错。
+3. v0.3 做社交回访、运营和治理能力。
+4. 所有涉及跨用户互动的写操作统一走云函数，客户端不直接改他人帖子计数字段。
+5. 所有计数更新必须遵守"状态真的变化才 inc"。
 
-## 2. 现状（2026-06-15 探索）
+---
 
-- 数据层 `utils/db.js`：完整双路径（云优先，失败降级本地存储 + mock 种子），7 集合业务方法齐全（发帖/评论/点赞/收藏/消息/草稿/反馈/统计）
-- 登录：`loginWithCloud` + 资料完善弹窗 + `isProfileComplete` 门控（`utils/auth.js`）
-- 云函数：`login`（返回 openid + profile）、`updateProfile`（upsert 资料已写，未部署）
-- 云环境：`cloud1-d4gtpsssef2dcbcf8`（app.js 已配）
-- 缺：集合未创建、云函数未部署、集合权限未配
-- 已知遗留：
-  - `db.js` `createPost` 仍写 `comments: 0` 字段（与 addComment 去 comments 不一致）
-  - 页面层 `withMockFallback` 与 db.js 内层 try/catch 降级可能冗余（内层吃错后外层 mockFn 可能永不触发）
+# v0.1「能用」：真实云端核心闭环
 
-## 3. 关键决策
+## v0.1.0 云环境与数据库基线确认
 
-### 3.1 准入：微信后台「体验成员」白名单（方案 A）
-- 0 代码，小程序后台加成员微信号（≤90 人），成员扫体验版码进入
-- v0.1/v0.2 不需要应用内白名单 / role
-- v0.3 要管理员时才引入 `users.role`，准入仍靠 A
+### 目标
 
-### 3.2 计数更新必须走云函数（interact）
-**问题**：当前 `db.js` 客户端直接 update `posts` 计数（views / likes / commentCount）。云数据库权限下 `posts` 只能设「仅创建者可写」（否则任何人可改他人帖子正文，不安全）；非作者客户端 `updateById('posts', …)` 会被权限拒绝 → db.js catch 后降级本地 → 多人计数不一致（致命）。
+确认当前云环境、集合、权限和基础数据结构可支撑真实多人测试。
 
-**解法**：新增 `interact` 云函数，统一处理 like/unlike/comment/view 的「子集合写入 + posts 计数更新」。云函数有 admin 权限，绕过集合权限规则。客户端计数路径改为 `wx.cloud.callFunction('interact')`。
+### 范围
 
-## 4. v0.1「能用」详细设计
+- 确认 `cloud1-d4gtpsssef2dcbcf8` 为当前正式开发环境。
+- 确认 `app.js` 云初始化逻辑正常。
+- 创建或确认以下集合：
+  - `users`
+  - `posts`
+  - `comments`
+  - `likes`
+  - `collects`
+  - `views`
+  - `history`
+- 补充数据库 schema 文档，把已实际使用但文档遗漏的 `history` 加入集合清单。
+- 初步配置权限：
+  - `posts`：所有用户可读，仅创建者可写。
+  - `comments`：所有用户可读，仅创建者可创建/修改/删除自己的评论。
+  - `likes / collects / views / history`：用户仅能操作自己的记录。
+  - 计数字段更新由云函数完成。
 
-### 4.1 范围
-体验成员完成：登录 → 完善资料 → 浏览（首页/广场/详情）→ 发帖 → 评论 → 点赞/收藏，全走真实云。
+### 不做
 
-### 4.2 interact 云函数设计
-接口：`wx.cloud.callFunction({ name: 'interact', data: { action, postId, ... } })`
+- 不清理所有 mock。
+- 不做通知。
+- 不做搜索。
+- 不做管理员体系。
 
-| action | 输入 | 行为 | 返回 |
-|--------|------|------|------|
-| `view` | `{ postId }` | `posts.views` `_.inc(1)` | `{ success }` |
-| `like` | `{ postId }` | 幂等：查 likes，无则 add + `posts.likes` inc(1) | `{ liked: true }` |
-| `unlike` | `{ postId }` | 查 likes，有则 remove + `posts.likes` inc(-1) | `{ liked: false }` |
-| `comment` | `{ postId, content }` | add comments（_openid 来自 context）+ `posts.commentCount` inc(1) | `{ commentId, commentCount }` |
+### 验收标准
 
-鉴权：从 `cloud.getWXContext()` 取 openid；likes/comments 写入带 openid；幂等校验防重复点赞。并发计数必须用 `_.inc`，禁止读-改-写。
+- 小程序能正常初始化云环境。
+- 体验版用户能读到真实云数据库数据。
+- 非作者不能直接修改他人帖子正文。
+- `docs/database-schema.md` 中包含 `history`、`views`、`collects` 等实际使用集合。
 
-### 4.3 云端基础设施任务
-1. 创建 5 集合：posts / comments / likes / collects / users
-2. 部署 3 云函数：`login`（有）、`updateProfile`（有）、`interact`（新写）
-3. 权限规则：
-   - posts, comments：所有用户可读，仅创建者可写
-   - likes, collects, users：仅创建者可读写
-4. 体验版发布 + 后台加体验成员
+---
 
-### 4.4 数据模型（v0.1）
-- **posts**: _id, _openid, title, desc, author, category, type, content[], images[], coverStyle, views, likes, commentCount, status, createdAt, updatedAt
-- **comments**: _id, _openid, postId, content, createdAt
-- **likes**: _id, postId, openid, createdAt
-- **collects**: _id, postId, openid, createdAt
-- **users**: _id, _openid, nickName, avatarFileID, createdAt, updatedAt
+## v0.1.1 用户登录与资料闭环
 
-### 4.5 客户端改动
-- `utils/db.js`：新增 `callInteract(action, payload)` 封装；`toggleLike` / `addComment` / `incrementViews` 云就绪时走 interact，否则本地降级
-- `pages/detail/index.js`：浏览量、点赞改 callInteract
-- `pages/forum/index.js` 等点赞入口：改 callInteract
-- 清理 `createPost` 的 `comments: 0` 字段（统一 commentCount）
+### 目标
 
-### 4.6 登录流程完善
-- 部署 updateProfile
-- 验证全链路：扫码 → login 拿 openid → users 查/建资料 → `isProfileComplete` → 可发帖/评论
-- 验证 P1–P6 修复在真实云下的行为（session merge、globalData↔isAuthed 一致）
+让用户登录、资料完善和 `users` 集合真实打通。
 
-### 4.7 成功标准
-- 成员 A 发帖，成员 B 能看到、评论、点赞、收藏；计数多人一致
-- 无云仍降级 mock（兜底保留）
-- 权限校验：B 不能改 A 的帖子正文
+### 范围
 
-### 4.8 风险与缓解
-- 体验版冷启动慢：加 loading 态
-- 并发计数：interact 内必须 `_.inc`，禁止读-改-写
-- 两层 mockFallback 在真实云下可能掩盖错误：v0.1 加日志观察，v0.2 系统清理
+- 保留现有 `login` 云函数。
+- 新增 `updateProfile` 云函数。
+- `updateProfile` 从 `cloud.getWXContext()` 获取 `OPENID`。
+- `users._id = OPENID`。
+- 支持 upsert 用户资料：
+  - `nickName`
+  - `avatarUrl`
+  - `brief`
+  - `level`
+  - `createdAt`
+  - `updatedAt`
+- 前端登录成功后，把资料同步到云端。
+- 本地 storage 仍可作为缓存，但云端为主数据源。
 
-### 4.9 v0.1 任务清单
-1. 创建 5 集合（控制台）
-2. 配置集合权限规则
-3. 写 interact 云函数（`cloudfunctions/interact/index.js` + `package.json`）
-4. 部署 login + updateProfile + interact（CLI 或开发者工具）
-5. db.js 加 `callInteract` + 改 `toggleLike`/`addComment`/`incrementViews`
-6. detail.js / forum.js 等改 callInteract
-7. 清 createPost `comments` 字段
-8. 体验成员 A/B 互测全链路（登录→发帖→评论→点赞→收藏→计数一致）
-9. 体验版发布 + 后台加体验成员
+### 不做
 
-## 5. v0.2「好用」
+- 不做手机号绑定。
+- 不做管理员角色。
+- 不做复杂用户等级体系。
 
-### 5.1 范围
-- **周边真实化**：创建 messages / history / feedback 集合 + drafts 走云；打通消息 / 草稿 / 收藏列表 / 历史 / 反馈页真实数据
-- **稳定化**：补加载 / 空 / 错误态 UI；收紧权限；清理 `withMockFallback` 与 db.js 内层降级冗余；清遗留字段
+### 验收标准
 
-### 5.2 成功标准
-- 所有现有页面走真实云且健壮，无静默降级掩盖错误
+- 新用户登录后，`users` 集合出现对应记录。
+- 老用户再次登录时更新 `updatedAt`。
+- 用户修改昵称/头像/简介后，云端数据同步更新。
+- 客户端不能伪造他人 `openid` 修改资料。
 
-## 6. v0.3「想用」
+---
 
-### 6.1 范围
-- **社交**：互动通知（点赞 / 评论 / 收藏 → 新云函数 + notifications 集合）、个人主页
-- **运营**：搜索、内容治理（引入 `users.role` 做管理员，准入仍 A）、数据统计（aggregate）
+## v0.1.2 发帖与帖子详情真实云
 
-### 6.2 成功标准
-- 团队有「想每天打开」的理由（通知驱动回访）
+### 目标
 
-## 7. 跨版本决策
-- **权限演进**：v0.1/v0.2 用微信平台权限模式；v0.3 要管理员才加 `users.role`
-- **mockFallback 清理**：v0.1 保留观察，v0.2 系统清理
-- **节奏**：每版 ~1-2 周
+让发帖、浏览帖子列表、进入详情页全部走真实云数据库。
+
+### 范围
+
+- 检查 `createPost` 写入字段。
+- 清理 `createPost` 中遗留的 `comments: 0` 字段，统一使用 `commentCount: 0`。
+- 新增或确认帖子初始化字段：
+  - `likes: 0`
+  - `collectCount: 0`
+  - `commentCount: 0`
+  - `views: 0`
+  - `status: 'published'`
+  - `createdAt`
+  - `updatedAt`
+- 首页、论坛页、详情页优先读取真实云数据。
+- v0.1 阶段允许 mock 兜底，但必须能看出当前是否为 mock / 本地模式。
+
+### 不做
+
+- 不做草稿云端化。
+- 不做帖子审核。
+- 不做推荐算法。
+
+### 验收标准
+
+- A 用户发帖后，B 用户能在列表和详情页看到。
+- B 用户不能修改 A 的帖子正文。
+- 帖子详情页展示的点赞数、评论数、收藏数、浏览数来自云端字段。
+- 新帖不再写入遗留 `comments: 0` 字段。
+
+---
+
+## v0.1.3 interact 云函数 v1
+
+### 目标
+
+新增 `interact` 云函数，统一处理浏览、点赞、取消点赞、收藏、取消收藏、评论。
+
+### action 列表
+
+支持 6 个 action：
+
+1. `view`
+2. `like`
+3. `unlike`
+4. `collect`
+5. `uncollect`
+6. `comment`
+
+### 共同规则
+
+- `OPENID` 只能从 `cloud.getWXContext()` 获取。
+- 客户端只允许传：
+  - `action`
+  - `postId`
+  - `content`（仅评论需要）
+- 客户端不得传：
+  - `openid`
+  - `authorOpenid`
+  - `countDelta`
+  - 任意 posts 更新字段
+- 所有 action 都先校验 `postId` 是否存在。
+- 未知 action 返回 `INVALID_ACTION`。
+- 失败必须明确返回错误，不允许静默降级。
+
+### view 行为
+
+- `views._id = ${postId}_${OPENID}_${YYYYMMDD}`。
+- 当天首次浏览才写入 `views` 并让 `posts.views += 1`。
+- 重复浏览不重复增加浏览量。
+- 同时 upsert `history._id = ${postId}_${OPENID}`，更新 `viewedAt`。
+- `history` 可以冗余保存帖子快照字段：
+  - `postId`
+  - `title`
+  - `cover`
+  - `category`
+  - `authorName`
+  - `viewedAt`
+  - `updatedAt`
+
+### like 行为
+
+- `likes._id = ${postId}_${OPENID}`。
+- 已存在则直接返回 `liked: true`，不重复 inc。
+- 新增成功才执行 `posts.likes += 1`。
+
+### unlike 行为
+
+- 仅当 `likes` 文档存在并删除成功时，执行 `posts.likes -= 1`。
+- 不存在则直接返回 `liked: false`，不重复扣减。
+- `likes` 不允许小于 0。
+
+### collect 行为
+
+- `collects._id = ${postId}_${OPENID}`。
+- 已存在则直接返回 `collected: true`，不重复 inc。
+- 新增成功才执行 `posts.collectCount += 1`。
+
+### uncollect 行为
+
+- 仅当 `collects` 文档存在并删除成功时，执行 `posts.collectCount -= 1`。
+- 不存在则直接返回 `collected: false`，不重复扣减。
+- `collectCount` 不允许小于 0。
+
+### comment 行为
+
+- `content.trim()` 后不能为空。
+- 评论长度限制为 500 字以内。
+- 新增 `comments` 文档。
+- 新增成功后执行 `posts.commentCount += 1`。
+- 返回 `commentId` 和最新 `commentCount`。
+
+### 统一返回结构
+
+```js
+{
+  success: true,
+  action,
+  postId,
+  state: {
+    liked,
+    collected
+  },
+  counts: {
+    likes,
+    collectCount,
+    commentCount,
+    views
+  },
+  data: {
+    commentId
+  }
+}
+```
+
+### 一致性策略
+
+v0.1 暂不引入事务，使用：
+
+- 确定性 `_id`
+- 幂等 add/remove
+- 状态变化才 `_.inc`
+- 明确错误返回
+- 云函数日志记录异常
+
+如果关系文档写入成功，但 posts 计数更新失败，云函数必须返回失败并记录日志，例如：
+
+```js
+{
+  success: false,
+  code: 'COUNT_UPDATE_FAILED'
+}
+```
+
+### 不做
+
+- 不做 `db.runTransaction()`。
+- 不做互动通知。
+- 不做内容审核。
+- 不做评论删除后的计数修复。
+
+### 验收标准
+
+- 连续快速点赞不会产生重复 like 文档。
+- 连续快速收藏不会产生重复 collect 文档。
+- 重复进入详情页不会无限增加浏览量。
+- B 用户可以点赞、评论、收藏 A 用户帖子。
+- B 用户仍不能修改 A 用户帖子正文。
+- 点赞数、收藏数、评论数、浏览数多人一致。
+
+---
+
+## v0.1.4 前端接入 interact
+
+### 目标
+
+把详情页互动逻辑从客户端直写改为统一调用 `interact` 云函数。
+
+### 范围
+
+- `pages/detail/index.js` 中：
+  - 浏览量改走 `interact({ action: 'view' })`
+  - 点赞改走 `interact({ action: 'like' / 'unlike' })`
+  - 收藏改走 `interact({ action: 'collect' / 'uncollect' })`
+  - 评论改走 `interact({ action: 'comment', content })`
+- 前端不再本地推测 `+1 / -1` 作为最终结果。
+- 前端以云函数返回的 `state` 和 `counts` 刷新 UI。
+- 失败时显示明确错误提示。
+- 保留必要 loading 状态，避免用户重复点击造成请求风暴。
+
+### 不做
+
+- 不做通知 UI。
+- 不做评论分页优化。
+- 不做富文本评论。
+
+### 验收标准
+
+- 点赞按钮状态以云端返回为准。
+- 收藏按钮状态以云端返回为准。
+- 评论成功后评论列表刷新，评论数正确。
+- 云函数失败时，不出现假成功 UI。
+- 快速点击不会造成计数明显漂移。
+
+---
+
+## v0.1.5 多人体验版验收
+
+### 目标
+
+用真实体验版成员测试 v0.1 核心闭环。
+
+### 测试角色
+
+- A 用户：发帖者
+- B 用户：互动者
+- C 用户：旁观者
+
+### 必测场景
+
+1. A 登录并完善资料。
+2. A 发帖。
+3. B 进入列表看到 A 的帖子。
+4. B 进入详情页，浏览量增加一次。
+5. B 重复进入详情页，当天浏览量不重复增加。
+6. B 点赞 A 的帖子。
+7. B 快速重复点赞，不产生重复 like。
+8. B 取消点赞，计数正确减少。
+9. B 收藏 A 的帖子。
+10. B 取消收藏，计数正确减少。
+11. B 评论 A 的帖子。
+12. C 打开同一帖子，看到一致的计数和评论。
+13. B 尝试修改 A 的帖子正文，权限拒绝。
+14. 无云或云异常时，开发环境可 mock，但必须可识别当前模式。
+
+### 验收标准
+
+v0.1 通过条件：
+
+- 登录 → 完善资料 → 浏览 → 发帖 → 评论 → 点赞 → 收藏 全链路可用。
+- A/B/C 三个用户看到的核心计数一致。
+- 非作者无法修改帖子正文。
+- 云端错误不会被静默 mock 掩盖。
+
+---
+
+## v0.1.6 文档与遗留清理
+
+### 目标
+
+把 v0.1 的真实数据结构、云函数接口和权限规则写清楚。
+
+### 范围
+
+- 更新 `docs/database-schema.md`。
+- 新增 `docs/cloudfunctions.md` 或在现有文档中补充：
+  - `login`
+  - `updateProfile`
+  - `interact`
+- 记录 `interact` action、入参、返回值、错误码。
+- 记录集合权限规则。
+- 清理 `comments: 0` 遗留字段。
+- 标注 v0.1 保留的 mock fallback 位置，方便 v0.2 清理。
+
+### 验收标准
+
+- 新成员能按文档理解集合用途。
+- 新成员能按文档调用 `interact`。
+- 文档中不再遗漏 `history` 集合。
+- 遗留字段清理有记录。
+
+---
+
+# v0.2「好用」：真实云页面与错误显性化
+
+## v0.2.0 mock / fallback 策略重构
+
+### 目标
+
+清理静默降级，避免真实云错误被 mock 掩盖。
+
+### 范围
+
+- 区分开发模式和生产/体验模式。
+- 生产/体验模式禁止静默 fallback。
+- `withMockFallback` 只允许开发模式显式开启。
+- `db.js` 内层降级逻辑逐步收口。
+- 云错误统一返回到页面，由页面显示错误态。
+- 增加统一错误日志格式。
+
+### 不做
+
+- 不一次性重写所有页面。
+- 不删除 mock 数据文件，先改为开发专用。
+
+### 验收标准
+
+- 云集合不存在、权限错误、云函数失败时，页面能显示错误，而不是悄悄展示 mock。
+- 开发者能从日志定位真实失败原因。
+- 体验版不再被 mock 数据误导。
+
+---
+
+## v0.2.1 草稿真实云
+
+### 目标
+
+把草稿从本地/伪 posts 状态升级为真实云端草稿。
+
+### 推荐方案
+
+单独创建 `drafts` 集合。
+
+### 范围
+
+- 新增 `drafts` 集合。
+- 用户只能读写自己的草稿。
+- 草稿保存、编辑、删除、发布走真实云。
+- 草稿发布时创建正式 `posts` 文档。
+- 发布成功后删除或标记草稿状态。
+
+### 不做
+
+- 不把草稿暴露在公开 posts 查询中。
+- 不做多人协作草稿。
+
+### 验收标准
+
+- 用户 A 的草稿只有 A 能看到。
+- 草稿发布后，正式帖子所有人可见。
+- 草稿不会出现在其他用户帖子列表中。
+
+---
+
+## v0.2.2 收藏列表与历史页真实云
+
+### 目标
+
+让收藏列表和浏览历史页面完全基于真实云数据。
+
+### 范围
+
+- 收藏列表读取 `collects`。
+- 历史页读取 `history`。
+- 支持取消收藏。
+- 支持删除历史记录。
+- 支持空态、加载态、错误态。
+- 历史页优先使用 history 快照字段，减少二次查询复杂度。
+
+### 验收标准
+
+- B 收藏 A 的帖子后，收藏列表可见。
+- B 取消收藏后，收藏列表移除。
+- B 浏览 A 的帖子后，历史页出现记录。
+- 历史页不展示其他用户的记录。
+
+---
+
+## v0.2.3 messages 与 feedback 真实云
+
+### 目标
+
+让消息页和反馈页真实可用。
+
+### 范围
+
+- 创建或确认 `messages` 集合。
+- 创建或确认 `feedback` 集合。
+- 消息页读取真实消息数据。
+- 反馈页提交到云端。
+- 反馈记录包含：
+  - `openid`
+  - `type`
+  - `content`
+  - `contact`
+  - `status`
+  - `createdAt`
+- 消息页补空态、错误态。
+- 反馈页补提交中、提交成功、提交失败状态。
+
+### 不做
+
+- 不做站内实时聊天。
+- 不做客服后台。
+- 不做通知推送。
+
+### 验收标准
+
+- 用户提交反馈后，云端能看到记录。
+- 消息页无数据时显示空态，而不是 mock 消息。
+- 云错误时有明确提示。
+
+---
+
+## v0.2.4 全页面状态体验优化
+
+### 目标
+
+让所有核心页面具备稳定的加载态、空态、错误态和重试能力。
+
+### 范围
+
+覆盖页面：
+
+- 首页
+- 论坛页
+- 详情页
+- 发布页
+- 我的页面
+- 收藏页
+- 历史页
+- 草稿页
+- 消息页
+- 反馈页
+
+每个页面至少支持：
+
+- loading
+- empty
+- error
+- retry
+- success
+
+### 验收标准
+
+- 断网时页面不白屏。
+- 云函数失败时有错误提示。
+- 空数据时不展示 mock。
+- 用户可以手动重试。
+
+---
+
+## v0.2.5 权限收紧与数据清理
+
+### 目标
+
+让数据库权限和字段结构进入可上线状态。
+
+### 范围
+
+- 复查所有集合权限。
+- 清理遗留字段。
+- 清理无用 mock fallback 路径。
+- 检查 posts 中是否仍存在：
+  - `comments`
+  - 其他重复计数字段
+- 给常用查询字段补索引建议：
+  - `posts.createdAt`
+  - `posts.category`
+  - `posts.status`
+  - `comments.postId`
+  - `likes.postId`
+  - `likes._openid`
+  - `collects.postId`
+  - `collects._openid`
+  - `history._openid`
+  - `history.viewedAt`
+
+### 验收标准
+
+- 普通用户只能操作自己的私有数据。
+- 非作者不能修改他人帖子。
+- 公开页面只展示 published 内容。
+- 主要页面查询稳定，不依赖 mock。
+
+---
+
+# v0.3「想用」：社交回访、搜索、治理和运营
+
+## v0.3.0 notifications 互动通知
+
+### 目标
+
+通过点赞、评论、收藏通知驱动用户回访。
+
+### 范围
+
+- 新增 `notifications` 集合。
+- `interact` 在以下行为成功后写通知：
+  - like
+  - collect
+  - comment
+- 不给自己触发自己的通知。
+- 通知字段包含：
+  - `recipientOpenid`
+  - `actorOpenid`
+  - `postId`
+  - `type`
+  - `content`
+  - `read`
+  - `createdAt`
+- 消息页接入 notifications。
+- 支持已读状态。
+
+### 不做
+
+- 不做微信订阅消息。
+- 不做复杂通知聚合。
+- 不做实时推送。
+
+### 验收标准
+
+- B 评论 A 的帖子后，A 的消息页出现通知。
+- A 查看通知后可跳转到帖子详情。
+- A 自己操作自己的帖子不产生通知。
+- 已读状态可更新。
+
+---
+
+## v0.3.1 个人主页
+
+### 目标
+
+让用户能查看自己和他人的公开主页，增强社交关系感。
+
+### 范围
+
+- 新增个人主页页面。
+- 展示用户资料：
+  - 头像
+  - 昵称
+  - 简介
+  - 发帖数
+  - 获赞数
+- 展示用户发布过的公开帖子。
+- 从帖子详情、评论、消息通知中可进入个人主页。
+
+### 不做
+
+- 不做关注关系。
+- 不做私信。
+- 不展示他人草稿或私有历史。
+
+### 验收标准
+
+- 点击作者头像能进入作者主页。
+- 主页只展示 published 帖子。
+- 统计数据基本正确。
+
+---
+
+## v0.3.2 搜索真实化
+
+### 目标
+
+让用户能搜索帖子内容，提高内容发现能力。
+
+### 范围
+
+- 搜索 posts 中的公开内容。
+- 支持按标题、摘要、分类、作者昵称进行轻量搜索。
+- 搜索结果只展示 published 帖子。
+- 增加搜索空态、历史搜索、清空搜索。
+- 搜索结果支持跳转详情。
+
+### 不做
+
+- 不做复杂全文搜索引擎。
+- 不做语义搜索。
+- 不做个性化推荐。
+
+### 验收标准
+
+- 输入关键词后能搜到相关帖子。
+- 搜索结果不包含草稿或隐藏内容。
+- 无结果时有明确空态。
+
+---
+
+## v0.3.3 内容治理与管理员能力
+
+### 目标
+
+让团队具备基础内容管理能力。
+
+### 范围
+
+- 在 `users` 中引入 `role` 字段。
+- 管理员判断必须在云函数中完成。
+- 新增举报能力：
+  - `reports` 集合
+  - 用户可举报帖子或评论
+- 新增管理云函数：
+  - 隐藏帖子
+  - 恢复帖子
+  - 删除违规评论
+  - 更新举报处理状态
+- `posts.status` 扩展：
+  - `published`
+  - `hidden`
+  - `deleted`
+- 评论可增加状态：
+  - `visible`
+  - `hidden`
+  - `deleted`
+
+### 不做
+
+- 不做自动审核。
+- 不做复杂风控。
+- 不做多级管理员权限。
+
+### 验收标准
+
+- 普通用户不能调用管理能力。
+- 管理员可以隐藏违规帖子。
+- 被隐藏帖子不再出现在公开列表。
+- 举报记录可被追踪处理。
+
+---
+
+## v0.3.4 数据统计与运营看板基础
+
+### 目标
+
+让团队能看到基础运营数据，用于判断内容和用户活跃度。
+
+### 范围
+
+- 使用 aggregate 或云函数统计：
+  - 总用户数
+  - 总帖子数
+  - 总评论数
+  - 总点赞数
+  - 总收藏数
+  - 今日新增帖子
+  - 今日新增评论
+  - 热门帖子
+- 统计接口只允许管理员访问。
+- 可先输出简单管理页或控制台日志。
+
+### 不做
+
+- 不做复杂 BI 看板。
+- 不做留存分析。
+- 不做漏斗分析。
+
+### 验收标准
+
+- 管理员能查看基础统计。
+- 普通用户不能访问统计接口。
+- 热门帖子排序可用。
+
+---
+
+# 推荐执行顺序
+
+优先级从高到低：
+
+1. v0.1.0 云环境与数据库基线确认
+2. v0.1.1 用户登录与资料闭环
+3. v0.1.2 发帖与帖子详情真实云
+4. v0.1.3 interact 云函数 v1
+5. v0.1.4 前端接入 interact
+6. v0.1.5 多人体验版验收
+7. v0.1.6 文档与遗留清理
+8. v0.2.0 mock / fallback 策略重构
+9. v0.2.1 草稿真实云
+10. v0.2.2 收藏列表与历史页真实云
+11. v0.2.3 messages 与 feedback 真实云
+12. v0.2.4 全页面状态体验优化
+13. v0.2.5 权限收紧与数据清理
+14. v0.3.0 notifications 互动通知
+15. v0.3.1 个人主页
+16. v0.3.2 搜索真实化
+17. v0.3.3 内容治理与管理员能力
+18. v0.3.4 数据统计与运营看板基础
+
+---
+
+# 当前最先要做的 3 件事
+
+1. 补文档：马上把 `history`、`views`、`collects`、`collectCount`、`commentCount` 写进 schema 文档，避免后续实现和文档继续偏离。
+2. 实现 interact：先把 `view / like / unlike / collect / uncollect / comment` 收口到云函数，解决权限和计数一致性问题。
+3. 改详情页调用：把详情页里的浏览、点赞、收藏、评论全部切到 `interact`，不要再从客户端直接更新 posts 计数字段。
+
+---
+
+# v0.1 完成定义
+
+当以下条件全部满足，可以认为 v0.1 完成：
+
+1. A 能登录并完善资料。
+2. A 能发帖。
+3. B 能看到 A 的帖子。
+4. B 能浏览、点赞、收藏、评论 A 的帖子。
+5. B 不能修改 A 的帖子正文。
+6. 浏览、点赞、收藏、评论计数多人一致。
+7. 快速重复点击不会产生重复 like / collect 文档。
+8. 同一用户同一天重复进入详情不会重复增加浏览量。
+9. 云端错误不会被静默 mock 掩盖。
+10. 数据库 schema 和云函数接口文档已同步更新。
