@@ -7,35 +7,42 @@ exports.main = async (event) => {
   const openid = OPENID || '';
   if (!openid) return { success: false, error: '未登录' };
 
-  const { nickName, avatarFileID } = event;
+  const { nickName, avatarUrl, brief } = event;
   if (!nickName) return { success: false, error: '昵称不能为空' };
 
   try {
     const db = cloud.database();
     const updateData = {
       nickName,
-      avatarFileID: avatarFileID || '',
+      avatarUrl: avatarUrl || '',
+      brief: brief || '',
       updatedAt: db.serverDate(),
     };
 
-    const { data } = await db.collection('users').where({ openid }).limit(1).get();
-    if (data.length === 0) {
+    const userRef = db.collection('users').doc(openid);
+    try {
+      const existing = await userRef.get();
+      if (existing.data.length > 0) {
+        await userRef.update({ data: updateData });
+      }
+    } catch (e) {
       await db.collection('users').add({
         data: {
+          _id: openid,
           openid,
           ...updateData,
+          level: 0,
           createdAt: db.serverDate(),
         },
       });
-    } else {
-      await db.collection('users').where({ openid }).update({ data: updateData });
     }
 
     return {
       success: true,
       openid,
       nickName,
-      avatarFileID: avatarFileID || '',
+      avatarUrl: avatarUrl || '',
+      brief: brief || '',
     };
   } catch (err) {
     console.error('updateProfile failed:', err);
