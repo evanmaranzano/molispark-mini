@@ -15,7 +15,7 @@ exports.main = async () => {
         const user = data[0];
         profile = {
           nickName: user.nickName || '微信用户',
-          avatarUrl: user.avatarFileID || '',
+          avatarUrl: user.avatarUrl || '',
         };
       }
     } catch (err) {

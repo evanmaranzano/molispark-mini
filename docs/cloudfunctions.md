@@ -25,7 +25,7 @@
 
 按 openid 查 `users` 集合；查不到则 `profile=null`（前端据此判断「资料未完善/未登录」）。
 
-> ⚠️ 已知字段名不一致：login 读 `user.avatarFileID`，而 updateProfile 写的是 `avatarUrl`。头像字段未统一，登录返回的 profile.avatarUrl 当前会取不到值。待修（不在 v0.1.6 范围，单独 issue）。
+> 注：头像字段统一为 `avatarUrl`（login 读 `user.avatarUrl`，updateProfile 写 `avatarUrl`）。该字段内存的是云存储 fileID，前端 image 组件直接用作 src。
 
 ## updateProfile
 
