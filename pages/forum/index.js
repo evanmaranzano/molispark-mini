@@ -1,6 +1,4 @@
 import { getPosts } from '~/utils/db';
-import { withMockFallback } from '~/utils/mockFallback';
-import { getPublishedPosts } from '~/mock/community';
 
 function buildTabItems(list, currentValue) {
   return list.map((item) => ({
@@ -19,7 +17,8 @@ function buildCategoryItems(list, currentValue) {
 }
 
 const TAB_VALUES = ['推荐', '最新', '关注'];
-const CATEGORY_VALUES = ['全部', '学习', '职场', 'AI', '读书'];
+// 标签值必须和帖子 category 字段精确一致，否则云端 where({category}) 匹配不到、会触发 mock fallback
+const CATEGORY_VALUES = ['全部', '学习方法', 'AI 工具', '读书笔记', '自我提升'];
 const DEFAULT_TAB = '推荐';
 const DEFAULT_CATEGORY = '全部';
 
@@ -49,19 +48,8 @@ Page({
       where.category = currentCategory;
     }
     const orderBy = currentTab === '最新' ? 'createdAt' : 'likes';
-    const posts = await withMockFallback(
-      () => getPosts({ where, orderBy, limit: 50 }),
-      () => {
-        const filtered = getPublishedPosts().filter(
-          (item) => currentCategory === '全部' || item.category.includes(currentCategory)
-        );
-        if (currentTab === '最新') {
-          return filtered;
-        }
-        return filtered.slice().sort((a, b) => (b.likes || 0) - (a.likes || 0));
-      }
-    );
-    this.setData({ posts, loading: false });
+    const posts = await getPosts({ where, orderBy, limit: 50 });
+    this.setData({ posts: posts || [], loading: false });
   },
 
   handleTabTap(e) {
