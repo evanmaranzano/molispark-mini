@@ -5,7 +5,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .login-modal__sheet {
@@ -16,7 +16,7 @@
   background: #fff;
   border-radius: 24rpx 24rpx 0 0;
   padding: 40rpx 32rpx calc(40rpx + env(safe-area-inset-bottom));
-  z-index: 1001;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
   align-items: center;

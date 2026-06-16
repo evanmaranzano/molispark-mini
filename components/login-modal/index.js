@@ -15,17 +15,18 @@ Component({
     show: { type: Boolean, value: false },
   },
 
-  // 弹窗显示时隐藏自定义 tabBar（否则面板底部被 tabBar 遮挡显示不全），关闭时恢复
   observers: {
     show(val) {
+      // 通过 getTabBar() 控制自定义 tabBar 显隐（wx.hideTabBar 对自定义 tabBar 无效）
       try {
-        if (val) {
-          wx.hideTabBar({ animation: false });
-        } else {
-          wx.showTabBar({ animation: false });
+        const pages = getCurrentPages();
+        const page = pages[pages.length - 1];
+        const tabBar = page && typeof page.getTabBar === 'function' && page.getTabBar();
+        if (tabBar) {
+          tabBar.setData({ hidden: !!val });
         }
       } catch (e) {
-        // 非 tab 页调用会抛错，忽略
+        // 非 tab 页无 getTabBar，忽略
       }
     },
   },

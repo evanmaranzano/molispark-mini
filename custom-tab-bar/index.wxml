@@ -1,4 +1,4 @@
-<view class="custom-tab-bar">
+<view class="custom-tab-bar" wx:if="{{!hidden}}">
   <view
     wx:for="{{list}}"
     wx:key="value"

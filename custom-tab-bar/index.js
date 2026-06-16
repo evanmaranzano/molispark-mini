@@ -1,6 +1,7 @@
 Component({
   data: {
     value: '',
+    hidden: false,
     list: [
       {
         icon: 'home',
