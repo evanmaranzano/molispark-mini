@@ -11,8 +11,8 @@ import {
   toggleLike,
   updatePost,
 } from '~/utils/db';
-import { withMockFallback, withMockFallbackOne } from '~/utils/mockFallback';
-import { getPostById as mockGetPostById, comments as mockComments } from '~/mock/community';
+import { withMockFallbackOne } from '~/utils/mockFallback';
+import { getPostById as mockGetPostById } from '~/mock/community';
 
 function withNameInitial(list = []) {
   return list.map((item) => ({
@@ -65,11 +65,8 @@ Page({
   },
 
   async loadComments() {
-    const comments = await withMockFallback(
-      () => getComments(this.postId),
-      () => mockComments
-    );
-    this.setData({ comments: withNameInitial(comments) });
+    const comments = await getComments(this.postId);
+    this.setData({ comments: withNameInitial(comments || []) });
   },
 
   async checkInteractionState() {

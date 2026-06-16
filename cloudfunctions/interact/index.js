@@ -41,7 +41,7 @@ exports.main = async (event) => {
   const { OPENID } = cloud.getWXContext();
   if (!OPENID) return { success: false, code: 'UNAUTHORIZED' };
 
-  const { action, postId, content } = event;
+  const { action, postId, content, name } = event;
   if (!postId) return { success: false, code: 'MISSING_POST_ID' };
   if (!VALID_ACTIONS.includes(action)) {
     return { success: false, code: 'INVALID_ACTION' };
@@ -73,7 +73,7 @@ exports.main = async (event) => {
       return await handleUncollect(postId, OPENID, counts);
     }
     if (action === 'comment') {
-      return await handleComment(postId, OPENID, content, counts);
+      return await handleComment(postId, OPENID, content, name, counts);
     }
   } catch (err) {
     console.error('interact failed:', action, postId, OPENID, err.message);
@@ -219,12 +219,13 @@ async function handleUncollect(postId, openid, counts) {
   return makeResponse('uncollect', postId, { state: { collected: false }, counts });
 }
 
-async function handleComment(postId, openid, content, counts) {
+async function handleComment(postId, openid, content, name, counts) {
   if (!content || !content.trim()) return { success: false, code: 'EMPTY_CONTENT' };
   if (content.length > 500) return { success: false, code: 'CONTENT_TOO_LONG' };
 
+  // 评论字段对齐前端/mock：内容用 body、评论者用 name（detail wxml 读 item.body/item.name）
   const commentRes = await db.collection('comments').add({
-    data: { postId, openid, content: content.trim(), createdAt: db.serverDate() },
+    data: { postId, openid, name: name || '微信用户', body: content.trim(), createdAt: db.serverDate() },
   });
 
   try {

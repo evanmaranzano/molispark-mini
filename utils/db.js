@@ -278,6 +278,8 @@ async function add(collection, data) {
   const doc = clone(data);
   applyLocalData(doc, data);
   doc._id = doc._id || `local-${collection}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  // 本地数据补 _openid；云 add 时 _openid 由云数据库自动注入，禁止手动写（否则 Invalid Key Name）
+  doc._openid = doc._openid || getCurrentOpenid();
   list.unshift(doc);
   saveLocalDb(localDb);
   return markLocal({ _id: doc._id });
@@ -470,7 +472,7 @@ async function getComments(postId, options = {}) {
 
 async function addComment(data) {
   if (isCloudReady()) {
-    const result = await callInteract({ action: 'comment', postId: data.postId, content: data.content });
+    const result = await callInteract({ action: 'comment', postId: data.postId, content: data.body, name: data.name });
     if (result && result.success) {
       return { _id: result.data.commentId, commentCount: result.counts.commentCount };
     }
@@ -478,7 +480,6 @@ async function addComment(data) {
 
   const result = await add('comments', {
     ...data,
-    _openid: getCurrentOpenid(),
     createdAt: serverDate(),
   });
   await updateById('posts', data.postId, { commentCount: _.inc(1) });
@@ -575,7 +576,6 @@ async function saveDraft(data, openid) {
     author: data.author || '微信用户',
     desc: data.desc || normalizeContent(data.content)[0] || '',
     time: '草稿',
-    _openid: openid || getCurrentOpenid(),
     updatedAt: serverDate(),
   };
   if (data._id) {
@@ -590,7 +590,6 @@ async function saveDraft(data, openid) {
 async function submitFeedback(content, openid) {
   return add('feedback', {
     content,
-    _openid: openid || getCurrentOpenid(),
     status: 'pending',
     createdAt: serverDate(),
   });

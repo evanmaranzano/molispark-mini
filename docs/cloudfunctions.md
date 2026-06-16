@@ -43,7 +43,7 @@
 
 所有帖子互动的统一入口。云函数有完整权限，绕过 `posts`「仅创建者可写」限制，保证多人点赞/浏览/收藏/评论计数一致（非作者操作不会被拒、不会降级本地导致计数分裂）。
 
-入参：`{ action, postId, content? }`
+入参：`{ action, postId, content?, name? }`（comment 用 `content` 作正文、`name` 作评论者昵称；写入 `comments` 集合时落地为 `body`/`name` 字段，对齐前端 detail wxml 的 `item.body`/`item.name`）
 
 | action | 关联集合 | 确定性 _id | posts 计数 | 返回 state/data |
 |--------|---------|-----------|-----------|----------------|
