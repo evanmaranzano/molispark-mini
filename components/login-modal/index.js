@@ -15,6 +15,21 @@ Component({
     show: { type: Boolean, value: false },
   },
 
+  // 弹窗显示时隐藏自定义 tabBar（否则面板底部被 tabBar 遮挡显示不全），关闭时恢复
+  observers: {
+    show(val) {
+      try {
+        if (val) {
+          wx.hideTabBar({ animation: false });
+        } else {
+          wx.showTabBar({ animation: false });
+        }
+      } catch (e) {
+        // 非 tab 页调用会抛错，忽略
+      }
+    },
+  },
+
   data: {
     needSetup: false,
     avatarUrl: '',
