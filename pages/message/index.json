@@ -2,6 +2,7 @@
   "navigationStyle": "custom",
   "disableScroll": true,
   "usingComponents": {
-    "status-bar": "/components/status-bar/index"
+    "status-bar": "/components/status-bar/index",
+    "login-modal": "/components/login-modal/index"
   }
 }

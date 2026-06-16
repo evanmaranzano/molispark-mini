@@ -1,8 +1,10 @@
 import { getMessages, markMessageRead, count } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { messages as mockMessages, getMessageSummary } from '~/mock/community';
+import loginGuard from '~/behaviors/loginGuard';
 
 Page({
+  behaviors: [loginGuard],
   data: {
     messageList: [],
     summaryCards: [],
@@ -10,6 +12,7 @@ Page({
   },
 
   onShow() {
+    this.checkLoginGuard();
     this.loadMessages();
   },
 

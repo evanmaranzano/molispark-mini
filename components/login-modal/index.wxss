@@ -1,0 +1,94 @@
+.login-modal__mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.login-modal__sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 40rpx 32rpx calc(40rpx + env(safe-area-inset-bottom));
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-modal__title {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #17202a;
+}
+
+.login-modal__desc {
+  font-size: 24rpx;
+  color: #8a949e;
+  margin-top: 10rpx;
+  margin-bottom: 30rpx;
+}
+
+.login-modal__btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  text-align: center;
+  padding: 0;
+}
+
+.login-modal__btn--primary {
+  background: #2fb67d;
+  color: #fff;
+}
+
+.login-modal__btn::after {
+  border: none;
+}
+
+.login-modal__avatar {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  background: #f1f3f5;
+  margin-bottom: 24rpx;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.login-modal__avatar::after {
+  border: none;
+}
+
+.login-modal__avatar-img {
+  width: 100%;
+  height: 100%;
+}
+
+.login-modal__avatar-tip {
+  font-size: 22rpx;
+  color: #aab4be;
+}
+
+.login-modal__input {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #e2e7ea;
+  border-radius: 18rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  margin-bottom: 24rpx;
+  box-sizing: border-box;
+}

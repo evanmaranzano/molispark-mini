@@ -70,3 +70,4 @@
   </view>
 </scroll-view>
 <t-message id="t-message" />
+<login-modal show="{{showLoginModal}}" bind:logined="onLogined" />

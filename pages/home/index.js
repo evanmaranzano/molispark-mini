@@ -2,6 +2,7 @@ import Message from 'tdesign-miniprogram/message/index';
 import { getPosts, count } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { getPublishedPosts, quickActions } from '~/mock/community';
+import loginGuard from '~/behaviors/loginGuard';
 
 function withAuthorInitial(list = []) {
   return list.map((item) => ({
@@ -11,6 +12,7 @@ function withAuthorInitial(list = []) {
 }
 
 Page({
+  behaviors: [loginGuard],
   data: {
     enable: false,
     quickActions,
@@ -25,6 +27,7 @@ Page({
   },
 
   onShow() {
+    this.checkLoginGuard();
     this.consumeOperResult();
     this.loadUnreadCount();
   },

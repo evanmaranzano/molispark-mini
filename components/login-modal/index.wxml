@@ -1,0 +1,20 @@
+<view class="login-modal" wx:if="{{show}}" catchtouchstart="noop">
+  <view class="login-modal__mask"></view>
+  <view class="login-modal__sheet">
+    <view class="login-modal__title">{{needSetup ? '完善资料' : '登录知行社'}}</view>
+    <view class="login-modal__desc">{{needSetup ? '设置昵称和头像后即可使用' : '登录后即可浏览、发帖、互动'}}</view>
+
+    <block wx:if="{{!needSetup}}">
+      <button class="login-modal__btn login-modal__btn--primary" bindtap="onLogin">微信一键登录</button>
+    </block>
+
+    <block wx:else>
+      <button class="login-modal__avatar" open-type="chooseAvatar" bindchooseavatar="onAvatarChoose">
+        <image wx:if="{{avatarUrl}}" class="login-modal__avatar-img" src="{{avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="login-modal__avatar-tip">点击选择头像</view>
+      </button>
+      <input class="login-modal__input" type="nickname" placeholder="请输入昵称" value="{{nickname}}" bindinput="onNicknameInput" />
+      <button class="login-modal__btn login-modal__btn--primary" bindtap="onSubmit">{{submitting ? '保存中...' : '保存并登录'}}</button>
+    </block>
+  </view>
+</view>

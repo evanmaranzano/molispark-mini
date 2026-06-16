@@ -1,8 +1,14 @@
 import { zones } from '~/mock/community';
+import loginGuard from '~/behaviors/loginGuard';
 
 Page({
+  behaviors: [loginGuard],
   data: {
     zones,
+  },
+
+  onShow() {
+    this.checkLoginGuard();
   },
 
   navigateBack() {

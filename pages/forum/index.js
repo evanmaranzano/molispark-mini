@@ -1,4 +1,5 @@
 import { getPosts } from '~/utils/db';
+import loginGuard from '~/behaviors/loginGuard';
 
 function buildTabItems(list, currentValue) {
   return list.map((item) => ({
@@ -23,6 +24,7 @@ const DEFAULT_TAB = '推荐';
 const DEFAULT_CATEGORY = '全部';
 
 Page({
+  behaviors: [loginGuard],
   data: {
     tabs: buildTabItems(TAB_VALUES, DEFAULT_TAB),
     categoryTabs: buildCategoryItems(CATEGORY_VALUES, DEFAULT_CATEGORY),
@@ -38,6 +40,10 @@ Page({
       this.setData({ zoneTitle: options.zone });
     }
     this.loadPosts();
+  },
+
+  onShow() {
+    this.checkLoginGuard();
   },
 
   async loadPosts() {

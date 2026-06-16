@@ -14,7 +14,6 @@ App({
     this.initCloud();
     this.checkUpdate();
     this.restoreSession();
-    this.setupLoginGuard();
   },
 
   initSystemInfo() {
@@ -76,27 +75,5 @@ App({
       this.globalData.openid = session.openid;
       this.globalData.userInfo = session.profile;
     }
-  },
-
-  // 全局登录守卫：未完善资料时，除「我的」页外一律拦截跳转登录，避免未登录操作
-  setupLoginGuard() {
-    const ALLOWED = ['pages/my/index'];
-    const guard = (path) => {
-      const cleanPath = (path || '').split('?')[0];
-      if (ALLOWED.some((p) => cleanPath.indexOf(p) === 0)) return;
-      const session = auth.getSession();
-      if (auth.isProfileComplete(session ? session.profile : null)) return;
-      if (!this._loginGuardPrompting) {
-        this._loginGuardPrompting = true;
-        wx.showModal({
-          title: '请先登录',
-          content: '完善昵称和头像后即可使用全部功能',
-          showCancel: false,
-          complete: () => { this._loginGuardPrompting = false; },
-        });
-      }
-      wx.switchTab({ url: '/pages/my/index' });
-    };
-    wx.onAppRoute((res) => guard(res.path));
   },
 });
