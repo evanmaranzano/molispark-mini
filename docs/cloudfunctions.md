@@ -62,6 +62,17 @@
 
 `COUNT_UPDATE_FAILED`：互动记录已写入但 posts 计数 inc 失败。前端可据此保留本地状态但不刷新展示计数，避免数据漂移。
 
+## seed
+
+一次性预置初始帖子，让小程序列表不为空（验收/体验时进来就有内容）。内容取自项目 mock 精华帖，幂等插入。
+
+入参：无
+返回：`{ success, total, results: [{ _id, status: 'created' | 'exists' }] }`
+
+用确定性 `_id`（`seed-post-1..4`），重复调用只创建一次。字段对齐 posts schema（`status: published`、`collectCount/commentCount: 0`、`_openid: 'seed-author'`、`time: '精华'`）。预设帖可被正常浏览/点赞/评论（interact 云函数有完整权限 inc 计数）。
+
+部署后在云开发控制台「云函数 → seed → 云端测试」调用一次即可；或开发者工具 console 跑 `wx.cloud.callFunction({ name: 'seed' }).then(console.log)`。
+
 ## 涉及集合
 
 posts, users, comments, likes, collects, views, history。权限规则与索引建议见 `docs/database-schema.md`。
