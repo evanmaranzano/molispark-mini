@@ -43,6 +43,7 @@ Component({
     noop() {},
 
     onLogin() {
+      console.log('[login-modal] onLogin tapped');
       wx.showLoading({ title: '登录中', mask: true });
       loginWithCloud(getDefaultProfile())
         .then((session) => {
