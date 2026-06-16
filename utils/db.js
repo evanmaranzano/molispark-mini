@@ -1,6 +1,15 @@
 /**
- * 云数据库 CRUD 封装
- * 云环境未配置时自动使用本地存储，保证页面主流程可预览、可验证。
+ * 云数据库 CRUD 封装。
+ *
+ * Mock fallback 策略（v0.1）：云就绪（utils/cloud.js isCloudReady）时走云数据库，云调用抛错或
+ * 无云环境时降级到本地 localStorage（key: miniLocalDb，由 mock/community.js seed 生成），降级
+ * 返回对象经 markLocal() 打上 __fromLocalDb 标记。
+ * - 底层 CRUD（add/getById/query/updateById/updateWhere/removeById/removeWhere/count）：
+ *   统一「云优先 + try/catch 降级本地」。
+ * - 互动类（addComment/toggleLike/toggleCollect）：云优先走 interact 云函数，callInteract 返回
+ *   null 或 success=false 时回退本地手动 ±1。v0.2 计划抽 mock fallback 中间层统一处理。
+ * - callInteract 云不可用时返回 null（不抛错），降级路径由调用方决定。
+ * - v0.1 调试期：add 的 catch 会 console.error 打印降级日志，v0.2 移除。
  */
 
 const mock = require('~/mock/community');
