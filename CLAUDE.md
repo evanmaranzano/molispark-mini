@@ -60,6 +60,19 @@
 
 ## WXML 事件冒泡
 - `catchtap=""` 空字符串不可靠，弹窗内层拦截点击用 `catchtap="noop"` 并在 JS 定义 `noop() {}`
+- 全屏弹窗禁止用外层 `catchtouchstart` 拦截——会破坏子 `<button>` 的 `bindtap` 合成（按钮点击无反应）；防穿透用遮罩/面板分别 `catchtap="noop"`，不拦 touchstart
+
+## 自定义 tabBar 与全屏弹窗
+- `wx.hideTabBar` 对自定义 tabBar（custom-tab-bar/ 组件）无效，它不是系统 tabBar
+- 全屏弹窗需隐藏 tabBar：`getCurrentPages()` 取当前页 → `page.getTabBar().setData({ hidden: true/false })`，custom-tab-bar wxml 用 `wx:if="{{!hidden}}"` 控制。已有 `components/login-modal` 用此模式。
+
+## 云数据库 _openid 与字段名
+- 客户端 `add()` 禁止手动写 `_openid`（云数据库系统字段，自动注入；手动写报 `Invalid Key Name: _openid`）。本地降级在 `db.js` 的 `add` 内自动补 `_openid`。
+- 头像字段名统一为 `avatarUrl`（存的是 fileID）：login 读 `user.avatarUrl`、updateProfile 写 `avatarUrl`、auth `updateUserProfile` 传 `avatarUrl`。历史曾用 `avatarFileID`，已全部统一。
+
+## mock fallback 与枚举字段
+- `withMockFallback` 把「空数组」当无效会塞 mock 假数据，混淆真实/预览数据。列表查询（forum 帖子、detail 评论）已去掉这层；`db.js` 内部 query 云失败时已降级本地 mock，页面层不要再套一层 withMockFallback。
+- 枚举字段（如 `posts.category`）的页面标签值必须和实际数据精确一致，云端 `where({category})` 是精确匹配，对不上会查空触发降级。标准分类：学习方法 / AI 工具 / 读书笔记 / 自我提升。
 
 ## 登录流程设计原则
 - 拿到 openid ≠ 登录完成；"已登录"仅当用户资料完整（真实昵称，非默认"微信用户"）
