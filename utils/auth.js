@@ -110,7 +110,7 @@ function updateUserProfile(nickName, avatarFileID) {
   return wx.cloud
     .callFunction({
       name: 'updateProfile',
-      data: { nickName, avatarFileID },
+      data: { nickName, avatarUrl: avatarFileID },
     })
     .then((res) => {
       if (!res.result || !res.result.success) {
@@ -122,7 +122,7 @@ function updateUserProfile(nickName, avatarFileID) {
         openid: res.result.openid,
         profile: {
           nickName: res.result.nickName,
-          avatarUrl: res.result.avatarFileID || '',
+          avatarUrl: res.result.avatarUrl || '',
         },
         loginAt: Date.now(),
       });

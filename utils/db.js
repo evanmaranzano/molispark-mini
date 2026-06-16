@@ -14,6 +14,7 @@
 
 const mock = require('~/mock/community');
 const { isCloudReady } = require('~/utils/cloud');
+const { getSession } = require('~/utils/auth');
 
 const LOCAL_DB_KEY = 'miniLocalDb';
 const LOCAL_OPENID = 'local-openid';
@@ -84,7 +85,12 @@ function getCurrentOpenid() {
 
 function getCurrentProfile() {
   const app = getAppSafe();
-  return (app && app.globalData && app.globalData.userInfo) || {};
+  const fromGlobal = app && app.globalData && app.globalData.userInfo;
+  if (fromGlobal && fromGlobal.nickName) return fromGlobal;
+  // globalData 可能未同步（登录只写 session），回退到 session 取昵称，避免发帖作者落成"微信用户"
+  const session = getSession();
+  if (session && session.profile && session.profile.nickName) return session.profile;
+  return {};
 }
 
 function getDocId(item) {
