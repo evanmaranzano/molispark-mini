@@ -11,7 +11,9 @@
       <input class="form-input" placeholder="请输入标题" placeholder-class="form-placeholder" value="{{title}}" data-field="title" bindinput="handleInput" />
 
       <view class="form-label">分类</view>
-      <input class="form-input" placeholder="请输入分类" placeholder-class="form-placeholder" value="{{category}}" data-field="category" bindinput="handleInput" />
+      <picker class="form-input form-picker" mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="handleCategoryChange">
+        <view class="form-picker__value">{{category}}</view>
+      </picker>
 
       <view class="form-label">正文</view>
       <textarea

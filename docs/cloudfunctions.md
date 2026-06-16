@@ -69,7 +69,7 @@
 入参：无
 返回：`{ success, total, results: [{ _id, status: 'created' | 'exists' }] }`
 
-用确定性 `_id`（`seed-post-1..4`），重复调用只创建一次。字段对齐 posts schema（`status: published`、`collectCount/commentCount: 0`、`_openid: 'seed-author'`、`time: '精华'`）。预设帖可被正常浏览/点赞/评论（interact 云函数有完整权限 inc 计数）。
+用确定性 `_id`（`seed-post-1..10`），重复调用只创建一次。字段对齐 posts schema（`status: published`、`collectCount/commentCount: 0`、`_openid: 'seed-author'`、`time: '精华'`）。预设帖可被正常浏览/点赞/评论（interact 云函数有完整权限 inc 计数）。
 
 部署后在云开发控制台「云函数 → seed → 云端测试」调用一次即可；或开发者工具 console 跑 `wx.cloud.callFunction({ name: 'seed' }).then(console.log)`。
 

@@ -5,7 +5,9 @@ Page({
   data: {
     id: '',
     title: '',
+    categories: ['学习方法', 'AI 工具', '读书笔记', '自我提升'],
     category: '学习方法',
+    categoryIndex: 0,
     content: '',
     images: [],
     publishing: false,
@@ -22,9 +24,11 @@ Page({
     try {
       const post = await getPostById(id);
       if (post) {
+        const category = post.category || '学习方法';
         this.setData({
           title: post.title || '',
-          category: post.category || '学习方法',
+          category,
+          categoryIndex: Math.max(0, this.data.categories.indexOf(category)),
           content: (post.content || []).join('\n'),
           images: post.images || [],
         });
@@ -41,6 +45,11 @@ Page({
   handleInput(e) {
     const { field } = e.currentTarget.dataset;
     this.setData({ [field]: e.detail.value });
+  },
+
+  handleCategoryChange(e) {
+    const index = Number(e.detail.value);
+    this.setData({ categoryIndex: index, category: this.data.categories[index] });
   },
 
   async handleChooseImage() {
