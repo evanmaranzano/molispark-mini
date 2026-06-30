@@ -127,9 +127,12 @@ async function handleLike(postId, openid, counts) {
   const likeId = `${postId}_${openid}`;
   let created = false;
   try {
-    await db.collection('likes').add({
-      data: { _id: likeId, postId, openid, createdAt: db.serverDate() },
-    });
+      await db.collection('likes').add({
+        // 云函数写入不会自动注入 _openid；likes 集合「仅创建者可读写」权限下
+        // 客户端 query('likes', { postId, openid }) 会过滤掉本记录导致 isLiked 永远 false、
+        // toggleLike 永远走 like 分支无法取消。显式写入 _openid 让权限匹配。
+        data: { _id: likeId, postId, openid, _openid: openid, createdAt: db.serverDate() },
+      });
     created = true;
   } catch (e) {
     // 主键冲突 = 已点赞
@@ -175,9 +178,10 @@ async function handleCollect(postId, openid, counts) {
   const collectId = `${postId}_${openid}`;
   let created = false;
   try {
-    await db.collection('collects').add({
-      data: { _id: collectId, postId, openid, createdAt: db.serverDate() },
-    });
+      await db.collection('collects').add({
+        // 同 likes：显式写 _openid 让「仅创建者可读写」权限下客户端能查回。
+        data: { _id: collectId, postId, openid, _openid: openid, createdAt: db.serverDate() },
+      });
     created = true;
   } catch (e) {
     // 主键冲突 = 已收藏

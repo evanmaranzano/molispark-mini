@@ -3,7 +3,7 @@
 .custom-tab-bar {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   gap: 64rpx;
   min-height: @tab-bar-height;
@@ -54,6 +54,8 @@
   }
 
   &__icon-wrap--home .custom-tab-bar__icon {
+    width: 30rpx;
+    height: 26rpx;
     border: 4rpx solid currentColor;
     border-top: 0;
     border-radius: 4rpx;
@@ -61,19 +63,19 @@
     &::before {
       content: '';
       position: absolute;
-      left: 3rpx;
-      top: -12rpx;
-      width: 22rpx;
-      height: 22rpx;
+      left: 50%;
+      top: -8rpx;
+      width: 18rpx;
+      height: 18rpx;
       border-left: 4rpx solid currentColor;
       border-top: 4rpx solid currentColor;
-      transform: rotate(45deg);
+      transform: translateX(-50%) rotate(45deg);
     }
   }
 
   &__icon-wrap--release .custom-tab-bar__icon {
-    width: 30rpx;
-    height: 30rpx;
+    width: 34rpx;
+    height: 34rpx;
 
     &::before,
     &::after {
@@ -86,14 +88,14 @@
     }
 
     &::before {
-      width: 28rpx;
+      width: 32rpx;
       height: 4rpx;
       border-radius: 99rpx;
     }
 
     &::after {
       width: 4rpx;
-      height: 28rpx;
+      height: 32rpx;
       border-radius: 99rpx;
     }
   }

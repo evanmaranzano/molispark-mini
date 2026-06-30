@@ -15,7 +15,13 @@ Page({
   },
 
   onShow() {
+    this.syncTabBar();
     this.loadDraftCount();
+  },
+
+  syncTabBar() {
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar && tabBar.syncActiveTab) tabBar.syncActiveTab();
   },
 
   async loadDraftCount() {

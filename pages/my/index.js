@@ -46,7 +46,13 @@ Page({
   },
 
   onShow() {
+    this.syncTabBar();
     this.syncAuthState();
+  },
+
+  syncTabBar() {
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar && tabBar.syncActiveTab) tabBar.syncActiveTab();
   },
 
   syncAuthState() {
@@ -54,18 +60,27 @@ Page({
     const isAuthed = Boolean(authSession && isProfileComplete(authSession.profile));
     const app = getApp();
     if (isAuthed) {
+      // 已填资料：openid + userInfo 写回 globalData，供互动/统计使用
       app.globalData.openid = authSession.openid;
       app.globalData.userInfo = authSession.profile;
-    } else {
-      app.globalData.openid = '';
-      app.globalData.userInfo = null;
     }
+    // 未填资料不清空 globalData.openid：它是登录凭证，detail 页点赞/收藏仍需要。
+    // my 页内容访问（loadStats/菜单）由 isAuthed 门禁，未填资料时 stats 不加载、显示引导。
     this.setData({
       isAuthed,
       profile: buildProfile(isAuthed ? authSession : null),
     });
     if (isAuthed) {
       this.loadStats();
+    } else {
+      // 未登录/未填资料：stats 重置为 0，避免残留上次登录的数字
+      this.setData({
+        stats: [
+          { label: '我的帖子', value: '0' },
+          { label: '收到的赞', value: '0' },
+          { label: '我的收藏', value: '0' },
+        ],
+      });
     }
   },
 
@@ -200,6 +215,11 @@ Page({
 
   onMenuTap(e) {
     const { title, url } = e.currentTarget.dataset;
+    // 未填资料（isAuthed=false）不允许查看我的帖子/收藏/历史等个人内容，引导去填资料
+    if (!this.data.isAuthed) {
+      this.setData({ showProfileSetup: true });
+      return;
+    }
     const routeMap = {
       我的帖子: '/pages/myPosts/index',
       我的收藏: '/pages/favorites/index',

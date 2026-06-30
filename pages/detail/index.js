@@ -6,6 +6,7 @@ import {
   getPostById,
   isCollected,
   isLiked,
+  normalizeContent,
   recordHistory,
   toggleCollect,
   toggleLike,
@@ -13,6 +14,7 @@ import {
 } from '~/utils/db';
 import { withMockFallbackOne } from '~/utils/mockFallback';
 import { getPostById as mockGetPostById } from '~/mock/community';
+import { getTempFileURL } from '~/utils/storage';
 
 function withNameInitial(list = []) {
   return list.map((item) => ({
@@ -36,6 +38,7 @@ Page({
     collected: false,
     commentText: '',
     showCommentInput: false,
+    loadError: false,
     actionList: [
       { key: 'like', label: '点赞', icon: '👍' },
       { key: 'collect', label: '收藏', icon: '⭐' },
@@ -57,10 +60,32 @@ Page({
       (id) => mockGetPostById(id),
       this.postId
     );
+    if (post && post.__loadError) {
+      this.setData({ loadError: true });
+      return;
+    }
     if (post) {
-      this.setData({ post: withAuthorInitial(post) });
+      post.content = normalizeContent(post.content);
+      this.setData({ post: withAuthorInitial(post), loadError: false });
+      this.resolveImages(post.images);
       this.incrementViews(post);
       this.recordHistory();
+    }
+  },
+
+  retryLoad() {
+    this.setData({ loadError: false });
+    this.loadPost();
+    this.loadComments();
+  },
+
+  async resolveImages(images) {
+    if (!images || !images.length) return;
+    try {
+      const urls = await getTempFileURL(images);
+      this.setData({ 'post.images': urls });
+    } catch (err) {
+      // 静默失败，保留原 fileID
     }
   },
 
@@ -134,7 +159,7 @@ Page({
 
     if (key === 'like') {
       try {
-        const result = await toggleLike(this.postId, openid);
+        const result = await toggleLike(this.postId, openid, this.data.liked);
         const updateData = { liked: result.liked };
         if (result.likes !== undefined) {
           updateData['post.likes'] = result.likes;
@@ -152,7 +177,7 @@ Page({
 
     if (key === 'collect') {
       try {
-        const result = await toggleCollect(this.postId, openid);
+        const result = await toggleCollect(this.postId, openid, this.data.collected);
         const updateData = { collected: result.collected };
         if (result.collectCount !== undefined) {
           updateData['post.collectCount'] = result.collectCount;

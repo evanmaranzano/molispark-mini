@@ -14,6 +14,7 @@
 
 const mock = require('~/mock/community');
 const { isCloudReady } = require('~/utils/cloud');
+const { allowMockFallback } = require('~/utils/runtime');
 const { getSession } = require('~/utils/auth');
 
 const LOCAL_DB_KEY = 'miniLocalDb';
@@ -104,7 +105,7 @@ function sameId(left, right) {
 }
 
 function normalizeContent(content) {
-  if (Array.isArray(content)) return content;
+  if (Array.isArray(content)) return content.map((item) => String(item).trim()).filter(Boolean);
   if (!content) return [];
   return String(content)
     .split('\n')
@@ -275,6 +276,7 @@ async function add(collection, data) {
     try {
       return await db.collection(collection).add({ data: toCloudObject(data, db) });
     } catch (err) {
+      if (!allowMockFallback()) throw err;
       console.error(`[db] cloud add to "${collection}" failed, falling back to local:`, err.errMsg || err.message || err);
     }
   }
@@ -298,6 +300,7 @@ async function getById(collection, id) {
       const res = await db.collection(collection).doc(id).get();
       return res.data || null;
     } catch (err) {
+      if (!allowMockFallback()) throw err;
       // 降级到本地
     }
   }
@@ -318,6 +321,7 @@ async function query(collection, where = {}, options = {}) {
       const res = await request.get();
       return res.data;
     } catch (err) {
+      if (!allowMockFallback()) throw err;
       // 降级到本地
     }
   }
@@ -339,6 +343,7 @@ async function updateById(collection, id, data) {
     try {
       return await db.collection(collection).doc(id).update({ data: toCloudObject(data, db) });
     } catch (err) {
+      if (!allowMockFallback()) throw err;
       // 降级到本地
     }
   }
@@ -358,6 +363,7 @@ async function updateWhere(collection, where, data) {
     try {
       return await db.collection(collection).where(toCloudObject(where, db)).update({ data: toCloudObject(data, db) });
     } catch (err) {
+      if (!allowMockFallback()) throw err;
       // 降级到本地
     }
   }
@@ -380,6 +386,7 @@ async function removeById(collection, id) {
     try {
       return await db.collection(collection).doc(id).remove();
     } catch (err) {
+      if (!allowMockFallback()) throw err;
       // 降级到本地
     }
   }
@@ -397,6 +404,7 @@ async function removeWhere(collection, where) {
     try {
       return await db.collection(collection).where(toCloudObject(where, db)).remove();
     } catch (err) {
+      if (!allowMockFallback()) throw err;
       // 降级到本地
     }
   }
@@ -415,6 +423,7 @@ async function count(collection, where = {}) {
       const res = await db.collection(collection).where(toCloudObject(where, db)).count();
       return res.total;
     } catch (err) {
+      if (!allowMockFallback()) throw err;
       // 降级到本地
     }
   }
@@ -492,12 +501,13 @@ async function addComment(data) {
   return result;
 }
 
-async function toggleLike(postId, openid) {
-  const existing = await query('likes', { postId, openid }, { limit: 1 });
-  const willLike = existing.length === 0;
-
+async function toggleLike(postId, openid, currentLiked = false) {
+  // 云模式下互动状态以云函数为准，不再在调用前本地查一次：
+  // likes 集合「仅创建者可读写」+ 云函数写入的记录 _openid 之前为空，
+  // 客户端 query 永远返回空 → willLike 永远为 true → 永远只能点赞不能取消。
+  // 修复后 _openid 已正确写入，但仍按调用方当前状态决定 action，避免查库往返。
   if (isCloudReady()) {
-    const result = await callInteract({ action: willLike ? 'like' : 'unlike', postId });
+    const result = await callInteract({ action: currentLiked ? 'unlike' : 'like', postId });
     if (result && result.success) {
       return {
         liked: result.state.liked,
@@ -506,6 +516,9 @@ async function toggleLike(postId, openid) {
     }
   }
 
+  // 非云降级路径保留原 query（本地无权限限制）
+  const existing = await query('likes', { postId, openid }, { limit: 1 });
+  const willLike = existing.length === 0;
   if (willLike) {
     await add('likes', { postId, openid, createdAt: serverDate() });
     await updateById('posts', postId, { likes: _.inc(1) });
@@ -521,12 +534,9 @@ async function isLiked(postId, openid) {
   return res.length > 0;
 }
 
-async function toggleCollect(postId, openid) {
-  const existing = await query('collects', { postId, openid }, { limit: 1 });
-  const willCollect = existing.length === 0;
-
+async function toggleCollect(postId, openid, currentCollected = false) {
   if (isCloudReady()) {
-    const result = await callInteract({ action: willCollect ? 'collect' : 'uncollect', postId });
+    const result = await callInteract({ action: currentCollected ? 'uncollect' : 'collect', postId });
     if (result && result.success) {
       return {
         collected: result.state.collected,
@@ -535,6 +545,8 @@ async function toggleCollect(postId, openid) {
     }
   }
 
+  const existing = await query('collects', { postId, openid }, { limit: 1 });
+  const willCollect = existing.length === 0;
   if (willCollect) {
     await add('collects', { postId, openid, createdAt: serverDate() });
     return { collected: true };
@@ -612,14 +624,20 @@ async function recordHistory(postId, openid) {
 }
 
 async function getUserStats(openid) {
-  const [postCount, likeCount, collectCount] = await Promise.all([
+  const [postCount, collectCount] = await Promise.all([
     count('posts', { _openid: openid, status: 'published' }),
-    count('likes', { openid }),
     count('collects', { openid }),
   ]);
+
+  // 「收到的赞」= 自己所有帖子 likes 字段之和。likes 集合「仅创建者可读写」客户端跨用户查不到，
+  // 但 posts.likes 字段是云函数 admin 写入、posts「所有用户可读」，累加即可拿到准确值。
+  // 等价于 v0.3.4 aggregate 云函数实现，当前用客户端 query 凑合。
+  const myPosts = await query('posts', { _openid: openid, status: 'published' }, { limit: 100 });
+  const receivedLikes = (myPosts || []).reduce((sum, p) => sum + (p.likes || 0), 0);
+
   return {
     posts: postCount,
-    likes: likeCount,
+    likes: receivedLikes,
     collects: collectCount,
   };
 }
@@ -647,6 +665,7 @@ module.exports = {
   isCollected,
   isLiked,
   markMessageRead,
+  normalizeContent,
   query,
   recordHistory,
   removeById,

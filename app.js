@@ -71,8 +71,12 @@ App({
 
   restoreSession() {
     const session = auth.getSession();
-    if (session && auth.isProfileComplete(session.profile)) {
-      this.globalData.openid = session.openid;
+    if (!session) return;
+    // openid 是登录凭证，与资料是否完整解耦：未填昵称的登录用户也应能查自己的点赞/收藏状态、
+    // 在云函数里写入 _openid。否则 profile 不完整时 globalData.openid 丢失，detail 页
+    // checkInteractionState 直接 return，状态永远不回显。
+    this.globalData.openid = session.openid;
+    if (auth.isProfileComplete(session.profile)) {
       this.globalData.userInfo = session.profile;
     }
   },

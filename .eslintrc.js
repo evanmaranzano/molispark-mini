@@ -83,4 +83,15 @@ module.exports = {
     'no-undef': 0,
     'no-proto': 0,
   },
+  overrides: [
+    {
+      // test/ 下用 node:test 标准的 require + 字符串拼接，放宽 airbnb 相关规则
+      files: ['test/**/*.js'],
+      rules: {
+        'global-require': 0,
+        'no-path-concat': 0,
+        'prefer-template': 0,
+      },
+    },
+  ],
 };

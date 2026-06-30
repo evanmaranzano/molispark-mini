@@ -18,10 +18,6 @@
 
       <view class="article-title">{{post.title}}</view>
 
-      <view class="hero hero--{{post.coverStyle}}">
-        <view class="hero__label">{{post.heroTitle}}</view>
-      </view>
-
       <view wx:if="{{post.images && post.images.length}}" class="article-images">
         <image wx:for="{{post.images}}" wx:key="*this" class="article-images__item" src="{{item}}" mode="widthFix" />
       </view>
@@ -38,7 +34,7 @@
 
       <view class="sticky-actions">
         <view
-          class="sticky-actions__item {{liked ? 'sticky-actions__item--active' : ''}}"
+          class="sticky-actions__item {{(item.key === 'like' && liked) || (item.key === 'collect' && collected) ? 'sticky-actions__item--active' : ''}}"
           wx:for="{{actionList}}"
           wx:key="key"
           data-key="{{item.key}}"
@@ -65,6 +61,11 @@
         </view>
       </view>
     </view>
+  </view>
+
+  <view class="load-error" wx:if="{{loadError && !post}}">
+    <view class="load-error__hint">加载失败</view>
+    <view class="load-error__retry" bindtap="retryLoad">重试</view>
   </view>
 </scroll-view>
 

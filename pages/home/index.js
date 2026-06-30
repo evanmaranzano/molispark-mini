@@ -27,9 +27,15 @@ Page({
   },
 
   onShow() {
+    this.syncTabBar();
     this.checkLoginGuard();
     this.consumeOperResult();
     this.loadUnreadCount();
+  },
+
+  syncTabBar() {
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar && tabBar.syncActiveTab) tabBar.syncActiveTab();
   },
 
   async loadRecommend() {
