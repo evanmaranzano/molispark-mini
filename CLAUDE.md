@@ -5,6 +5,11 @@
 - LESS 样式（project.config.json 已启用 `useCompilerPlugins: ["less"]`）
 - 云开发（cloudfunctions/ 目录已配置）
 - appid: wxba805d188c9a4151
+- 云环境 ID: cloud1-d4gtpsssef2dcbcf8
+- 云数据库 7 集合: posts, comments, likes, collects, messages, feedback, users
+- 仓库: evanmaranzano/molispark-mini（main 分支）
+- 迭代进度文档: `docs/v0.1-progress.md`（新会话入口）
+- 关键决策: 计数更新走 `interact` 云函数（绕过 posts「仅创建者可写」权限）；准入用微信后台「体验成员」白名单
 
 ## 模块系统
 - pages/*.js 用 ES module（import/export）
