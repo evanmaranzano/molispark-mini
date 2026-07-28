@@ -1,55 +1,58 @@
+@import '/variable.less';
+
 .message-scroll {
   height: 100vh;
-  background: linear-gradient(180deg, #182134 0%, #24314c 30%, #f6f1e8 30%, #f6f1e8 100%);
+  background: @page-bg;
 }
 
 .message-hero {
   padding: 0 30rpx 32rpx;
-  color: #f9f6ef;
+  background: linear-gradient(135deg, #ebf5e9, #d6ead9);
+  color: @brand-dark;
 
   &__eyebrow {
     font-size: 22rpx;
     letter-spacing: 8rpx;
     text-transform: uppercase;
-    color: rgba(249, 246, 239, 0.66);
+    color: rgba(40, 98, 71, 0.62);
   }
 
   &__title {
     margin-top: 16rpx;
     font-size: 58rpx;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   &__desc {
     margin-top: 16rpx;
     font-size: 24rpx;
     line-height: 1.7;
-    color: rgba(249, 246, 239, 0.72);
+    color: @ink-secondary;
   }
 
   &__stats {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16rpx;
     margin-top: 32rpx;
   }
 
   &__stat {
     padding: 22rpx 18rpx;
-    border-radius: 28rpx;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(18rpx);
+    border: 1rpx solid rgba(255, 255, 255, 0.75);
+    border-radius: 20rpx;
+    background: rgba(255, 253, 248, 0.62);
   }
 
   &__value {
     font-size: 34rpx;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   &__label {
     margin-top: 8rpx;
     font-size: 22rpx;
-    color: rgba(249, 246, 239, 0.68);
+    color: @ink-secondary;
   }
 }
 
@@ -65,13 +68,13 @@
 
   &__title {
     font-size: 36rpx;
-    color: #1d2230;
-    font-weight: 600;
+    color: @ink;
+    font-weight: 700;
   }
 
   &__hint {
     font-size: 22rpx;
-    color: #90857a;
+    color: @ink-tertiary;
   }
 }
 
@@ -86,10 +89,10 @@
   display: flex;
   gap: 18rpx;
   padding: 24rpx;
-  border-radius: 30rpx;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1rpx solid rgba(37, 45, 67, 0.06);
-  box-shadow: 0 14rpx 32rpx rgba(26, 30, 40, 0.06);
+  border: 1rpx solid @line;
+  border-radius: 22rpx;
+  background: @surface;
+  box-shadow: @shadow-soft;
 
   &__avatar {
     display: grid;
@@ -97,7 +100,7 @@
     width: 84rpx;
     height: 84rpx;
     border-radius: 50%;
-    background: #2fb67d;
+    background: @brand;
     color: #fff;
     font-size: 28rpx;
     flex-shrink: 0;
@@ -117,20 +120,20 @@
 
   &__name {
     font-size: 28rpx;
-    color: #1d2230;
-    font-weight: 600;
+    color: @ink;
+    font-weight: 700;
   }
 
   &__time {
     font-size: 22rpx;
-    color: #988d80;
+    color: @ink-tertiary;
   }
 
   &__preview {
     margin-top: 10rpx;
     font-size: 24rpx;
     line-height: 1.55;
-    color: #6f655d;
+    color: @ink-secondary;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -151,13 +154,13 @@
   }
 
   &__tag {
-    background: #f2ebe3;
-    color: #816d56;
+    background: @surface-muted;
+    color: @brand-dark;
   }
 
   &__status {
-    color: #95897d;
-    background: #faf6f1;
+    color: @ink-tertiary;
+    background: @page-bg;
   }
 
   &__badge {
@@ -180,6 +183,6 @@
 .empty-hint {
   padding: 80rpx 0;
   text-align: center;
-  color: #90857a;
+  color: @ink-tertiary;
   font-size: 28rpx;
 }

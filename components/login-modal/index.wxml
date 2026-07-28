@@ -13,7 +13,7 @@
         <image wx:if="{{avatarUrl}}" class="login-modal__avatar-img" src="{{avatarUrl}}" mode="aspectFill" />
         <view wx:else class="login-modal__avatar-tip">点击选择头像</view>
       </button>
-      <input class="login-modal__input" type="nickname" placeholder="请输入昵称" value="{{nickname}}" bindinput="onNicknameInput" />
+      <input class="login-modal__input" type="nickname" maxlength="20" placeholder="请输入昵称" value="{{nickname}}" bindinput="onNicknameInput" />
       <button class="login-modal__btn login-modal__btn--primary" bindtap="onSubmit">{{submitting ? '保存中...' : '保存并登录'}}</button>
     </block>
   </view>

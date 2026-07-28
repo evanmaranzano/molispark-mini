@@ -1,0 +1,1504 @@
+{
+  "nodes": [
+    {
+      "id": "o001:1",
+      "type": "composite_shape",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 1320,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "extra_narrow",
+        "border_color": "#e6e3d9",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#f6f5f0",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "a001:1",
+      "type": "text_shape",
+      "x": 50,
+      "y": 34,
+      "width": 720,
+      "height": 38,
+      "text": {
+        "text": "知行社小程序  ·  页面流转原型",
+        "font_weight": "regular",
+        "font_size": 24,
+        "horizontal_align": "left",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#20332c",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1,
+        "rich_text": {
+          "paragraphs": [
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "font_weight": "bold",
+                      "font_size": 28,
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false,
+                      "text_color": "#20332c"
+                    },
+                    "text": "知行社小程序"
+                  }
+                },
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "font_size": 18,
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false,
+                      "text_color": "#5d6b65"
+                    },
+                    "text": "  ·  页面流转原型"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "a001:2",
+      "type": "text_shape",
+      "x": 52,
+      "y": 78,
+      "width": 820,
+      "height": 24,
+      "text": {
+        "text": "真实界面截图 · 主路径与功能入口 · v0.1",
+        "font_weight": "regular",
+        "font_size": 12,
+        "horizontal_align": "left",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#7c8982",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:2",
+      "type": "composite_shape",
+      "x": 1015,
+      "y": 40,
+      "width": 215,
+      "height": 34,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "extra_narrow",
+        "border_color": "#a9e1c9",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#dff5ea",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "a001:3",
+      "type": "text_shape",
+      "x": 1015,
+      "y": 49,
+      "width": 215,
+      "height": 17,
+      "text": {
+        "text": "8 个真实页面截图",
+        "font_weight": "regular",
+        "font_size": 12,
+        "horizontal_align": "center",
+        "vertical_align": "top",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#177356",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:3",
+      "type": "composite_shape",
+      "x": 50,
+      "y": 120,
+      "width": 1180,
+      "height": 1,
+      "style": {
+        "border_style": "none",
+        "fill_opacity": 100,
+        "fill_color": "#dedcd3",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "o001:4",
+      "type": "composite_shape",
+      "x": 50,
+      "y": 145,
+      "width": 280,
+      "height": 30,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "extra_narrow",
+        "border_color": "#b9e7d2",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#e3f6ed",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "a001:4",
+      "type": "text_shape",
+      "x": 50,
+      "y": 151,
+      "width": 280,
+      "height": 19,
+      "text": {
+        "text": "① 内容发现与阅读",
+        "font_weight": "regular",
+        "font_size": 13,
+        "horizontal_align": "center",
+        "vertical_align": "top",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#20785b",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:5",
+      "type": "composite_shape",
+      "x": 50,
+      "y": 190,
+      "width": 210,
+      "height": 450,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#2fb786",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#ffffff",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "d001:1",
+      "type": "image",
+      "x": 65,
+      "y": 204,
+      "width": 180,
+      "height": 350,
+      "style": {
+        "border_style": "none"
+      },
+      "image": {
+        "token": "OvEab4RkRozwBkxDwwLcDUoUn9c"
+      }
+    },
+    {
+      "id": "a001:5",
+      "type": "text_shape",
+      "x": 65,
+      "y": 560,
+      "width": 180,
+      "height": 24,
+      "text": {
+        "text": "首页",
+        "font_weight": "regular",
+        "font_size": 16,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#20332c",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "a001:6",
+      "type": "text_shape",
+      "x": 65,
+      "y": 590,
+      "width": 180,
+      "height": 32,
+      "text": {
+        "text": "默认入口\n搜索 / 论坛 / 专区 / 消息",
+        "font_weight": "regular",
+        "font_size": 11,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#7c8982",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:6",
+      "type": "composite_shape",
+      "x": 340,
+      "y": 190,
+      "width": 210,
+      "height": 450,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#6b9cf2",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#ffffff",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "d001:2",
+      "type": "image",
+      "x": 355,
+      "y": 204,
+      "width": 180,
+      "height": 350,
+      "style": {
+        "border_style": "none"
+      },
+      "image": {
+        "token": "EmkZb3I42o1ABSxuFuHc42jqnwe"
+      }
+    },
+    {
+      "id": "a001:7",
+      "type": "text_shape",
+      "x": 355,
+      "y": 560,
+      "width": 180,
+      "height": 24,
+      "text": {
+        "text": "搜索",
+        "font_weight": "regular",
+        "font_size": 16,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#20332c",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "a001:8",
+      "type": "text_shape",
+      "x": 355,
+      "y": 590,
+      "width": 180,
+      "height": 32,
+      "text": {
+        "text": "关键词检索\n点击结果进入详情",
+        "font_weight": "regular",
+        "font_size": 11,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#7c8982",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:7",
+      "type": "composite_shape",
+      "x": 630,
+      "y": 190,
+      "width": 210,
+      "height": 450,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#6b9cf2",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#ffffff",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "d001:3",
+      "type": "image",
+      "x": 645,
+      "y": 204,
+      "width": 180,
+      "height": 350,
+      "style": {
+        "border_style": "none"
+      },
+      "image": {
+        "token": "LPBObajPvoZT08xkzmrcLFKUnSb"
+      }
+    },
+    {
+      "id": "a001:9",
+      "type": "text_shape",
+      "x": 645,
+      "y": 560,
+      "width": 180,
+      "height": 24,
+      "text": {
+        "text": "论坛",
+        "font_weight": "regular",
+        "font_size": 16,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#20332c",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "a001:10",
+      "type": "text_shape",
+      "x": 645,
+      "y": 590,
+      "width": 180,
+      "height": 32,
+      "text": {
+        "text": "推荐 / 最新 / 关注\n分类筛选与帖子列表",
+        "font_weight": "regular",
+        "font_size": 11,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#7c8982",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:8",
+      "type": "composite_shape",
+      "x": 920,
+      "y": 190,
+      "width": 210,
+      "height": 450,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#6b9cf2",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#ffffff",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "d001:4",
+      "type": "image",
+      "x": 935,
+      "y": 204,
+      "width": 180,
+      "height": 350,
+      "style": {
+        "border_style": "none"
+      },
+      "image": {
+        "token": "Fi2qbh7uHotuy2xwEUScQZ37nNb"
+      }
+    },
+    {
+      "id": "a001:11",
+      "type": "text_shape",
+      "x": 935,
+      "y": 560,
+      "width": 180,
+      "height": 24,
+      "text": {
+        "text": "内容详情",
+        "font_weight": "regular",
+        "font_size": 16,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#20332c",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "a001:12",
+      "type": "text_shape",
+      "x": 935,
+      "y": 590,
+      "width": 180,
+      "height": 32,
+      "text": {
+        "text": "正文阅读\n点赞 / 收藏 / 评论 / 分享",
+        "font_weight": "regular",
+        "font_size": 11,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#7c8982",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:9",
+      "type": "composite_shape",
+      "x": 50,
+      "y": 690,
+      "width": 280,
+      "height": 30,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "extra_narrow",
+        "border_color": "#f3d39b",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#fff1d7",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "a001:13",
+      "type": "text_shape",
+      "x": 50,
+      "y": 696,
+      "width": 280,
+      "height": 19,
+      "text": {
+        "text": "② 互动与个人管理",
+        "font_weight": "regular",
+        "font_size": 13,
+        "horizontal_align": "center",
+        "vertical_align": "top",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#a76616",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:10",
+      "type": "composite_shape",
+      "x": 50,
+      "y": 735,
+      "width": 210,
+      "height": 450,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#6b9cf2",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#ffffff",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "d001:5",
+      "type": "image",
+      "x": 65,
+      "y": 749,
+      "width": 180,
+      "height": 350,
+      "style": {
+        "border_style": "none"
+      },
+      "image": {
+        "token": "CaiXbrz21oR1JVxFL2NcLPKNncf"
+      }
+    },
+    {
+      "id": "a001:14",
+      "type": "text_shape",
+      "x": 65,
+      "y": 1105,
+      "width": 180,
+      "height": 24,
+      "text": {
+        "text": "专区",
+        "font_weight": "regular",
+        "font_size": 16,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#20332c",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "a001:15",
+      "type": "text_shape",
+      "x": 65,
+      "y": 1135,
+      "width": 180,
+      "height": 32,
+      "text": {
+        "text": "主题社区入口\n带专区标题进入论坛",
+        "font_weight": "regular",
+        "font_size": 11,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#7c8982",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:11",
+      "type": "composite_shape",
+      "x": 340,
+      "y": 735,
+      "width": 210,
+      "height": 450,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#f0a84b",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#ffffff",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "d001:6",
+      "type": "image",
+      "x": 355,
+      "y": 749,
+      "width": 180,
+      "height": 350,
+      "style": {
+        "border_style": "none"
+      },
+      "image": {
+        "token": "Qoqyb1ARno53xXxSSXyci4ppn2e"
+      }
+    },
+    {
+      "id": "a001:16",
+      "type": "text_shape",
+      "x": 355,
+      "y": 1105,
+      "width": 180,
+      "height": 24,
+      "text": {
+        "text": "消息中心",
+        "font_weight": "regular",
+        "font_size": 16,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#20332c",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "a001:17",
+      "type": "text_shape",
+      "x": 355,
+      "y": 1135,
+      "width": 180,
+      "height": 32,
+      "text": {
+        "text": "评论 / 点赞 / 系统通知\n点击会话进入详情",
+        "font_weight": "regular",
+        "font_size": 11,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#7c8982",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:12",
+      "type": "composite_shape",
+      "x": 630,
+      "y": 735,
+      "width": 210,
+      "height": 450,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#f0a84b",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#ffffff",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "d001:7",
+      "type": "image",
+      "x": 645,
+      "y": 749,
+      "width": 180,
+      "height": 350,
+      "style": {
+        "border_style": "none"
+      },
+      "image": {
+        "token": "XYS5bSVS4oh6uzx0TdkcoA9YnLb"
+      }
+    },
+    {
+      "id": "a001:18",
+      "type": "text_shape",
+      "x": 645,
+      "y": 1105,
+      "width": 180,
+      "height": 24,
+      "text": {
+        "text": "发布",
+        "font_weight": "regular",
+        "font_size": 16,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#20332c",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "a001:19",
+      "type": "text_shape",
+      "x": 645,
+      "y": 1135,
+      "width": 180,
+      "height": 32,
+      "text": {
+        "text": "发帖子 / 上传图片 / 文件\n草稿箱入口",
+        "font_weight": "regular",
+        "font_size": 11,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#7c8982",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:13",
+      "type": "composite_shape",
+      "x": 920,
+      "y": 735,
+      "width": 210,
+      "height": 450,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#9c83d7",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#ffffff",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "d001:8",
+      "type": "image",
+      "x": 935,
+      "y": 749,
+      "width": 180,
+      "height": 350,
+      "style": {
+        "border_style": "none"
+      },
+      "image": {
+        "token": "IixjbOXUmoayVfx4DtXc5U6onsb"
+      }
+    },
+    {
+      "id": "a001:20",
+      "type": "text_shape",
+      "x": 935,
+      "y": 1105,
+      "width": 180,
+      "height": 24,
+      "text": {
+        "text": "个人中心",
+        "font_weight": "regular",
+        "font_size": 16,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#20332c",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "a001:21",
+      "type": "text_shape",
+      "x": 935,
+      "y": 1135,
+      "width": 180,
+      "height": 32,
+      "text": {
+        "text": "我的帖子 / 收藏 / 历史\n设置与反馈",
+        "font_weight": "regular",
+        "font_size": 11,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#7c8982",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1
+      }
+    },
+    {
+      "id": "o001:14",
+      "type": "composite_shape",
+      "x": 50,
+      "y": 1215,
+      "width": 1080,
+      "height": 64,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "extra_narrow",
+        "border_color": "#f0d79e",
+        "border_color_type": 1,
+        "border_style": "solid",
+        "fill_opacity": 100,
+        "fill_color": "#fef1ce",
+        "fill_color_type": 1
+      },
+      "composite_shape": {
+        "type": "round_rect"
+      }
+    },
+    {
+      "id": "a001:22",
+      "type": "text_shape",
+      "x": 50,
+      "y": 1239,
+      "width": 1080,
+      "height": 17,
+      "text": {
+        "text": "未截图的子页面：发布表单 / 草稿箱 / 设置 / 反馈；当前先作为入口旁注保留，后续可以继续补成第二张细化流。",
+        "font_weight": "regular",
+        "font_size": 12,
+        "horizontal_align": "left",
+        "vertical_align": "top",
+        "line_through": false,
+        "underline": false,
+        "italic": false,
+        "angle": 0,
+        "text_color": "#8a6b36",
+        "text_color_type": 1,
+        "text_background_color_type": 0,
+        "theme_text_background_color_code": -1,
+        "rich_text": {
+          "paragraphs": [
+            {
+              "paragraph_type": 0,
+              "elements": [
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "font_weight": "bold",
+                      "font_size": 12,
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false,
+                      "text_color": "#8a5a13"
+                    },
+                    "text": "未截图的子页面："
+                  }
+                },
+                {
+                  "element_type": 0,
+                  "text_element": {
+                    "text_style": {
+                      "font_size": 12,
+                      "italic": false,
+                      "underline": false,
+                      "line_through": false,
+                      "text_color": "#8a6b36"
+                    },
+                    "text": "发布表单 / 草稿箱 / 设置 / 反馈；当前先作为入口旁注保留，后续可以继续补成第二张细化流。"
+                  }
+                }
+              ],
+              "indent": 0,
+              "list_begin_index": 0,
+              "quote": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "c001:1",
+      "type": "connector",
+      "x": 260,
+      "y": 415,
+      "width": 80,
+      "height": 1,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "medium",
+        "border_color": "#2fb786",
+        "border_color_type": 1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "attached_object": {
+            "id": "o001:5",
+            "snap_to": "right",
+            "position": {
+              "x": 1,
+              "y": 0.5
+            }
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "attached_object": {
+            "id": "o001:6",
+            "snap_to": "left",
+            "position": {
+              "x": 0,
+              "y": 0.5
+            }
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "polyline",
+        "captions": {
+          "data": [
+            {
+              "text": "搜索入口",
+              "font_weight": "regular",
+              "font_size": 14,
+              "horizontal_align": "left",
+              "vertical_align": "top",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "start_object": {
+          "id": "o001:5",
+          "snap_to": "right",
+          "position": {
+            "x": 1,
+            "y": 0.5
+          }
+        },
+        "end_object": {
+          "id": "o001:6",
+          "snap_to": "left",
+          "position": {
+            "x": 0,
+            "y": 0.5
+          }
+        }
+      }
+    },
+    {
+      "id": "c001:2",
+      "type": "connector",
+      "x": 840,
+      "y": 415,
+      "width": 80,
+      "height": 1,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "medium",
+        "border_color": "#6b9cf2",
+        "border_color_type": 1,
+        "border_style": "solid"
+      },
+      "connector": {
+        "start": {
+          "attached_object": {
+            "id": "o001:7",
+            "snap_to": "right",
+            "position": {
+              "x": 1,
+              "y": 0.5
+            }
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "attached_object": {
+            "id": "o001:8",
+            "snap_to": "left",
+            "position": {
+              "x": 0,
+              "y": 0.5
+            }
+          },
+          "arrow_style": "triangle_arrow"
+        },
+        "shape": "polyline",
+        "captions": {
+          "data": [
+            {
+              "text": "点击帖子",
+              "font_weight": "regular",
+              "font_size": 14,
+              "horizontal_align": "left",
+              "vertical_align": "top",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1
+            }
+          ]
+        },
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "start_object": {
+          "id": "o001:7",
+          "snap_to": "right",
+          "position": {
+            "x": 1,
+            "y": 0.5
+          }
+        },
+        "end_object": {
+          "id": "o001:8",
+          "snap_to": "left",
+          "position": {
+            "x": 0,
+            "y": 0.5
+          }
+        }
+      }
+    },
+    {
+      "id": "c001:3",
+      "type": "connector",
+      "x": 155,
+      "y": 640,
+      "width": 580,
+      "height": 1,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#2fb786",
+        "border_color_type": 1,
+        "border_style": "dash"
+      },
+      "connector": {
+        "start": {
+          "attached_object": {
+            "id": "o001:5",
+            "snap_to": "bottom",
+            "position": {
+              "x": 0.5,
+              "y": 1
+            }
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "attached_object": {
+            "id": "o001:7",
+            "snap_to": "bottom",
+            "position": {
+              "x": 0.5,
+              "y": 1
+            }
+          },
+          "arrow_style": "line_arrow"
+        },
+        "shape": "curve",
+        "captions": {
+          "data": [
+            {
+              "text": "快捷入口",
+              "font_weight": "regular",
+              "font_size": 14,
+              "horizontal_align": "left",
+              "vertical_align": "top",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1
+            }
+          ]
+        },
+        "turning_points": [
+          {
+            "x": 150.37037037037038,
+            "y": 154.66666666666666
+          },
+          {
+            "x": 429.6296296296296,
+            "y": 154.66666666666666
+          }
+        ],
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "start_object": {
+          "id": "o001:5",
+          "snap_to": "bottom",
+          "position": {
+            "x": 0.5,
+            "y": 1
+          }
+        },
+        "end_object": {
+          "id": "o001:7",
+          "snap_to": "bottom",
+          "position": {
+            "x": 0.5,
+            "y": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "c001:4",
+      "type": "connector",
+      "x": 445,
+      "y": 190,
+      "width": 580,
+      "height": 1,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#6b9cf2",
+        "border_color_type": 1,
+        "border_style": "dash"
+      },
+      "connector": {
+        "start": {
+          "attached_object": {
+            "id": "o001:6",
+            "snap_to": "top",
+            "position": {
+              "x": 0.5,
+              "y": 0
+            }
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "attached_object": {
+            "id": "o001:8",
+            "snap_to": "top",
+            "position": {
+              "x": 0.5,
+              "y": 0
+            }
+          },
+          "arrow_style": "line_arrow"
+        },
+        "shape": "curve",
+        "captions": {
+          "data": [
+            {
+              "text": "结果进入详情",
+              "font_weight": "regular",
+              "font_size": 14,
+              "horizontal_align": "left",
+              "vertical_align": "top",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1
+            }
+          ]
+        },
+        "turning_points": [
+          {
+            "x": 150.37037037037038,
+            "y": -154.66666666666666
+          },
+          {
+            "x": 429.6296296296296,
+            "y": -154.66666666666666
+          }
+        ],
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "start_object": {
+          "id": "o001:6",
+          "snap_to": "top",
+          "position": {
+            "x": 0.5,
+            "y": 0
+          }
+        },
+        "end_object": {
+          "id": "o001:8",
+          "snap_to": "top",
+          "position": {
+            "x": 0.5,
+            "y": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "c001:5",
+      "type": "connector",
+      "x": 155,
+      "y": 640,
+      "width": 580,
+      "height": 95,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#6b9cf2",
+        "border_color_type": 1,
+        "border_style": "dash"
+      },
+      "connector": {
+        "start": {
+          "attached_object": {
+            "id": "o001:10",
+            "snap_to": "top",
+            "position": {
+              "x": 0.5,
+              "y": 0
+            }
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "attached_object": {
+            "id": "o001:7",
+            "snap_to": "bottom",
+            "position": {
+              "x": 0.5,
+              "y": 1
+            }
+          },
+          "arrow_style": "line_arrow"
+        },
+        "shape": "curve",
+        "captions": {
+          "data": [
+            {
+              "text": "专区标题 → 论坛",
+              "font_weight": "regular",
+              "font_size": 14,
+              "horizontal_align": "left",
+              "vertical_align": "top",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1
+            }
+          ]
+        },
+        "turning_points": [
+          {
+            "x": 150.37037037037038,
+            "y": 18.12782113493121
+          },
+          {
+            "x": 429.6296296296296,
+            "y": 76.87217886506878
+          }
+        ],
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "start_object": {
+          "id": "o001:10",
+          "snap_to": "top",
+          "position": {
+            "x": 0.5,
+            "y": 0
+          }
+        },
+        "end_object": {
+          "id": "o001:7",
+          "snap_to": "bottom",
+          "position": {
+            "x": 0.5,
+            "y": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "c001:6",
+      "type": "connector",
+      "x": 445,
+      "y": 640,
+      "width": 580,
+      "height": 95,
+      "style": {
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_color": "#f0a84b",
+        "border_color_type": 1,
+        "border_style": "dash"
+      },
+      "connector": {
+        "start": {
+          "attached_object": {
+            "id": "o001:11",
+            "snap_to": "top",
+            "position": {
+              "x": 0.5,
+              "y": 0
+            }
+          },
+          "arrow_style": "none"
+        },
+        "end": {
+          "attached_object": {
+            "id": "o001:8",
+            "snap_to": "bottom",
+            "position": {
+              "x": 0.5,
+              "y": 1
+            }
+          },
+          "arrow_style": "line_arrow"
+        },
+        "shape": "curve",
+        "captions": {
+          "data": [
+            {
+              "text": "通知进入详情",
+              "font_weight": "regular",
+              "font_size": 14,
+              "horizontal_align": "left",
+              "vertical_align": "top",
+              "line_through": false,
+              "underline": false,
+              "italic": false,
+              "angle": 0,
+              "text_color": "#1f2329",
+              "text_color_type": 0,
+              "text_background_color_type": 0,
+              "theme_text_color_code": -1,
+              "theme_text_background_color_code": -1
+            }
+          ]
+        },
+        "turning_points": [
+          {
+            "x": 150.37037037037038,
+            "y": 18.12782113493121
+          },
+          {
+            "x": 429.6296296296296,
+            "y": 76.87217886506878
+          }
+        ],
+        "caption_auto_direction": false,
+        "specified_coordinate": true,
+        "caption_position": 0.5,
+        "start_object": {
+          "id": "o001:11",
+          "snap_to": "top",
+          "position": {
+            "x": 0.5,
+            "y": 0
+          }
+        },
+        "end_object": {
+          "id": "o001:8",
+          "snap_to": "bottom",
+          "position": {
+            "x": 0.5,
+            "y": 1
+          }
+        }
+      }
+    }
+  ]
+}

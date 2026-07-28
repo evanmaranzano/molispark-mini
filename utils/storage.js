@@ -28,9 +28,11 @@ async function uploadFile(filePath, cloudPath) {
  * @returns {Promise<string[]>} fileID 数组
  */
 async function uploadImages(filePaths, prefix = 'images/posts/') {
-  const tasks = filePaths.map((filePath, index) => {
-    const ext = filePath.split('.').pop() || 'jpg';
-    const cloudPath = `${prefix}${Date.now()}-${index}.${ext}`;
+  const batchId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  const tasks = filePaths.slice(0, 9).map((filePath, index) => {
+    const extMatch = String(filePath).split('?')[0].match(/\.([a-zA-Z0-9]{1,4})$/);
+    const ext = extMatch ? extMatch[1].toLowerCase() : 'jpg';
+    const cloudPath = `${prefix}${batchId}-${index}.${ext}`;
     return uploadFile(filePath, cloudPath);
   });
   return Promise.all(tasks);
@@ -71,9 +73,11 @@ async function deleteFiles(fileIDs) {
  * @returns {Promise<string[]>} fileID 数组
  */
 async function chooseAndUploadImages(options = {}, prefix = 'images/posts/') {
+  const requestedCount = Number(options.count) || 9;
+  const count = Math.min(Math.max(requestedCount, 1), 9);
   return new Promise((resolve, reject) => {
     wx.chooseMedia({
-      count: options.count || 9,
+      count,
       mediaType: ['image'],
       sourceType: options.sourceType || ['album', 'camera'],
       success: async (res) => {

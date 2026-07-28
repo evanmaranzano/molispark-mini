@@ -2,11 +2,11 @@
 
 .home-page {
   height: calc(100vh - @tab-bar-height - env(safe-area-inset-bottom));
-  background: #f5f7f8;
+  background: @page-bg;
 }
 
 .page-shell {
-  padding: 0 32rpx 96rpx;
+  padding: 0 28rpx 112rpx;
 }
 
 .topbar,
@@ -28,69 +28,79 @@
     place-items: center;
     width: 76rpx;
     height: 76rpx;
-    border-radius: 28rpx;
-    background: linear-gradient(135deg, #52c998, #2fae7b);
+    border-radius: 20rpx;
+    background: @brand-dark;
     color: #fff;
     font-size: 42rpx;
-    box-shadow: 0 16rpx 28rpx rgba(47, 182, 125, 0.25);
+    box-shadow: 0 12rpx 24rpx rgba(23, 74, 53, 0.18);
   }
 
   &__sub {
     margin-top: 6rpx;
-    color: #7d8790;
+    color: @ink-tertiary;
     font-size: 20rpx;
   }
 
   &__name {
     font-size: 40rpx;
-    color: #17202a;
-    font-weight: 800;
+    color: @ink;
+    font-weight: 700;
   }
 }
 
 .search-box,
 .feature-panel,
 .post-card {
-  box-shadow: 0 10rpx 30rpx rgba(31, 45, 61, 0.08);
+  box-shadow: @shadow-soft;
 }
 
 .search-box {
   display: flex;
   align-items: center;
   gap: 10rpx;
-  margin-top: 24rpx;
+  margin-top: 28rpx;
   height: 84rpx;
   padding: 0 24rpx;
-  border-radius: 32rpx;
-  background: #f0f2f4;
-  color: #7d8790;
+  border: 1rpx solid @line;
+  border-radius: 20rpx;
+  background: rgba(255, 253, 248, 0.82);
+  color: @ink-tertiary;
   font-size: 24rpx;
 }
 
 .hero-card {
   position: relative;
   overflow: hidden;
-  height: 280rpx;
+  height: 300rpx;
   margin-top: 24rpx;
-  border-radius: 36rpx;
+  border-radius: 28rpx;
   background:
-    radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.88) 0 18%, rgba(255, 255, 255, 0) 20%),
-    linear-gradient(120deg, #eaf4df 0%, #f7f2e3 55%, #d4e9d8 100%);
-  box-shadow: 0 10rpx 30rpx rgba(31, 45, 61, 0.08);
+    radial-gradient(circle at 88% 24%, rgba(255, 255, 255, 0.9) 0 18%, rgba(255, 255, 255, 0) 20%),
+    linear-gradient(135deg, #e8f4e6 0%, #d4ead8 100%);
+  box-shadow: 0 14rpx 30rpx rgba(49, 103, 75, 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    right: -72rpx;
+    top: -126rpx;
+    width: 310rpx;
+    height: 310rpx;
+    border: 1rpx solid rgba(40, 98, 71, 0.15);
+    border-radius: 50%;
+  }
 
   &::after {
     content: '';
     position: absolute;
-    right: 28rpx;
-    bottom: 16rpx;
-    width: 220rpx;
-    height: 140rpx;
-    border-radius: 28rpx;
-    background: linear-gradient(135deg, #fff, #dceadc);
-    box-shadow:
-      inset 0 0 0 1rpx rgba(0, 0, 0, 0.03),
-      0 18rpx 35rpx rgba(70, 92, 74, 0.16);
-    transform: rotate(-2deg);
+    right: 32rpx;
+    bottom: 30rpx;
+    width: 178rpx;
+    height: 108rpx;
+    border: 1rpx solid rgba(255, 255, 255, 0.76);
+    border-radius: 16rpx;
+    background: rgba(255, 255, 255, 0.52);
+    transform: rotate(-7deg);
   }
 
   &__image {
@@ -103,20 +113,20 @@
   &__content {
     position: relative;
     z-index: 1;
-    padding: 42rpx 36rpx 0;
+    padding: 46rpx 34rpx 0;
   }
 
   &__title {
     font-size: 42rpx;
     line-height: 1.2;
-    color: #174b35;
-    font-weight: 800;
+    color: @brand-dark;
+    font-weight: 700;
   }
 
   &__desc {
     margin-top: 12rpx;
     font-size: 24rpx;
-    color: #406454;
+    color: @ink-secondary;
   }
 
   &__button {
@@ -127,8 +137,8 @@
     height: 56rpx;
     margin-top: 24rpx;
     padding: 0 24rpx;
-    border-radius: 999rpx;
-    background: #2fb67d;
+    border-radius: 14rpx;
+    background: @brand;
     color: #fff;
     font-size: 22rpx;
     font-weight: 700;
@@ -140,8 +150,9 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 22rpx;
   padding: 0;
-  border-radius: 32rpx;
-  background: #fff;
+  border: 1rpx solid @line;
+  border-radius: 24rpx;
+  background: @surface;
   overflow: hidden;
 }
 
@@ -161,7 +172,7 @@
     right: 0;
     width: 1rpx;
     height: 120rpx;
-    background: #edf0f2;
+    background: @line;
   }
 
   &__icon {
@@ -182,14 +193,14 @@
   &__title {
     margin-top: 14rpx;
     font-size: 30rpx;
-    color: #17202a;
+    color: @ink;
     font-weight: 700;
   }
 
   &__desc {
     margin-top: 8rpx;
     font-size: 20rpx;
-    color: #7d8790;
+    color: @ink-tertiary;
   }
 }
 
@@ -202,13 +213,14 @@
 
   &__title {
     font-size: 34rpx;
-    color: #17202a;
-    font-weight: 800;
+    color: @ink;
+    font-weight: 700;
   }
 
   &__more {
     font-size: 22rpx;
-    color: #7d8790;
+    color: @brand;
+    font-weight: 700;
   }
 }
 
@@ -222,8 +234,14 @@
   display: flex;
   gap: 20rpx;
   padding: 24rpx;
-  border-radius: 32rpx;
-  background: #fff;
+  border: 1rpx solid @line;
+  border-radius: 24rpx;
+  background: @surface;
+
+  &:active {
+    opacity: 0.8;
+    transform: scale(0.99);
+  }
 
   &__body {
     flex: 1;
@@ -233,15 +251,15 @@
   &__title {
     font-size: 30rpx;
     line-height: 1.35;
-    color: #17202a;
-    font-weight: 800;
+    color: @ink;
+    font-weight: 700;
   }
 
   &__desc {
     display: -webkit-box;
     overflow: hidden;
     margin-top: 10rpx;
-    color: #6f7c86;
+    color: @ink-secondary;
     font-size: 22rpx;
     line-height: 1.45;
     -webkit-box-orient: vertical;
@@ -251,7 +269,7 @@
   &__meta {
     gap: 10rpx;
     margin-top: 16rpx;
-    color: #8a949e;
+    color: @ink-tertiary;
     font-size: 20rpx;
   }
 
@@ -262,26 +280,48 @@
     height: 30rpx;
     border-radius: 50%;
     color: #fff;
-    background: linear-gradient(135deg, #d7eadf, #7dcaa7);
+    background: @brand;
     font-size: 18rpx;
   }
 
   &__cover {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden;
     width: 144rpx;
     height: 144rpx;
+    padding: 16rpx;
     border-radius: 22rpx;
     flex-shrink: 0;
-
-    &--book {
-      background: linear-gradient(135deg, #e7eadf, #b8d5c0);
-    }
-
-    &--ai {
-      background: linear-gradient(135deg, #e7f3ee, #b8d5c5);
-    }
-
-    &--note {
-      background: linear-gradient(135deg, #f3eadc, #d8bea0);
-    }
+    color: @brand-dark;
+    background: linear-gradient(135deg, #e9f5e8 0%, #d3ead5 52%, #b9d9c0 100%);
   }
+
+  &__cover-title {
+    position: relative;
+    z-index: 1;
+    display: -webkit-box;
+    overflow: hidden;
+    max-width: 100%;
+    padding-right: 0;
+    color: inherit;
+    font-size: 18rpx;
+    line-height: 1.35;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: none;
+    word-break: break-all;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+.empty-hint {
+  padding: 56rpx 0;
+  color: @ink-tertiary;
+  font-size: 24rpx;
+  text-align: center;
 }

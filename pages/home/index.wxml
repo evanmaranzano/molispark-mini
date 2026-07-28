@@ -52,7 +52,8 @@
       <view class="section-head__more" bindtap="goForum">更多 ›</view>
     </view>
 
-    <view class="post-list">
+    <view wx:if="{{loadError}}" class="empty-hint">推荐内容暂时无法加载</view>
+    <view class="post-list" wx:else>
       <view class="post-card" wx:for="{{recommendList}}" wx:key="id" bindtap="handlePostTap" data-id="{{item._id || item.id}}">
         <view class="post-card__body">
           <view class="post-card__title">{{item.title}}</view>
@@ -64,7 +65,9 @@
             <text>{{item.time}}</text>
           </view>
         </view>
-        <view class="post-card__cover post-card__cover--{{item.coverStyle}}"></view>
+        <view class="post-card__cover post-card__cover--{{item.coverStyle}}">
+          <view class="post-card__cover-title">{{item.heroTitle || item.title}}</view>
+        </view>
       </view>
     </view>
   </view>

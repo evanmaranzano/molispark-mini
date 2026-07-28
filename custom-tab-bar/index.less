@@ -10,8 +10,9 @@
   padding: 18rpx 42rpx;
   padding-bottom: calc(8rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.98);
-  border-top: 1rpx solid rgba(31, 41, 55, 0.08);
+  background: rgba(255, 253, 248, 0.98);
+  border-top: 1rpx solid @line;
+  box-shadow: 0 -10rpx 26rpx rgba(24, 47, 35, 0.04);
 
   &__item {
     position: relative;
@@ -20,11 +21,16 @@
     flex-direction: column;
     align-items: center;
     gap: 8rpx;
-    color: #8d98a6;
+    color: @ink-tertiary;
+    transition: transform 160ms ease, color 160ms ease;
 
     &--active {
-      color: #2eb986;
-      font-weight: 600;
+      color: @brand-dark;
+      font-weight: 700;
+    }
+
+    &:active {
+      transform: translateY(2rpx);
     }
   }
 
@@ -40,9 +46,9 @@
     &--action {
       width: 64rpx;
       height: 64rpx;
-      background: #2eb986;
+      background: @brand;
       color: #fff;
-      box-shadow: 0 12rpx 26rpx rgba(46, 185, 134, 0.22);
+      box-shadow: 0 12rpx 24rpx rgba(74, 169, 120, 0.24);
     }
   }
 
@@ -138,7 +144,7 @@
     min-width: 34rpx;
     height: 34rpx;
     padding: 0 8rpx;
-    border: 3rpx solid #fcf8f1;
+    border: 3rpx solid @surface;
     border-radius: 999rpx;
     background: #ff6f5f;
     font-size: 18rpx;

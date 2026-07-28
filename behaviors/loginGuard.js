@@ -17,6 +17,9 @@ module.exports = Behavior({
 
     onLogined() {
       this.setData({ showLoginModal: false });
+      if (typeof this.onLoginGuardPassed === 'function') {
+        this.onLoginGuardPassed();
+      }
     },
   },
 });

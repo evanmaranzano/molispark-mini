@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "nodes": [
+    {
+      "type": "image",
+      "id": "image-test",
+      "x": 100,
+      "y": 100,
+      "width": 180,
+      "height": 350,
+      "image": { "src": "OvEab4RkRozwBkxDwwLcDUoUn9c" }
+    }
+  ]
+}

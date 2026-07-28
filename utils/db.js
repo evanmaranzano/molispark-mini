@@ -564,7 +564,7 @@ async function getCollectedPosts(openid, limit = 20) {
   const collects = await query('collects', { openid }, { limit, orderBy: 'createdAt' });
   if (!collects.length) return markLocal([]);
   const ids = collects.map((item) => item.postId);
-  return query('posts', { _id: _.in(ids) });
+  return query('posts', { _id: _.in(ids), status: 'published' });
 }
 
 async function getMessages(openid, options = {}) {
@@ -614,6 +614,8 @@ async function submitFeedback(content, openid) {
 }
 
 async function recordHistory(postId, openid) {
+  // 云端浏览在 interact 云函数内完成，避免客户端重复写入并覆盖完整快照。
+  if (isCloudReady()) return null;
   const userOpenid = openid || getCurrentOpenid();
   await removeWhere('history', { postId, openid: userOpenid });
   return add('history', {

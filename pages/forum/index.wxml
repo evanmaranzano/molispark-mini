@@ -41,7 +41,9 @@
           <view class="post-card__desc">{{item.desc}}</view>
           <view class="post-card__meta">{{item.author}} · {{item.time}}</view>
         </view>
-        <view class="post-card__cover post-card__cover--{{item.coverStyle}}"></view>
+        <view class="post-card__cover post-card__cover--{{item.coverStyle}}">
+          <view class="post-card__cover-title">{{item.heroTitle || item.title}}</view>
+        </view>
       </view>
     </view>
   </view>

@@ -6,7 +6,8 @@
       <view class="sub-topbar__title">草稿箱</view>
     </view>
 
-    <view wx:if="{{!drafts.length && !loading}}" class="empty-hint">暂无草稿</view>
+    <view wx:if="{{loadError}}" class="empty-hint">草稿暂时无法加载</view>
+    <view wx:elif="{{!drafts.length && !loading}}" class="empty-hint">暂无草稿</view>
     <view class="draft-list">
       <view class="draft-card" wx:for="{{drafts}}" wx:key="_id">
         <view class="draft-card__title">{{item.title}}</view>
@@ -20,3 +21,4 @@
     </view>
   </view>
 </scroll-view>
+<login-modal show="{{showLoginModal}}" bind:logined="onLogined" />

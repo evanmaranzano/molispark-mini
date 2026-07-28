@@ -1,14 +1,17 @@
 import { getDrafts } from '~/utils/db';
+import { withMockFallback } from '~/utils/mockFallback';
 import { drafts as mockDrafts } from '~/mock/community';
+import loginGuard from '~/behaviors/loginGuard';
 
 const publishOptions = [
-  { id: 'post', title: '发帖子', desc: '分享观点、经验和见解', color: '#2fb67d', icon: '✎' },
-  { id: 'image', title: '上传图片', desc: '分享图片内容', color: '#4f9df7', icon: '🖼' },
-  { id: 'file', title: '发布文件', desc: '上传资料与附件', color: '#ef9c2f', icon: '📄' },
-  { id: 'draft', title: '草稿箱', desc: '查看和管理你的草稿', color: '#ef9c2f', icon: '🗂' },
+  { id: 'post', title: '写文章', desc: '分享观点、经验和见解', color: '#2f8a62', icon: '✎' },
+  { id: 'image', title: '图文分享', desc: '用图片记录你的观察', color: '#5c8fd7', icon: '🖼' },
+  { id: 'draft', title: '草稿箱', desc: '继续未完成的内容', color: '#b77a38', icon: '🗂' },
 ];
 
 Page({
+  behaviors: [loginGuard],
+
   data: {
     publishOptions,
     draftCount: 0,
@@ -16,6 +19,10 @@ Page({
 
   onShow() {
     this.syncTabBar();
+    if (this.checkLoginGuard()) this.loadDraftCount();
+  },
+
+  onLoginGuardPassed() {
     this.loadDraftCount();
   },
 
@@ -27,15 +34,19 @@ Page({
   async loadDraftCount() {
     const app = getApp();
     const { openid } = app.globalData;
-    try {
-      const drafts = await getDrafts(openid);
-      this.setData({ draftCount: drafts.length || mockDrafts.length });
-    } catch (err) {
-      this.setData({ draftCount: mockDrafts.length });
+    if (!openid) {
+      this.setData({ draftCount: 0 });
+      return;
     }
+    const result = await withMockFallback(
+      () => getDrafts(openid),
+      () => mockDrafts
+    );
+    this.setData({ draftCount: Array.isArray(result) ? result.length : 0 });
   },
 
   handleOptionTap(e) {
+    if (!this.checkLoginGuard()) return;
     const { id } = e.currentTarget.dataset;
     if (id === 'draft') {
       wx.navigateTo({ url: '/pages/drafts/index' });

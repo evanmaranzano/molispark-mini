@@ -1,4 +1,5 @@
 const cloud = require('wx-server-sdk');
+
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const db = cloud.database();
@@ -7,8 +8,8 @@ const _ = db.command;
 const VALID_ACTIONS = ['view', 'like', 'unlike', 'collect', 'uncollect', 'comment'];
 
 function getDateStr() {
-  const d = new Date();
-  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const d = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  return `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`;
 }
 
 function makeResponse(action, postId, { state, counts, data, success = true, code }) {
@@ -26,6 +27,7 @@ function makeResponse(action, postId, { state, counts, data, success = true, cod
 async function getPostCounts(postId) {
   const postRes = await db.collection('posts').doc(postId).get();
   const p = postRes.data;
+  if (!p) throw new Error('post not found');
   return {
     post: p,
     counts: {
@@ -36,50 +38,6 @@ async function getPostCounts(postId) {
     },
   };
 }
-
-exports.main = async (event) => {
-  const { OPENID } = cloud.getWXContext();
-  if (!OPENID) return { success: false, code: 'UNAUTHORIZED' };
-
-  const { action, postId, content, name } = event;
-  if (!postId) return { success: false, code: 'MISSING_POST_ID' };
-  if (!VALID_ACTIONS.includes(action)) {
-    return { success: false, code: 'INVALID_ACTION' };
-  }
-
-  let postInfo;
-  try {
-    postInfo = await getPostCounts(postId);
-  } catch (e) {
-    return { success: false, code: 'POST_NOT_FOUND' };
-  }
-
-  const { post, counts } = postInfo;
-
-  try {
-    if (action === 'view') {
-      return await handleView(postId, OPENID, post, counts);
-    }
-    if (action === 'like') {
-      return await handleLike(postId, OPENID, counts);
-    }
-    if (action === 'unlike') {
-      return await handleUnlike(postId, OPENID, counts);
-    }
-    if (action === 'collect') {
-      return await handleCollect(postId, OPENID, counts);
-    }
-    if (action === 'uncollect') {
-      return await handleUncollect(postId, OPENID, counts);
-    }
-    if (action === 'comment') {
-      return await handleComment(postId, OPENID, content, name, counts);
-    }
-  } catch (err) {
-    console.error('interact failed:', action, postId, OPENID, err.message);
-    return { success: false, code: 'INTERNAL_ERROR', error: err.message };
-  }
-};
 
 async function handleView(postId, openid, post, counts) {
   const viewId = `${postId}_${openid}_${getDateStr()}`;
@@ -108,6 +66,8 @@ async function handleView(postId, openid, post, counts) {
     await db.collection('history').doc(historyId).set({
       data: {
         postId,
+        openid,
+        _openid: openid,
         title: post.title || '',
         cover: post.cover || (post.images && post.images[0]) || '',
         category: post.category || '',
@@ -223,13 +183,31 @@ async function handleUncollect(postId, openid, counts) {
   return makeResponse('uncollect', postId, { state: { collected: false }, counts });
 }
 
-async function handleComment(postId, openid, content, name, counts) {
-  if (!content || !content.trim()) return { success: false, code: 'EMPTY_CONTENT' };
-  if (content.length > 500) return { success: false, code: 'CONTENT_TOO_LONG' };
+async function handleComment(postId, openid, content, counts) {
+  if (typeof content !== 'string') return { success: false, code: 'INVALID_CONTENT' };
+  const body = content.trim();
+  if (!body) return { success: false, code: 'EMPTY_CONTENT' };
+  if (body.length > 500) return { success: false, code: 'CONTENT_TOO_LONG' };
 
-  // 评论字段对齐前端/mock：内容用 body、评论者用 name（detail wxml 读 item.body/item.name）
+  let authorName = '微信用户';
+  try {
+    const user = await db.collection('users').doc(openid).get();
+    if (user && user.data && typeof user.data.nickName === 'string') {
+      authorName = user.data.nickName.trim().slice(0, 20) || authorName;
+    }
+  } catch (e) {
+    // 资料不存在时保留默认昵称。
+  }
+
   const commentRes = await db.collection('comments').add({
-    data: { postId, openid, name: name || '微信用户', body: content.trim(), createdAt: db.serverDate() },
+    data: {
+      postId,
+      openid,
+      _openid: openid,
+      name: authorName,
+      body,
+      createdAt: db.serverDate(),
+    },
   });
 
   try {
@@ -245,3 +223,39 @@ async function handleComment(postId, openid, content, name, counts) {
     data: { commentId: commentRes._id },
   });
 }
+
+exports.main = async (event = {}) => {
+  const { OPENID } = cloud.getWXContext();
+  if (!OPENID) return { success: false, code: 'UNAUTHORIZED' };
+
+  const { action, content } = event;
+  const postId = typeof event.postId === 'string' ? event.postId.trim() : '';
+  if (!postId || postId.length > 128) return { success: false, code: 'MISSING_POST_ID' };
+  if (!VALID_ACTIONS.includes(action)) {
+    return { success: false, code: 'INVALID_ACTION' };
+  }
+
+  let postInfo;
+  try {
+    postInfo = await getPostCounts(postId);
+  } catch (e) {
+    return { success: false, code: 'POST_NOT_FOUND' };
+  }
+
+  const { post, counts } = postInfo;
+  if (post.status && post.status !== 'published') {
+    return { success: false, code: 'POST_UNAVAILABLE' };
+  }
+
+  try {
+    if (action === 'view') return await handleView(postId, OPENID, post, counts);
+    if (action === 'like') return await handleLike(postId, OPENID, counts);
+    if (action === 'unlike') return await handleUnlike(postId, OPENID, counts);
+    if (action === 'collect') return await handleCollect(postId, OPENID, counts);
+    if (action === 'uncollect') return await handleUncollect(postId, OPENID, counts);
+    return await handleComment(postId, OPENID, content, counts);
+  } catch (err) {
+    console.error('interact failed:', action, postId, OPENID, err.message);
+    return { success: false, code: 'INTERNAL_ERROR' };
+  }
+};

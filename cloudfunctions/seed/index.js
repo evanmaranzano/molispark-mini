@@ -190,39 +190,35 @@ const SEED_POSTS = [
   },
 ];
 
-exports.main = async () => {
-  const results = [];
-
-  for (const post of SEED_POSTS) {
-    let exists = false;
-    try {
-      await db.collection('posts').doc(post._id).get();
-      exists = true;
-    } catch (e) {
-      // 文档不存在，继续插入
-    }
-
-    if (exists) {
-      results.push({ _id: post._id, status: 'exists' });
-      continue;
-    }
-
+async function seedPost(post) {
+  try {
+    await db.collection('posts').doc(post._id).get();
+    return { _id: post._id, status: 'exists' };
+  } catch (e) {
     const now = db.serverDate();
-    await db.collection('posts').add({
-      data: {
-        ...post,
-        status: 'published',
-        time: '精华',
-        images: [],
-        collectCount: 0,
-        commentCount: 0,
-        _openid: 'seed-author',
-        createdAt: now,
-        updatedAt: now,
-      },
-    });
-    results.push({ _id: post._id, status: 'created' });
+    try {
+      await db.collection('posts').add({
+        data: {
+          ...post,
+          status: 'published',
+          time: '精华',
+          images: [],
+          collectCount: 0,
+          commentCount: 0,
+          _openid: 'seed-author',
+          createdAt: now,
+          updatedAt: now,
+        },
+      });
+      return { _id: post._id, status: 'created' };
+    } catch (err) {
+      await db.collection('posts').doc(post._id).get();
+      return { _id: post._id, status: 'exists' };
+    }
   }
+}
 
+exports.main = async () => {
+  const results = await Promise.all(SEED_POSTS.map((post) => seedPost(post)));
   return { success: true, total: SEED_POSTS.length, results };
 };

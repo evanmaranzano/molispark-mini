@@ -15,15 +15,20 @@ Page({
   },
 
   async submit() {
-    if (!this.data.content.trim()) {
+    const content = this.data.content.trim();
+    if (!content) {
       wx.showToast({ title: '请先输入反馈内容', icon: 'none' });
+      return;
+    }
+    if (content.length > 500) {
+      wx.showToast({ title: '反馈请控制在 500 字以内', icon: 'none' });
       return;
     }
     this.setData({ submitting: true });
     try {
       const app = getApp();
       const { openid } = app.globalData;
-      await submitFeedback(this.data.content, openid);
+      await submitFeedback(content, openid);
       wx.showToast({ title: '反馈已提交', icon: 'success' });
       this.setData({ content: '' });
       setTimeout(() => wx.navigateBack(), 500);

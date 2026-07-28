@@ -5,7 +5,8 @@ import { getPublishedPosts, quickActions } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
 
 function withAuthorInitial(list = []) {
-  return list.map((item) => ({
+  const safeList = Array.isArray(list) ? list : [];
+  return safeList.map((item) => ({
     ...item,
     authorInitial: item.author ? item.author.slice(0, 1) : '',
   }));
@@ -19,6 +20,7 @@ Page({
     recommendList: [],
     unreadCount: 0,
     loading: true,
+    loadError: false,
   },
 
   onLoad(option) {
@@ -39,11 +41,15 @@ Page({
   },
 
   async loadRecommend() {
-    const posts = await withMockFallback(
+    const result = await withMockFallback(
       () => getPosts({ limit: 4 }),
       () => getPublishedPosts().slice(0, 4)
     );
-    this.setData({ recommendList: withAuthorInitial(posts), loading: false });
+    this.setData({
+      recommendList: withAuthorInitial(result),
+      loading: false,
+      loadError: Boolean(result && result.__loadError),
+    });
   },
 
   async loadUnreadCount() {

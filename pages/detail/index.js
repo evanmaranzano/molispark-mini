@@ -15,6 +15,7 @@ import {
 import { withMockFallbackOne } from '~/utils/mockFallback';
 import { getPostById as mockGetPostById } from '~/mock/community';
 import { getTempFileURL } from '~/utils/storage';
+import { isCloudReady } from '~/utils/cloud';
 
 function withNameInitial(list = []) {
   return list.map((item) => ({
@@ -90,8 +91,12 @@ Page({
   },
 
   async loadComments() {
-    const comments = await getComments(this.postId);
-    this.setData({ comments: withNameInitial(comments || []) });
+    try {
+      const comments = await getComments(this.postId);
+      this.setData({ comments: withNameInitial(comments || []) });
+    } catch (err) {
+      this.setData({ comments: [] });
+    }
   },
 
   async checkInteractionState() {
@@ -116,6 +121,7 @@ Page({
         this.setData({ 'post.views': result.counts.views });
         return;
       }
+      if (isCloudReady()) return;
       await updatePost(this.postId, { views: _.inc(1) });
       this.setData({ 'post.views': (post.views || 0) + 1 });
     } catch (err) {
@@ -196,7 +202,8 @@ Page({
 
   async submitComment() {
     const { commentText } = this.data;
-    if (!commentText.trim()) {
+    const body = commentText.trim();
+    if (!body) {
       wx.showToast({ title: '请输入评论内容', icon: 'none' });
       return;
     }
@@ -211,7 +218,7 @@ Page({
       const result = await addComment({
         postId: this.postId,
         name: profile.nickName || '微信用户',
-        body: commentText,
+        body,
       });
       this.setData({ commentText: '', showCommentInput: false });
       if (result && result.commentCount !== undefined) {

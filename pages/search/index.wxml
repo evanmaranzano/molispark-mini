@@ -38,14 +38,17 @@
       <text>最新⌄</text>
     </view>
 
-    <view class="post-list">
+    <view wx:if="{{loadError}}" class="empty-hint">搜索结果暂时无法加载</view>
+    <view class="post-list" wx:else>
       <view class="post-card" wx:for="{{posts}}" wx:key="id" data-id="{{item._id || item.id}}" bindtap="goDetail">
         <view class="post-card__body">
           <view class="post-card__title">{{item.title}}</view>
           <view class="post-card__desc">{{item.desc}}</view>
           <view class="post-card__meta">{{item.author}} · {{item.time}}</view>
         </view>
-        <view class="post-card__cover post-card__cover--{{item.coverStyle}}"></view>
+        <view class="post-card__cover post-card__cover--{{item.coverStyle}}">
+          <view class="post-card__cover-title">{{item.heroTitle || item.title}}</view>
+        </view>
       </view>
     </view>
   </view>

@@ -1,25 +1,37 @@
 const { query, removeById } = require('~/utils/db');
 const { withMockFallback } = require('~/utils/mockFallback');
 const mock = require('~/mock/community');
+const loginGuard = require('~/behaviors/loginGuard');
 
 Page({
+  behaviors: [loginGuard],
+
   data: {
     posts: [],
     loading: true,
+    loadError: false,
   },
 
   onShow() {
+    if (this.checkLoginGuard()) this.loadPosts();
+  },
+
+  onLoginGuardPassed() {
     this.loadPosts();
   },
 
   async loadPosts() {
     const app = getApp();
     const openid = app.globalData.openid || 'local-openid';
-    const posts = await withMockFallback(
+    const result = await withMockFallback(
       () => query('posts', { _openid: openid }, { orderBy: 'updatedAt', order: 'desc' }),
       () => mock.getMyPosts()
     );
-    this.setData({ posts, loading: false });
+    this.setData({
+      posts: Array.isArray(result) ? result : [],
+      loading: false,
+      loadError: Boolean(result && result.__loadError),
+    });
   },
 
   navigateBack() {

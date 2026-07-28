@@ -149,7 +149,14 @@ Page({
       return;
     }
     wx.showLoading({ title: '上传头像中', mask: true });
-    const openid = getApp().globalData.openid || 'unknown';
+    const session = getSession();
+    const openid = getApp().globalData.openid || (session && session.openid);
+    if (!openid) {
+      wx.hideLoading();
+      wx.showToast({ title: '登录信息失效，请重新登录', icon: 'none' });
+      this.setData({ setupAvatarUrl: '', setupAvatarFileID: '' });
+      return;
+    }
     const extMatch = avatarUrl.split('?')[0].match(/\.([a-zA-Z0-9]{1,4})$/);
     const ext = extMatch ? extMatch[1].toLowerCase() : 'png';
     uploadFile(avatarUrl, `avatars/${openid}.${ext}`)

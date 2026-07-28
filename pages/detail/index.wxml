@@ -74,6 +74,7 @@
     class="comment-input-bar__field"
     placeholder="写评论..."
     value="{{commentText}}"
+    maxlength="500"
     bindinput="onCommentInput"
     confirm-type="send"
     bindconfirm="submitComment"

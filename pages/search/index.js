@@ -10,6 +10,10 @@ function buildKeywordItems(list, currentValue) {
   }));
 }
 
+function toPostList(result) {
+  return Array.isArray(result) ? result : [];
+}
+
 Page({
   data: {
     activeSearch: '',
@@ -17,6 +21,7 @@ Page({
     posts: [],
     resultText: '',
     searching: false,
+    loadError: false,
   },
 
   onLoad() {
@@ -24,11 +29,16 @@ Page({
   },
 
   async loadAll() {
-    const posts = await withMockFallback(
+    const result = await withMockFallback(
       () => getPosts({ limit: 50 }),
       () => getPublishedPosts()
     );
-    this.setData({ posts, resultText: `共 ${posts.length} 篇内容` });
+    const posts = toPostList(result);
+    this.setData({
+      posts,
+      resultText: `共 ${posts.length} 篇内容`,
+      loadError: Boolean(result && result.__loadError),
+    });
   },
 
   handleInput(e) {
@@ -42,7 +52,7 @@ Page({
       return;
     }
     this.setData({ searching: true });
-    const filtered = await withMockFallback(
+    const result = await withMockFallback(
       async () => {
         const allPosts = await getPosts({ limit: 100 });
         return allPosts.filter(
@@ -55,11 +65,13 @@ Page({
       },
       () => searchPosts(keyword)
     );
+    const filtered = toPostList(result);
     this.setData({
       posts: filtered,
       hotKeywords: buildKeywordItems(searchKeywords, keyword),
       resultText: `找到 ${filtered.length} 篇相关内容`,
       searching: false,
+      loadError: Boolean(result && result.__loadError),
     });
   },
 

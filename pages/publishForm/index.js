@@ -1,7 +1,12 @@
 const { createPost, getPostById, saveDraft, updatePost } = require('~/utils/db');
 const { chooseAndUploadImages } = require('~/utils/storage');
+const loginGuard = require('~/behaviors/loginGuard');
+
+const MAX_IMAGE_COUNT = 9;
 
 Page({
+  behaviors: [loginGuard],
+
   data: {
     id: '',
     title: '',
@@ -11,6 +16,7 @@ Page({
     content: '',
     images: [],
     publishing: false,
+    savingDraft: false,
   },
 
   onLoad(options) {
@@ -20,17 +26,28 @@ Page({
     }
   },
 
+  onShow() {
+    this.checkLoginGuard();
+  },
+
   async loadDraft(id) {
     try {
       const post = await getPostById(id);
       if (post) {
+        const app = getApp();
+        const { openid } = app.globalData;
+        if (post._openid && openid && String(post._openid) !== String(openid)) {
+          wx.showToast({ title: '无权编辑该内容', icon: 'none' });
+          setTimeout(() => wx.navigateBack(), 300);
+          return;
+        }
         const category = post.category || '学习方法';
         this.setData({
           title: post.title || '',
           category,
           categoryIndex: Math.max(0, this.data.categories.indexOf(category)),
-          content: (post.content || []).join('\n'),
-          images: post.images || [],
+          content: Array.isArray(post.content) ? post.content.join('\n') : String(post.content || ''),
+          images: Array.isArray(post.images) ? post.images.slice(0, MAX_IMAGE_COUNT) : [],
         });
       }
     } catch (err) {
@@ -53,9 +70,11 @@ Page({
   },
 
   async handleChooseImage() {
+    const remaining = MAX_IMAGE_COUNT - this.data.images.length;
+    if (remaining <= 0) return;
     try {
-      const fileIDs = await chooseAndUploadImages({ count: 9 });
-      this.setData({ images: [...this.data.images, ...fileIDs] });
+      const fileIDs = await chooseAndUploadImages({ count: remaining });
+      this.setData({ images: [...this.data.images, ...fileIDs].slice(0, MAX_IMAGE_COUNT) });
     } catch (err) {
       if (err.errMsg && err.errMsg.includes('cancel')) return;
       wx.showToast({ title: '上传失败', icon: 'none' });
@@ -70,13 +89,15 @@ Page({
   },
 
   async saveDraft() {
-    const { title, content, category, images, id } = this.data;
+    const { title, content, category, images, id, savingDraft } = this.data;
+    if (savingDraft || !this.checkLoginGuard()) return;
     if (!title.trim() && !content.trim()) {
       wx.showToast({ title: '请输入内容', icon: 'none' });
       return;
     }
     const app = getApp();
     const { openid } = app.globalData;
+    this.setData({ savingDraft: true });
     try {
       await saveDraft({
         _id: id || undefined,
@@ -92,31 +113,35 @@ Page({
     } catch (err) {
       console.error('saveDraft failed', err);
       wx.showToast({ title: '保存失败', icon: 'none' });
+    } finally {
+      this.setData({ savingDraft: false });
     }
   },
 
   async publish() {
     const { title, content, category, images, id, publishing } = this.data;
-    if (publishing) return;
-    if (!title.trim()) {
+    if (publishing || !this.checkLoginGuard()) return;
+    const normalizedTitle = title.trim();
+    const normalizedContent = content.trim();
+    if (!normalizedTitle) {
       wx.showToast({ title: '请输入标题', icon: 'none' });
       return;
     }
-    if (!content.trim()) {
+    if (!normalizedContent) {
       wx.showToast({ title: '请输入正文', icon: 'none' });
       return;
     }
     this.setData({ publishing: true });
     try {
-      const contentArr = content.split('\n').filter(Boolean);
+      const contentArr = normalizedContent.split('\n').map((item) => item.trim()).filter(Boolean);
       const payload = {
-        title,
+        title: normalizedTitle,
         category,
         content: contentArr,
-        images,
+        images: images.slice(0, MAX_IMAGE_COUNT),
         type: images.length > 0 ? '图片' : '文章',
         coverStyle: images.length > 0 ? 'ai' : 'book',
-        heroTitle: title.slice(0, 20).toUpperCase(),
+        heroTitle: normalizedTitle.slice(0, 20).toUpperCase(),
         desc: contentArr[0] ? contentArr[0].slice(0, 60) : '',
       };
       if (id) {

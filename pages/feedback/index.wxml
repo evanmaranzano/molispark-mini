@@ -12,6 +12,7 @@
         class="form-textarea"
         placeholder="告诉我们你遇到的问题或建议"
         value="{{content}}"
+        maxlength="500"
         bindinput="handleInput"
       />
       <view class="form-actions">

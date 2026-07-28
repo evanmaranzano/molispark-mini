@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "nodes": [
+    {
+      "type": "rect",
+      "id": "test",
+      "x": 100,
+      "y": 100,
+      "width": 240,
+      "height": 80,
+      "fillColor": "#DFF5EA",
+      "borderColor": "#2FB786",
+      "borderWidth": 2,
+      "borderRadius": 16,
+      "text": "测试节点",
+      "fontSize": 18,
+      "textColor": "#20332C",
+      "textAlign": "center",
+      "verticalAlign": "middle"
+    }
+  ]
+}

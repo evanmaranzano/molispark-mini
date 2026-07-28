@@ -1,6 +1,6 @@
-import { getMessages, markMessageRead, count } from '~/utils/db';
+import { getMessages, markMessageRead } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
-import { messages as mockMessages, getMessageSummary } from '~/mock/community';
+import { messages as mockMessages } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
 
 Page({
@@ -9,10 +9,14 @@ Page({
     messageList: [],
     summaryCards: [],
     loading: true,
+    loadError: false,
   },
 
   onShow() {
-    this.checkLoginGuard();
+    if (this.checkLoginGuard()) this.loadMessages();
+  },
+
+  onLoginGuardPassed() {
     this.loadMessages();
   },
 
@@ -20,42 +24,41 @@ Page({
     const app = getApp();
     const { openid } = app.globalData;
     if (!openid) {
-      this.renderMock();
+      this.setData({ messageList: [], summaryCards: this.buildSummary(0, 0), loading: false });
       return;
     }
 
-    try {
-      const messages = await getMessages(openid);
-      if (!messages.length) {
-        this.renderMock();
-        return;
-      }
-      const unreadTotal = messages.filter((item) => !item.read).length;
-      const messageList = messages.map((item) => ({
-        ...item,
-        avatarText: item.avatarText || (item.fromName ? item.fromName.slice(0, 1) : '消'),
-        statusText: item.read ? '已读完' : '未读',
-        showBadge: !item.read,
-      }));
+    const result = await withMockFallback(
+      () => getMessages(openid),
+      () => mockMessages
+    );
+    if (result && result.__loadError) {
       this.setData({
-        messageList,
-        summaryCards: this.buildSummary(unreadTotal, messages.length),
+        messageList: [],
+        summaryCards: this.buildSummary(0, 0),
         loading: false,
+        loadError: true,
       });
-    } catch (err) {
-      this.renderMock();
+      return;
     }
-  },
-
-  renderMock() {
-    const list = mockMessages.map((item) => ({
-      ...item,
-      fromName: item.name,
-      avatarText: item.avatarText,
-      statusText: item.unreadCount > 0 ? '未读' : '已读完',
-      showBadge: item.unreadCount > 0,
-    }));
-    this.setData({ messageList: list, summaryCards: getMessageSummary(), loading: false });
+    const messages = Array.isArray(result) ? result : [];
+    const messageList = messages.map((item) => {
+      const read = item.read === undefined ? !(item.unreadCount > 0) : item.read;
+      return {
+        ...item,
+        read,
+        avatarText: item.avatarText || (item.fromName ? item.fromName.slice(0, 1) : '消'),
+        statusText: read ? '已读完' : '未读',
+        showBadge: !read,
+      };
+    });
+    const unreadTotal = messageList.filter((item) => !item.read).length;
+    this.setData({
+      messageList,
+      summaryCards: this.buildSummary(unreadTotal, messageList.length),
+      loading: false,
+      loadError: false,
+    });
   },
 
   buildSummary(unread, total) {

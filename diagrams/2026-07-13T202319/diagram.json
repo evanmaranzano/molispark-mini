@@ -1,0 +1,400 @@
+{
+  "version": 2,
+  "nodes": [
+    {
+      "type": "frame",
+      "id": "canvas",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 1320,
+      "layout": "none",
+      "gap": 0,
+      "padding": 0,
+      "fillColor": "#F6F5F0",
+      "borderColor": "#E6E3D9",
+      "borderWidth": 1,
+      "borderRadius": 28,
+      "children": [
+        {
+          "type": "text",
+          "id": "title",
+          "x": 50,
+          "y": 34,
+          "width": 720,
+          "height": 38,
+          "text": [
+            { "content": "知行社小程序", "bold": true, "fontSize": 28, "color": "#20332C" },
+            { "content": "  ·  页面流转原型", "fontSize": 18, "color": "#5D6B65" }
+          ],
+          "fontSize": 24,
+          "textColor": "#20332C",
+          "textAlign": "left",
+          "verticalAlign": "middle"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "x": 52,
+          "y": 78,
+          "width": 820,
+          "height": 24,
+          "text": "真实界面截图 · 主路径与功能入口 · v0.1",
+          "fontSize": 12,
+          "textColor": "#7C8982",
+          "textAlign": "left",
+          "verticalAlign": "middle"
+        },
+        {
+          "type": "rect",
+          "id": "status",
+          "x": 1015,
+          "y": 40,
+          "width": 215,
+          "height": 34,
+          "fillColor": "#DFF5EA",
+          "borderColor": "#A9E1C9",
+          "borderWidth": 1,
+          "borderRadius": 17,
+          "text": "8 个真实页面截图",
+          "fontSize": 12,
+          "textColor": "#177356",
+          "textAlign": "center",
+          "verticalAlign": "middle"
+        },
+        {
+          "type": "rect",
+          "id": "divider",
+          "x": 50,
+          "y": 120,
+          "width": 1180,
+          "height": 1,
+          "fillColor": "#DEDCD3",
+          "borderWidth": 0
+        },
+        {
+          "type": "rect",
+          "id": "section-one",
+          "x": 50,
+          "y": 145,
+          "width": 280,
+          "height": 30,
+          "fillColor": "#E3F6ED",
+          "borderColor": "#B9E7D2",
+          "borderWidth": 1,
+          "borderRadius": 15,
+          "text": "① 内容发现与阅读",
+          "fontSize": 13,
+          "textColor": "#20785B",
+          "textAlign": "center",
+          "verticalAlign": "middle"
+        },
+        {
+          "type": "frame",
+          "id": "home-card",
+          "x": 50,
+          "y": 190,
+          "width": 210,
+          "height": 450,
+          "layout": "vertical",
+          "gap": 6,
+          "padding": [14, 14, 12, 14],
+          "alignItems": "center",
+          "fillColor": "#FFFFFF",
+          "borderColor": "#2FB786",
+          "borderWidth": 2,
+          "borderRadius": 18,
+          "children": [
+            { "type": "image", "id": "home-image", "width": 180, "height": 350, "image": { "src": "OvEab4RkRozwBkxDwwLcDUoUn9c" } },
+            { "type": "text", "id": "home-title", "width": 180, "height": 24, "text": "首页", "fontSize": 16, "textColor": "#20332C", "textAlign": "center", "verticalAlign": "middle" },
+            { "type": "text", "id": "home-desc", "width": 180, "height": 32, "text": "默认入口\n搜索 / 论坛 / 专区 / 消息", "fontSize": 11, "textColor": "#7C8982", "textAlign": "center", "verticalAlign": "middle" }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "search-card",
+          "x": 340,
+          "y": 190,
+          "width": 210,
+          "height": 450,
+          "layout": "vertical",
+          "gap": 6,
+          "padding": [14, 14, 12, 14],
+          "alignItems": "center",
+          "fillColor": "#FFFFFF",
+          "borderColor": "#6B9CF2",
+          "borderWidth": 2,
+          "borderRadius": 18,
+          "children": [
+            { "type": "image", "id": "search-image", "width": 180, "height": 350, "image": { "src": "EmkZb3I42o1ABSxuFuHc42jqnwe" } },
+            { "type": "text", "id": "search-title", "width": 180, "height": 24, "text": "搜索", "fontSize": 16, "textColor": "#20332C", "textAlign": "center", "verticalAlign": "middle" },
+            { "type": "text", "id": "search-desc", "width": 180, "height": 32, "text": "关键词检索\n点击结果进入详情", "fontSize": 11, "textColor": "#7C8982", "textAlign": "center", "verticalAlign": "middle" }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "forum-card",
+          "x": 630,
+          "y": 190,
+          "width": 210,
+          "height": 450,
+          "layout": "vertical",
+          "gap": 6,
+          "padding": [14, 14, 12, 14],
+          "alignItems": "center",
+          "fillColor": "#FFFFFF",
+          "borderColor": "#6B9CF2",
+          "borderWidth": 2,
+          "borderRadius": 18,
+          "children": [
+            { "type": "image", "id": "forum-image", "width": 180, "height": 350, "image": { "src": "LPBObajPvoZT08xkzmrcLFKUnSb" } },
+            { "type": "text", "id": "forum-title", "width": 180, "height": 24, "text": "论坛", "fontSize": 16, "textColor": "#20332C", "textAlign": "center", "verticalAlign": "middle" },
+            { "type": "text", "id": "forum-desc", "width": 180, "height": 32, "text": "推荐 / 最新 / 关注\n分类筛选与帖子列表", "fontSize": 11, "textColor": "#7C8982", "textAlign": "center", "verticalAlign": "middle" }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "detail-card",
+          "x": 920,
+          "y": 190,
+          "width": 210,
+          "height": 450,
+          "layout": "vertical",
+          "gap": 6,
+          "padding": [14, 14, 12, 14],
+          "alignItems": "center",
+          "fillColor": "#FFFFFF",
+          "borderColor": "#6B9CF2",
+          "borderWidth": 2,
+          "borderRadius": 18,
+          "children": [
+            { "type": "image", "id": "detail-image", "width": 180, "height": 350, "image": { "src": "Fi2qbh7uHotuy2xwEUScQZ37nNb" } },
+            { "type": "text", "id": "detail-title", "width": 180, "height": 24, "text": "内容详情", "fontSize": 16, "textColor": "#20332C", "textAlign": "center", "verticalAlign": "middle" },
+            { "type": "text", "id": "detail-desc", "width": 180, "height": 32, "text": "正文阅读\n点赞 / 收藏 / 评论 / 分享", "fontSize": 11, "textColor": "#7C8982", "textAlign": "center", "verticalAlign": "middle" }
+          ]
+        },
+        {
+          "type": "rect",
+          "id": "section-two",
+          "x": 50,
+          "y": 690,
+          "width": 280,
+          "height": 30,
+          "fillColor": "#FFF1D7",
+          "borderColor": "#F3D39B",
+          "borderWidth": 1,
+          "borderRadius": 15,
+          "text": "② 互动与个人管理",
+          "fontSize": 13,
+          "textColor": "#A76616",
+          "textAlign": "center",
+          "verticalAlign": "middle"
+        },
+        {
+          "type": "frame",
+          "id": "zones-card",
+          "x": 50,
+          "y": 735,
+          "width": 210,
+          "height": 450,
+          "layout": "vertical",
+          "gap": 6,
+          "padding": [14, 14, 12, 14],
+          "alignItems": "center",
+          "fillColor": "#FFFFFF",
+          "borderColor": "#6B9CF2",
+          "borderWidth": 2,
+          "borderRadius": 18,
+          "children": [
+            { "type": "image", "id": "zones-image", "width": 180, "height": 350, "image": { "src": "CaiXbrz21oR1JVxFL2NcLPKNncf" } },
+            { "type": "text", "id": "zones-title", "width": 180, "height": 24, "text": "专区", "fontSize": 16, "textColor": "#20332C", "textAlign": "center", "verticalAlign": "middle" },
+            { "type": "text", "id": "zones-desc", "width": 180, "height": 32, "text": "主题社区入口\n带专区标题进入论坛", "fontSize": 11, "textColor": "#7C8982", "textAlign": "center", "verticalAlign": "middle" }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "messages-card",
+          "x": 340,
+          "y": 735,
+          "width": 210,
+          "height": 450,
+          "layout": "vertical",
+          "gap": 6,
+          "padding": [14, 14, 12, 14],
+          "alignItems": "center",
+          "fillColor": "#FFFFFF",
+          "borderColor": "#F0A84B",
+          "borderWidth": 2,
+          "borderRadius": 18,
+          "children": [
+            { "type": "image", "id": "messages-image", "width": 180, "height": 350, "image": { "src": "Qoqyb1ARno53xXxSSXyci4ppn2e" } },
+            { "type": "text", "id": "messages-title", "width": 180, "height": 24, "text": "消息中心", "fontSize": 16, "textColor": "#20332C", "textAlign": "center", "verticalAlign": "middle" },
+            { "type": "text", "id": "messages-desc", "width": 180, "height": 32, "text": "评论 / 点赞 / 系统通知\n点击会话进入详情", "fontSize": 11, "textColor": "#7C8982", "textAlign": "center", "verticalAlign": "middle" }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "publish-card",
+          "x": 630,
+          "y": 735,
+          "width": 210,
+          "height": 450,
+          "layout": "vertical",
+          "gap": 6,
+          "padding": [14, 14, 12, 14],
+          "alignItems": "center",
+          "fillColor": "#FFFFFF",
+          "borderColor": "#F0A84B",
+          "borderWidth": 2,
+          "borderRadius": 18,
+          "children": [
+            { "type": "image", "id": "publish-image", "width": 180, "height": 350, "image": { "src": "XYS5bSVS4oh6uzx0TdkcoA9YnLb" } },
+            { "type": "text", "id": "publish-title", "width": 180, "height": 24, "text": "发布", "fontSize": 16, "textColor": "#20332C", "textAlign": "center", "verticalAlign": "middle" },
+            { "type": "text", "id": "publish-desc", "width": 180, "height": 32, "text": "发帖子 / 上传图片 / 文件\n草稿箱入口", "fontSize": 11, "textColor": "#7C8982", "textAlign": "center", "verticalAlign": "middle" }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "my-card",
+          "x": 920,
+          "y": 735,
+          "width": 210,
+          "height": 450,
+          "layout": "vertical",
+          "gap": 6,
+          "padding": [14, 14, 12, 14],
+          "alignItems": "center",
+          "fillColor": "#FFFFFF",
+          "borderColor": "#9C83D7",
+          "borderWidth": 2,
+          "borderRadius": 18,
+          "children": [
+            { "type": "image", "id": "my-image", "width": 180, "height": 350, "image": { "src": "IixjbOXUmoayVfx4DtXc5U6onsb" } },
+            { "type": "text", "id": "my-title", "width": 180, "height": 24, "text": "个人中心", "fontSize": 16, "textColor": "#20332C", "textAlign": "center", "verticalAlign": "middle" },
+            { "type": "text", "id": "my-desc", "width": 180, "height": 32, "text": "我的帖子 / 收藏 / 历史\n设置与反馈", "fontSize": 11, "textColor": "#7C8982", "textAlign": "center", "verticalAlign": "middle" }
+          ]
+        },
+        {
+          "type": "rect",
+          "id": "note",
+          "x": 50,
+          "y": 1215,
+          "width": 1080,
+          "height": 64,
+          "fillColor": "#FEF1CE",
+          "borderColor": "#F0D79E",
+          "borderWidth": 1,
+          "borderRadius": 14,
+          "text": [
+            { "content": "未截图的子页面：", "bold": true, "fontSize": 12, "color": "#8A5A13" },
+            { "content": "发布表单 / 草稿箱 / 设置 / 反馈；当前先作为入口旁注保留，后续可以继续补成第二张细化流。", "fontSize": 12, "color": "#8A6B36" }
+          ],
+          "fontSize": 12,
+          "textColor": "#8A6B36",
+          "textAlign": "left",
+          "verticalAlign": "middle"
+        }
+      ]
+    },
+    {
+      "type": "connector",
+      "id": "c-home-search",
+      "connector": {
+        "from": "home-card",
+        "to": "search-card",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "polyline",
+        "lineColor": "#2FB786",
+        "lineWidth": 2.5,
+        "endArrow": "triangle",
+        "label": "搜索入口",
+        "labelPosition": 0.5
+      }
+    },
+    {
+      "type": "connector",
+      "id": "c-forum-detail",
+      "connector": {
+        "from": "forum-card",
+        "to": "detail-card",
+        "fromAnchor": "right",
+        "toAnchor": "left",
+        "lineShape": "polyline",
+        "lineColor": "#6B9CF2",
+        "lineWidth": 2.5,
+        "endArrow": "triangle",
+        "label": "点击帖子",
+        "labelPosition": 0.5
+      }
+    },
+    {
+      "type": "connector",
+      "id": "c-home-forum",
+      "connector": {
+        "from": "home-card",
+        "to": "forum-card",
+        "fromAnchor": "bottom",
+        "toAnchor": "bottom",
+        "lineShape": "curve",
+        "lineColor": "#2FB786",
+        "lineWidth": 2,
+        "lineStyle": "dashed",
+        "endArrow": "arrow",
+        "label": "快捷入口",
+        "labelPosition": 0.5
+      }
+    },
+    {
+      "type": "connector",
+      "id": "c-search-detail",
+      "connector": {
+        "from": "search-card",
+        "to": "detail-card",
+        "fromAnchor": "top",
+        "toAnchor": "top",
+        "lineShape": "curve",
+        "lineColor": "#6B9CF2",
+        "lineWidth": 2,
+        "lineStyle": "dashed",
+        "endArrow": "arrow",
+        "label": "结果进入详情",
+        "labelPosition": 0.5
+      }
+    },
+    {
+      "type": "connector",
+      "id": "c-zones-forum",
+      "connector": {
+        "from": "zones-card",
+        "to": "forum-card",
+        "fromAnchor": "top",
+        "toAnchor": "bottom",
+        "lineShape": "curve",
+        "lineColor": "#6B9CF2",
+        "lineWidth": 2,
+        "lineStyle": "dashed",
+        "endArrow": "arrow",
+        "label": "专区标题 → 论坛",
+        "labelPosition": 0.5
+      }
+    },
+    {
+      "type": "connector",
+      "id": "c-messages-detail",
+      "connector": {
+        "from": "messages-card",
+        "to": "detail-card",
+        "fromAnchor": "top",
+        "toAnchor": "bottom",
+        "lineShape": "curve",
+        "lineColor": "#F0A84B",
+        "lineWidth": 2,
+        "lineStyle": "dashed",
+        "endArrow": "arrow",
+        "label": "通知进入详情",
+        "labelPosition": 0.5
+      }
+    }
+  ]
+}

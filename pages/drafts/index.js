@@ -1,25 +1,37 @@
 const { getDrafts, removeById } = require('~/utils/db');
 const { withMockFallback } = require('~/utils/mockFallback');
 const mock = require('~/mock/community');
+const loginGuard = require('~/behaviors/loginGuard');
 
 Page({
+  behaviors: [loginGuard],
+
   data: {
     drafts: [],
     loading: true,
+    loadError: false,
   },
 
   onShow() {
+    if (this.checkLoginGuard()) this.loadDrafts();
+  },
+
+  onLoginGuardPassed() {
     this.loadDrafts();
   },
 
   async loadDrafts() {
     const app = getApp();
     const openid = app.globalData.openid || 'local-openid';
-    const drafts = await withMockFallback(
+    const result = await withMockFallback(
       () => getDrafts(openid),
       () => mock.drafts
     );
-    this.setData({ drafts, loading: false });
+    this.setData({
+      drafts: Array.isArray(result) ? result : [],
+      loading: false,
+      loadError: Boolean(result && result.__loadError),
+    });
   },
 
   navigateBack() {

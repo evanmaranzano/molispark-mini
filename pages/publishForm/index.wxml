@@ -8,7 +8,7 @@
 
     <view class="form-card">
       <view class="form-label">标题</view>
-      <input class="form-input" placeholder="请输入标题" placeholder-class="form-placeholder" value="{{title}}" data-field="title" bindinput="handleInput" />
+      <input class="form-input" maxlength="60" placeholder="请输入标题" placeholder-class="form-placeholder" value="{{title}}" data-field="title" bindinput="handleInput" />
 
       <view class="form-label">分类</view>
       <picker class="form-input form-picker" mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="handleCategoryChange">
@@ -21,6 +21,7 @@
         placeholder="分享你的观点、经验和见解"
         placeholder-class="form-placeholder"
         value="{{content}}"
+        maxlength="5000"
         data-field="content"
         bindinput="handleInput"
       />
@@ -37,11 +38,12 @@
       </view>
 
       <view class="form-actions">
-        <view class="form-btn form-btn--light" bindtap="saveDraft">保存草稿</view>
-        <view class="form-btn form-btn--primary" bindtap="publish" disabled="{{publishing}}">
+        <view class="form-btn form-btn--light {{savingDraft ? 'form-btn--disabled' : ''}}" bindtap="saveDraft">{{savingDraft ? '保存中...' : '保存草稿'}}</view>
+        <view class="form-btn form-btn--primary {{publishing ? 'form-btn--disabled' : ''}}" bindtap="publish">
           {{publishing ? '发布中...' : '立即发布'}}
         </view>
       </view>
     </view>
   </view>
 </scroll-view>
+<login-modal show="{{showLoginModal}}" bind:logined="onLogined" />
