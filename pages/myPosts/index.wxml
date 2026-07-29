@@ -12,7 +12,7 @@
       <view class="draft-card" wx:for="{{posts}}" wx:key="_id">
         <view class="draft-card__title">{{item.title}}</view>
         <view class="draft-card__desc">{{item.desc}}</view>
-        <view class="draft-card__time">{{item.status === 'draft' ? '草稿' : (item.time || item.updatedAt)}}</view>
+        <view class="draft-card__time">{{item.status === 'draft' ? '草稿' : (item.timeText || item.time)}}</view>
         <view class="draft-card__actions">
           <view class="draft-card__button draft-card__button--outline" data-id="{{item._id || item.id}}" bindtap="goDetail">查看</view>
           <view class="draft-card__button draft-card__button--gray" data-id="{{item._id || item.id}}" bindtap="editPost">编辑</view>

@@ -3,18 +3,21 @@
   <view class="sub-shell">
     <view class="sub-topbar">
       <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
-      <view class="sub-topbar__title">专区</view>
+      <view class="sub-topbar__title">精选</view>
     </view>
 
-    <view class="zone-list">
-      <view class="zone-card" wx:for="{{zones}}" wx:key="id" bindtap="goForum" data-title="{{item.title}}">
-        <view class="zone-card__cover zone-card__cover--{{item.coverStyle}}"></view>
-        <view class="zone-card__body">
-          <view class="zone-card__title">{{item.title}}</view>
-          <view class="zone-card__desc">{{item.desc}}</view>
-          <view class="zone-card__members">{{item.members}}</view>
+    <view wx:if="{{loadError}}" class="empty-hint">精选内容暂时无法加载</view>
+    <view wx:elif="{{!posts.length && !loading}}" class="empty-hint">暂无精选内容</view>
+    <view class="post-list">
+      <view class="post-card" wx:for="{{posts}}" wx:key="_id" data-id="{{item._id || item.id}}" bindtap="goDetail">
+        <view class="post-card__body">
+          <view class="post-card__title">{{item.title}}</view>
+          <view class="post-card__desc">{{item.desc}}</view>
+          <view class="post-card__meta">{{item.author}} · {{item.timeText || item.time}}</view>
         </view>
-        <view class="zone-card__arrow">›</view>
+        <view class="post-card__cover post-card__cover--{{item.coverStyle}}">
+          <view class="post-card__cover-title">{{item.heroTitle || item.title}}</view>
+        </view>
       </view>
     </view>
   </view>

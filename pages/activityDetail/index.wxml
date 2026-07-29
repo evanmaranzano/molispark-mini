@@ -1,0 +1,64 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <status-bar compact />
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">活动详情</view>
+    </view>
+
+    <view wx:if="{{loadError}}" class="empty-hint">活动加载失败，请返回重试</view>
+
+    <block wx:elif="{{activity}}">
+      <image wx:if="{{activity.cover}}" class="activity-poster" src="{{activity.cover}}" mode="widthFix" />
+      <view wx:else class="activity-hero activity-hero--{{activity.coverStyle}}">
+        <view class="activity-hero__title">{{activity.heroTitle || activity.title}}</view>
+      </view>
+
+      <view class="activity-info">
+        <view class="activity-info__title">{{activity.title}}</view>
+        <view class="activity-info__row">
+          <text class="activity-info__label">时间</text>
+          <text class="activity-info__value">{{activity.startTime}} 至 {{activity.endTime}}</text>
+        </view>
+        <view class="activity-info__row">
+          <text class="activity-info__label">地点</text>
+          <text class="activity-info__value">{{activity.location}}</text>
+        </view>
+        <view class="activity-info__row">
+          <text class="activity-info__label">名额</text>
+          <text class="activity-info__value">{{activity.quotaText}}</text>
+        </view>
+        <view class="activity-info__desc">{{activity.desc}}</view>
+        <view wx:if="{{isAdmin}}" class="activity-info__admin">
+          <view class="activity-info__admin-btn" bindtap="onRemove">删除活动</view>
+        </view>
+      </view>
+
+      <view wx:if="{{signed}}" class="signup-done">
+        <view class="signup-done__badge">✓ 已报名</view>
+        <view class="signup-done__tip">报名成功，请按时参加活动</view>
+        <view class="signup-done__cancel" bindtap="onCancel">{{submitting ? '处理中...' : '取消报名'}}</view>
+      </view>
+
+      <view wx:else class="signup-form">
+        <view class="signup-form__title">填写报名信息</view>
+        <view class="signup-form__field">
+          <text class="signup-form__label">姓名</text>
+          <input class="signup-form__input" placeholder="请输入姓名" maxlength="20" value="{{name}}" bindinput="onNameInput" />
+        </view>
+        <view class="signup-form__field">
+          <text class="signup-form__label">手机号</text>
+          <input class="signup-form__input" type="number" placeholder="用于活动联系" maxlength="11" value="{{phone}}" bindinput="onPhoneInput" />
+        </view>
+        <view class="signup-form__field">
+          <text class="signup-form__label">备注</text>
+          <input class="signup-form__input" placeholder="选填，如饮食禁忌等" maxlength="100" value="{{note}}" bindinput="onNoteInput" />
+        </view>
+        <button class="signup-form__submit {{activity.full || submitting ? 'signup-form__submit--disabled' : ''}}" bindtap="onSignup">
+          {{activity.full ? '名额已满' : submitting ? '提交中...' : '立即报名'}}
+        </button>
+      </view>
+    </block>
+  </view>
+</scroll-view>
+<login-modal show="{{showLoginModal}}" bind:logined="onLogined" />

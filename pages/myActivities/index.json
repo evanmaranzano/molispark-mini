@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "status-bar": "/components/status-bar/index",
+    "login-modal": "/components/login-modal/index"
+  }
+}

@@ -2,6 +2,7 @@ import { query, _ } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { getHistoryPosts } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
+const { formatTime } = require('~/utils/time');
 
 Page({
   behaviors: [loginGuard],
@@ -34,7 +35,7 @@ Page({
       () => getHistoryPosts()
     );
     this.setData({
-      posts: Array.isArray(result) ? result : [],
+      posts: (Array.isArray(result) ? result : []).map((item) => ({ ...item, timeText: formatTime(item.createdAt || item.time) })),
       loading: false,
       loadError: Boolean(result && result.__loadError),
     });

@@ -12,7 +12,7 @@
         <view class="avatar">{{post.authorInitial}}</view>
         <view class="article-meta__body">
           <view class="article-meta__name">{{post.author}}</view>
-          <view class="article-meta__info">{{post.category}} · {{post.time}}</view>
+          <view class="article-meta__info">{{post.category}} · {{post.timeText || post.time}}</view>
         </view>
       </view>
 
@@ -24,6 +24,10 @@
 
       <view class="article-content">
         <view class="article-content__paragraph" wx:for="{{post.content}}" wx:key="*this">{{item}}</view>
+      </view>
+
+      <view wx:if="{{isAdmin}}" class="admin-bar">
+        <view class="admin-bar__btn {{post.featured ? 'admin-bar__btn--active' : ''}}" bindtap="toggleFeature">{{post.featured ? '★ 已加精（点击取消）' : '☆ 加精到精选页'}}</view>
       </view>
 
       <view class="article-stats">
@@ -54,7 +58,7 @@
         <view class="comment__body">
           <view class="comment__head">
             {{item.name}}
-            <text class="comment__time">{{item.time || item.createdAt}}</text>
+            <text class="comment__time">{{item.timeText || item.time}}</text>
           </view>
           <view class="comment__text">{{item.body}}</view>
           <view class="reply" wx:if="{{item.reply}}">作者回复：{{item.reply}}</view>

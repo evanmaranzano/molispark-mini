@@ -1,0 +1,52 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <status-bar compact />
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">发布活动</view>
+    </view>
+
+    <view wx:if="{{checked && !isAdmin}}" class="empty-hint">只有管理员可以发布活动</view>
+
+    <view wx:if="{{isAdmin}}" class="publish-form">
+      <view class="publish-form__field">
+        <text class="publish-form__label">标题</text>
+        <input class="publish-form__input" placeholder="活动标题（必填）" maxlength="50" value="{{title}}" data-field="title" bindinput="onInput" />
+      </view>
+      <view class="publish-form__field publish-form__field--top">
+        <text class="publish-form__label">简介</text>
+        <textarea class="publish-form__textarea" placeholder="活动内容介绍" maxlength="500" value="{{desc}}" data-field="desc" bindinput="onInput" />
+      </view>
+      <view class="publish-form__field">
+        <text class="publish-form__label">地点</text>
+        <input class="publish-form__input" placeholder="如：线上 · 腾讯会议" maxlength="50" value="{{location}}" data-field="location" bindinput="onInput" />
+      </view>
+      <view class="publish-form__field">
+        <text class="publish-form__label">开始</text>
+        <input class="publish-form__input" placeholder="YYYY-MM-DD HH:mm" value="{{startTime}}" data-field="startTime" bindinput="onInput" />
+      </view>
+      <view class="publish-form__field">
+        <text class="publish-form__label">结束</text>
+        <input class="publish-form__input" placeholder="YYYY-MM-DD HH:mm" value="{{endTime}}" data-field="endTime" bindinput="onInput" />
+      </view>
+      <view class="publish-form__field">
+        <text class="publish-form__label">名额</text>
+        <input class="publish-form__input" type="number" placeholder="0 表示不限" value="{{quota}}" data-field="quota" bindinput="onInput" />
+      </view>
+      <view class="publish-form__field">
+        <text class="publish-form__label">封面</text>
+        <view class="publish-form__covers">
+          <view
+            wx:for="{{coverOptions}}"
+            wx:key="key"
+            class="publish-form__cover {{coverStyle === item.key ? 'publish-form__cover--active' : ''}}"
+            data-key="{{item.key}}"
+            bindtap="onCoverTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+      <button class="publish-form__submit {{submitting ? 'publish-form__submit--disabled' : ''}}" bindtap="onSubmit">{{submitting ? '发布中...' : '发布活动'}}</button>
+    </view>
+  </view>
+</scroll-view>
+<login-modal show="{{showLoginModal}}" bind:logined="onLogined" />

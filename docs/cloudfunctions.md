@@ -1,6 +1,6 @@
 # 云函数文档
 
-> 知行社小程序 v0.1，3 个云函数。云环境 `cloud1-d4gtpsssef2dcbcf8`，appid `wxba805d188c9a4151`。
+> 知行社小程序 v0.1，5 个云函数（login / updateProfile / interact / seed / activity）。云环境 `cloud1-d4gtpsssef2dcbcf8`，appid `wxba805d188c9a4151`。
 
 ## 部署
 
@@ -16,14 +16,26 @@
 
 ## login
 
-身份认证 + 取已存资料。无入参，靠 `cloud.getWXContext()` 拿 OPENID。
+身份认证 + 取已存资料。默认无入参，靠 `cloud.getWXContext()` 拿 OPENID。
 
 返回：
 ```json
-{ "openid": "...", "appid": "...", "unionid": "...", "profile": { "nickName": "...", "avatarUrl": "..." } | null }
+{ "openid": "...", "appid": "...", "unionid": "...", "profile": { "nickName": "...", "avatarUrl": "...", "phoneNumber": "..." } | null }
 ```
 
 按 openid 查 `users` 集合；查不到则 `profile=null`（前端据此判断「资料未完善/未登录」）。
+
+### login · action='phone'（手机号快速验证）
+
+入参：`{ action: 'phone', code }`（code 来自 button `open-type="getPhoneNumber"` 回调 `e.detail.code`）。
+
+逻辑：`cloud.openapi.phonenumber.getPhoneNumber({ code })` 换手机号 → 写入 `users.phoneNumber`（doc(openid) update，不存在则建最小档案）。
+
+返回：
+- 成功：`{ success:true, openid, phoneNumber }`
+- 失败：`{ success:false, code }`，code ∈ `MISSING_CODE` / `UNAUTHORIZED` / `PHONE_FAILED` / `PHONE_SAVE_FAILED`
+
+> 限制：手机号快速验证仅**非个人主体**小程序可用，且需在 mp 后台开通（按次计费）。`PHONE_FAILED` 时前端降级提示走微信一键登录。
 
 > 注：头像字段统一为 `avatarUrl`（login 读 `user.avatarUrl`，updateProfile 写 `avatarUrl`）。该字段内存的是云存储 fileID，前端 image 组件直接用作 src。
 
@@ -76,3 +88,50 @@
 ## 涉及集合
 
 posts, users, comments, likes, collects, views, history。权限规则与索引建议见 `docs/database-schema.md`。
+
+## activity
+
+活动报名/取消，计数与状态写走 admin 权限，客户端不直接写 signups / activities.signupCount。
+
+入参：`{ action: 'signup' | 'cancel', activityId, name?, phone?, note? }`（OPENID 从 context 取，客户端不可传）。
+
+signup 校验：`name` 必填 ≤20 字；`phone` 必须 11 位（`/^1\d{10}$/`）；`note` 选填 ≤100 字；活动 `status != published` → `ACTIVITY_CLOSED`；`quota > 0` 且满员 → `QUOTA_FULL`。
+
+幂等：`_id = ${activityId}_${OPENID}`。
+- 已 `signed` 重复报名 → 直接返回当前状态，不重复计数；
+- `cancelled` 后再次报名 → 恢复原文档并重新计数；
+- 并发主键冲突 → 按已报名返回。
+
+返回：`{ success, action, activityId, state: { signed }, counts: { signupCount } }`；失败 `{ success:false, code }`，code ∈ `UNAUTHORIZED` / `MISSING_ACTIVITY_ID` / `INVALID_ACTION` / `ACTIVITY_NOT_FOUND` / `ACTIVITY_CLOSED` / `MISSING_NAME` / `NAME_TOO_LONG` / `INVALID_PHONE` / `NOTE_TOO_LONG` / `QUOTA_FULL` / `COUNT_UPDATE_FAILED` / `INTERNAL_ERROR`。
+
+signup 写入 `signups` 时冗余活动快照（`activityTitle/activityTime/activityLocation`），「我的报名」列表免回查；显式写 `_openid` 保证「仅创建者可读写」权限下客户端可查回（同 likes/collects 的坑）。
+
+## seed
+
+预置帖子 + 预置活动，幂等（确定性 `_id`：`seed-post-N` / `seed-activity-N`，重复调用只创建一次）。
+
+返回：`{ success:true, total, results, activityResults }`，单项 status 为 `created` / `exists`。
+
+### interact · feature / unfeature（管理员）
+
+入参：`{ action: 'feature' | 'unfeature', postId }`。云函数端查 `users.role === 'admin'`，非管理员返回 `{ success:false, code:'FORBIDDEN' }`。
+
+逻辑：`posts.featured = true/false`；精选页（pages/zones）按 `featured: true` 筛选。
+
+返回：`{ success, action, postId, state: { featured } }`。
+
+### activity · create（管理员）
+
+入参：`{ action: 'create', title, desc?, location?, startTime?, endTime?, quota?, coverStyle?, heroTitle? }`。同样校验 `users.role === 'admin'`，否则 `FORBIDDEN`。
+
+校验：title 必填 ≤50 字，desc ≤500 字，quota 取 `max(0, Number)`，coverStyle 白名单 `book/ai/note`。
+
+返回：`{ success:true, action:'create', data:{ activityId } }`。
+
+### activity · remove（管理员）
+
+入参：`{ action: 'remove', activityId }`。校验 `users.role === 'admin'`，否则 `FORBIDDEN`。
+
+逻辑：先删该活动全部 `signups` 记录，再删 `activities` 文档（不可恢复）。
+
+返回：`{ success:true, action:'remove', activityId }`。

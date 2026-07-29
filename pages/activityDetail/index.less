@@ -1,0 +1,192 @@
+@import '/pages/zones/index.less';
+
+.activity-poster {
+  width: 100%;
+  border-radius: 22rpx;
+  display: block;
+}
+
+.activity-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 220rpx;
+  border-radius: 22rpx;
+  color: @brand-dark;
+  background: linear-gradient(135deg, #e9f5e8 0%, #d3ead5 52%, #b9d9c0 100%);
+
+  &--ai {
+    background: linear-gradient(135deg, #e5f0ec, #c5ddcf);
+  }
+
+  &--note {
+    background: linear-gradient(135deg, #f4ebdc, #dec8a9);
+  }
+
+  &__title {
+    padding: 0 32rpx;
+    font-size: 34rpx;
+    font-weight: 800;
+    text-align: center;
+    word-break: break-all;
+  }
+}
+
+.activity-info {
+  margin-top: 22rpx;
+  padding: 28rpx 24rpx;
+  border: 1rpx solid @line;
+  border-radius: 22rpx;
+  background: @surface;
+  box-shadow: @shadow-soft;
+
+  &__title {
+    color: @ink;
+    font-size: 34rpx;
+    line-height: 1.4;
+    font-weight: 800;
+  }
+
+  &__row {
+    display: flex;
+    margin-top: 18rpx;
+    font-size: 24rpx;
+    line-height: 1.6;
+  }
+
+  &__label {
+    flex-shrink: 0;
+    width: 88rpx;
+    color: @ink-tertiary;
+  }
+
+  &__value {
+    flex: 1;
+    color: @ink;
+  }
+
+  &__desc {
+    margin-top: 22rpx;
+    padding-top: 22rpx;
+    border-top: 1rpx solid @line;
+    color: @ink-secondary;
+    font-size: 24rpx;
+    line-height: 1.7;
+  }
+
+  &__admin {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22rpx;
+  }
+
+  &__admin-btn {
+    padding: 10rpx 28rpx;
+    border: 1rpx solid #e6432d;
+    border-radius: 999rpx;
+    color: #e6432d;
+    font-size: 22rpx;
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+}
+
+.signup-form {
+  margin-top: 22rpx;
+  padding: 28rpx 24rpx 32rpx;
+  border: 1rpx solid @line;
+  border-radius: 22rpx;
+  background: @surface;
+  box-shadow: @shadow-soft;
+
+  &__title {
+    color: @ink;
+    font-size: 28rpx;
+    font-weight: 700;
+  }
+
+  &__field {
+    display: flex;
+    align-items: center;
+    margin-top: 20rpx;
+  }
+
+  &__label {
+    flex-shrink: 0;
+    width: 110rpx;
+    color: @ink-secondary;
+    font-size: 24rpx;
+  }
+
+  &__input {
+    flex: 1;
+    height: 80rpx;
+    padding: 0 20rpx;
+    border: 1rpx solid @line;
+    border-radius: 16rpx;
+    box-sizing: border-box;
+    color: @ink;
+    font-size: 26rpx;
+  }
+
+  &__submit {
+    margin-top: 30rpx;
+    width: 100%;
+    height: 88rpx;
+    line-height: 88rpx;
+    border-radius: 999rpx;
+    background: @brand;
+    color: #fff;
+    font-size: 28rpx;
+    font-weight: 700;
+    text-align: center;
+    padding: 0;
+
+    &::after {
+      border: none;
+    }
+
+    &--disabled {
+      background: @ink-tertiary;
+    }
+  }
+}
+
+.signup-done {
+  margin-top: 22rpx;
+  padding: 40rpx 24rpx;
+  border: 1rpx solid @line;
+  border-radius: 22rpx;
+  background: @surface;
+  box-shadow: @shadow-soft;
+  text-align: center;
+
+  &__badge {
+    color: @brand;
+    font-size: 32rpx;
+    font-weight: 800;
+  }
+
+  &__tip {
+    margin-top: 12rpx;
+    color: @ink-secondary;
+    font-size: 22rpx;
+  }
+
+  &__cancel {
+    display: inline-block;
+    margin-top: 26rpx;
+    padding: 16rpx 48rpx;
+    border: 1rpx solid @line;
+    border-radius: 999rpx;
+    color: @ink-tertiary;
+    font-size: 24rpx;
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+}

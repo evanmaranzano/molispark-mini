@@ -1,0 +1,117 @@
+@import '/pages/zones/index.less';
+
+.publish-entry {
+  margin-bottom: 18rpx;
+  padding: 22rpx 0;
+  border: 1rpx dashed @brand;
+  border-radius: 22rpx;
+  text-align: center;
+  color: @brand;
+  font-size: 26rpx;
+  font-weight: 700;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.activity-card {
+  display: flex;
+  gap: 18rpx;
+  padding: 24rpx;
+  border: 1rpx solid @line;
+  border-radius: 22rpx;
+  background: @surface;
+  box-shadow: @shadow-soft;
+
+  &:active {
+    opacity: 0.8;
+    transform: scale(0.99);
+  }
+
+  &__poster {
+    flex-shrink: 0;
+    width: 128rpx;
+    height: 128rpx;
+    border-radius: 18rpx;
+  }
+
+  &__cover {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    width: 128rpx;
+    height: 128rpx;
+    padding: 14rpx 10rpx;
+    border-radius: 18rpx;
+    color: @brand-dark;
+    background: linear-gradient(135deg, #e9f5e8 0%, #d3ead5 52%, #b9d9c0 100%);
+
+    &--ai {
+      background: linear-gradient(135deg, #e5f0ec, #c5ddcf);
+    }
+
+    &--note {
+      background: linear-gradient(135deg, #f4ebdc, #dec8a9);
+    }
+  }
+
+  &__cover-title {
+    display: -webkit-box;
+    overflow: hidden;
+    max-width: 100%;
+    color: inherit;
+    font-size: 17rpx;
+    line-height: 1.35;
+    font-weight: 700;
+    text-align: center;
+    word-break: break-all;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    color: @ink;
+    font-size: 28rpx;
+    line-height: 1.35;
+    font-weight: 700;
+  }
+
+  &__meta {
+    margin-top: 8rpx;
+    color: @ink-secondary;
+    font-size: 22rpx;
+    line-height: 1.5;
+  }
+
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12rpx;
+  }
+
+  &__quota {
+    color: @ink-tertiary;
+    font-size: 20rpx;
+  }
+
+  &__status {
+    color: @brand;
+    font-size: 20rpx;
+    font-weight: 700;
+
+    &--full {
+      color: @warm-accent;
+    }
+  }
+}

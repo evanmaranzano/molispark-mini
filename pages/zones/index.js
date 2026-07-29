@@ -1,22 +1,43 @@
-import { zones } from '~/mock/community';
+import { getPosts } from '~/utils/db';
+import { withMockFallback } from '~/utils/mockFallback';
+import { getFeaturedPosts } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
+const { formatTime } = require('~/utils/time');
 
 Page({
   behaviors: [loginGuard],
+
   data: {
-    zones,
+    posts: [],
+    loading: true,
+    loadError: false,
   },
 
   onShow() {
-    this.checkLoginGuard();
+    if (this.checkLoginGuard()) this.loadFeatured();
+  },
+
+  onLoginGuardPassed() {
+    this.loadFeatured();
+  },
+
+  async loadFeatured() {
+    const result = await withMockFallback(
+      () => getPosts({ where: { featured: true }, limit: 20 }),
+      () => getFeaturedPosts()
+    );
+    this.setData({
+      posts: (Array.isArray(result) ? result : []).map((item) => ({ ...item, timeText: formatTime(item.createdAt || item.time) })),
+      loading: false,
+      loadError: Boolean(result && result.__loadError),
+    });
   },
 
   navigateBack() {
     wx.navigateBack();
   },
 
-  goForum(e) {
-    const { title } = e.currentTarget.dataset;
-    wx.navigateTo({ url: `/pages/forum/index?zone=${title || ''}` });
+  goDetail(e) {
+    wx.navigateTo({ url: `/pages/detail/index?id=${e.currentTarget.dataset.id}` });
   },
 });

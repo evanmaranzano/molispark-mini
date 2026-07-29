@@ -6,8 +6,9 @@
 - 云开发（cloudfunctions/ 目录已配置）
 - appid: wxba805d188c9a4151
 - 云环境 ID: cloud1-d4gtpsssef2dcbcf8
-- 云数据库 7 集合: posts, comments, likes, collects, messages, feedback, users
+- 云数据库 9 集合: posts, comments, likes, collects, messages, feedback, users, activities, signups
 - 仓库: evanmaranzano/molispark-mini（main 分支）
+- 权限模型: users.role（'admin'|'member'，默认 member），云控制台手动改 role='admin' 授权；加精走 interact feature/unfeature、发布活动走 activity create，均云函数端校验 admin
 - 迭代进度文档: `docs/v0.1-progress.md`（新会话入口）
 - 关键决策: 计数更新走 `interact` 云函数（绕过 posts「仅创建者可写」权限）；准入用微信后台「体验成员」白名单
 
@@ -18,7 +19,7 @@
 - resolveAlias: `~/*` → `/*`（app.json）
 
 ## 样式继承链
-- pages/forum/index.less → pages/zones/index.less（共享 post-card、segment、tag 样式）
+- pages/favorites/index.less → pages/zones/index.less（共享 sub-page、post-card 样式）
 - pages/publishForm/index.less → pages/drafts/index.less（共享 sub-page、form-card 样式）
 - pages/home/index.less 独立
 - pages/my/index.less 独立
@@ -34,7 +35,7 @@
 
 ## 云开发接入
 - 环境 ID 已配置: cloud1-d4gtpsssef2dcbcf8（app.js 第 22 行）
-- 集合需在云开发控制台手动创建（7 个: posts, comments, likes, collects, messages, feedback, users）
+- 集合需在云开发控制台手动创建（9 个: posts, comments, likes, collects, messages, feedback, users, activities, signups）
 - 首次加载可能 timeout（冷启动），重编译即可
 - 权限设置见 docs/database-schema.md
 - cloudfunctions/login/index.js 用 wx-server-sdk，返回 openid/appid/unionid
@@ -76,7 +77,7 @@
 - 头像字段名统一为 `avatarUrl`（存的是 fileID）：login 读 `user.avatarUrl`、updateProfile 写 `avatarUrl`、auth `updateUserProfile` 传 `avatarUrl`。历史曾用 `avatarFileID`，已全部统一。
 
 ## mock fallback 与枚举字段
-- `withMockFallback` 把「空数组」当无效会塞 mock 假数据，混淆真实/预览数据。列表查询（forum 帖子、detail 评论）已去掉这层；`db.js` 内部 query 云失败时已降级本地 mock，页面层不要再套一层 withMockFallback。
+- `withMockFallback` 把「空数组」当无效会塞 mock 假数据，混淆真实/预览数据。列表查询（detail 评论）已去掉这层；`db.js` 内部 query 云失败时已降级本地 mock，页面层不要再套一层 withMockFallback。
 - 枚举字段（如 `posts.category`）的页面标签值必须和实际数据精确一致，云端 `where({category})` 是精确匹配，对不上会查空触发降级。标准分类：学习方法 / AI 工具 / 读书笔记 / 自我提升。
 
 ## 登录流程设计原则

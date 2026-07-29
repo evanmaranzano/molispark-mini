@@ -19,13 +19,13 @@
       </view>
     </view>
 
-    <view class="search-box" bindtap="goSearch">🔍 <text>搜索帖子、专区或内容</text></view>
+    <view class="search-box" bindtap="goSearch">🔍 <text>搜索帖子、精选或内容</text></view>
 
     <view class="hero-card">
       <view class="hero-card__content">
         <view class="hero-card__title">深度思考，<text>\n</text>共同成长</view>
         <view class="hero-card__desc">与优秀的人一起，探索知识的边界</view>
-        <view class="hero-card__button" bindtap="goZones">了解专区</view>
+        <view class="hero-card__button" bindtap="goZones">了解精选</view>
       </view>
     </view>
 
@@ -49,7 +49,7 @@
 
     <view class="section-head">
       <view class="section-head__title">推荐内容</view>
-      <view class="section-head__more" bindtap="goForum">更多 ›</view>
+      <view class="section-head__more" bindtap="goZones">更多 ›</view>
     </view>
 
     <view wx:if="{{loadError}}" class="empty-hint">推荐内容暂时无法加载</view>
@@ -62,7 +62,7 @@
             <view class="post-card__avatar">{{item.authorInitial}}</view>
             <text>{{item.author}}</text>
             <text>·</text>
-            <text>{{item.time}}</text>
+            <text>{{item.timeText || item.time}}</text>
           </view>
         </view>
         <view class="post-card__cover post-card__cover--{{item.coverStyle}}">

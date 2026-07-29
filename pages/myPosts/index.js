@@ -2,6 +2,7 @@ const { query, removeById } = require('~/utils/db');
 const { withMockFallback } = require('~/utils/mockFallback');
 const mock = require('~/mock/community');
 const loginGuard = require('~/behaviors/loginGuard');
+const { formatTime } = require('~/utils/time');
 
 Page({
   behaviors: [loginGuard],
@@ -28,7 +29,7 @@ Page({
       () => mock.getMyPosts()
     );
     this.setData({
-      posts: Array.isArray(result) ? result : [],
+      posts: (Array.isArray(result) ? result : []).map((item) => ({ ...item, timeText: formatTime(item.createdAt || item.time) })),
       loading: false,
       loadError: Boolean(result && result.__loadError),
     });

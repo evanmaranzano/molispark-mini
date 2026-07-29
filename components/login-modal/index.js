@@ -1,6 +1,7 @@
 const {
   loginWithCloud,
   updateUserProfile,
+  updateSessionProfile,
   isProfileComplete,
   getDefaultProfile,
   getSession,
@@ -41,6 +42,52 @@ Component({
 
   methods: {
     noop() {},
+
+    // 手机号快速验证登录：button open-type="getPhoneNumber" 回调。
+    // 先确保微信登录态（拿 openid），再把 code 交给 login 云函数换手机号。
+    // 能力受限（个人主体/未开通）时云函数返回 PHONE_FAILED，降级提示走微信登录。
+    onGetPhoneNumber(e) {
+      const code = e && e.detail && e.detail.code;
+      if (!code) {
+        if (e && e.detail && e.detail.errMsg && e.detail.errMsg.indexOf('deny') === -1) {
+          console.warn('[login-modal] getPhoneNumber failed:', e.detail.errMsg);
+        }
+        wx.showToast({ title: '未授权手机号', icon: 'none' });
+        return;
+      }
+      if (!isCloudReady()) {
+        wx.showToast({ title: '当前环境不支持手机号登录', icon: 'none' });
+        return;
+      }
+
+      wx.showLoading({ title: '登录中', mask: true });
+      loginWithCloud(getDefaultProfile())
+        .then((session) =>
+          wx.cloud
+            .callFunction({ name: 'login', data: { action: 'phone', code } })
+            .then((res) => ({ session, result: res.result || {} }))
+        )
+        .then(({ session, result }) => {
+          wx.hideLoading();
+          if (!result.success || !result.phoneNumber) {
+            console.error('[login-modal] phone login failed:', result.code, result.error || '');
+            wx.showToast({ title: '手机号登录失败，请用微信登录', icon: 'none' });
+            return;
+          }
+          const merged = updateSessionProfile({ phoneNumber: result.phoneNumber });
+          const profile = merged ? merged.profile : session.profile;
+          if (isProfileComplete(profile)) {
+            this.finishLogin();
+          } else {
+            this.setData({ needSetup: true });
+          }
+        })
+        .catch((err) => {
+          wx.hideLoading();
+          console.error('[login-modal] phone login error:', err);
+          wx.showToast({ title: '手机号登录失败，请用微信登录', icon: 'none' });
+        });
+    },
 
     onLogin() {
       wx.showLoading({ title: '登录中', mask: true });

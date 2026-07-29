@@ -218,7 +218,91 @@ async function seedPost(post) {
   }
 }
 
+// 预置活动：活动报名功能的初始内容。幂等：确定性 _id（seed-activity-N），重复调用只创建一次。
+// 权限同 posts：「所有用户可读」，任何用户可见，报名/取消走 activity 云函数。
+const SEED_ACTIVITIES = [
+  {
+    _id: 'seed-activity-1',
+    title: '周末共读会：主题阅读实战',
+    desc: '带一本你最近在读的书，现场完成一次主题阅读练习，并分享你的问题清单。',
+    location: '线上 · 腾讯会议',
+    startTime: '2026-08-08 14:00',
+    endTime: '2026-08-08 16:00',
+    quota: 30,
+    signupCount: 0,
+    coverStyle: 'book',
+    heroTitle: 'READ TOGETHER',
+  },
+  {
+    _id: 'seed-activity-2',
+    title: 'AI 工具工作坊：搭建个人工作流',
+    desc: '从信息获取、内容整理到任务执行，现场搭一个属于你自己的 AI 工作流。',
+    location: '上海 · 创智天地 3 号楼',
+    startTime: '2026-08-15 10:00',
+    endTime: '2026-08-15 12:00',
+    quota: 20,
+    signupCount: 0,
+    coverStyle: 'ai',
+    heroTitle: 'AI WORKFLOW',
+  },
+  {
+    _id: 'seed-activity-3',
+    title: '21 天早起打卡营（第 5 期）',
+    desc: '每天 7:30 前打卡，群内互相监督。完成 21 天打卡可领取结营证书。',
+    location: '线上 · 微信群',
+    startTime: '2026-08-01 07:00',
+    endTime: '2026-08-21 23:59',
+    quota: 0,
+    signupCount: 0,
+    coverStyle: 'note',
+    heroTitle: 'RISE EARLY',
+  },
+  {
+    _id: 'seed-activity-4',
+    title: '摩力AI亲子公益沙龙 第三期：不会写代码，也能做游戏？',
+    desc: '小学女创客现场教你！让孩子从「玩家」变成「创作者」，用 WorkBuddy 做一款属于你的小游戏。主办：鼓楼区人工智能产业加速中心公共服务平台、福州摩力创境运营管理有限公司、五凤街道党工委/办事处、广厦社区。',
+    location: '福州市鼓楼区五凤街道铜盘路323号 人工智能产业加速中心二楼共享中心',
+    startTime: '2026-07-25 09:30',
+    endTime: '2026-07-25 11:30',
+    quota: 0,
+    signupCount: 0,
+    cover: '/assets/activities/moli-salon-3.jpg',
+    coverStyle: 'ai',
+    heroTitle: 'AI KIDS MAKER',
+  },
+];
+
+async function seedActivity(activity) {
+  try {
+    await db.collection('activities').doc(activity._id).get();
+    return { _id: activity._id, status: 'exists' };
+  } catch (e) {
+    const now = db.serverDate();
+    try {
+      await db.collection('activities').add({
+        data: {
+          ...activity,
+          status: 'published',
+          _openid: 'seed-author',
+          createdAt: now,
+          updatedAt: now,
+        },
+      });
+      return { _id: activity._id, status: 'created' };
+    } catch (err) {
+      await db.collection('activities').doc(activity._id).get();
+      return { _id: activity._id, status: 'exists' };
+    }
+  }
+}
+
 exports.main = async () => {
   const results = await Promise.all(SEED_POSTS.map((post) => seedPost(post)));
-  return { success: true, total: SEED_POSTS.length, results };
+  const activityResults = await Promise.all(SEED_ACTIVITIES.map((activity) => seedActivity(activity)));
+  return {
+    success: true,
+    total: SEED_POSTS.length + SEED_ACTIVITIES.length,
+    results,
+    activityResults,
+  };
 };

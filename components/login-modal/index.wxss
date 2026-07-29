@@ -51,6 +51,14 @@
   color: #fff;
 }
 
+.login-modal__btn--phone {
+  margin-top: 20rpx;
+  background: #fff;
+  color: #2fb67d;
+  border: 2rpx solid #2fb67d;
+  box-sizing: border-box;
+}
+
 .login-modal__btn::after {
   border: none;
 }

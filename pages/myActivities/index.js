@@ -1,35 +1,33 @@
-import { getCollectedPosts } from '~/utils/db';
+import { getMySignups } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
-import { getFavoritePosts } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
-const { formatTime } = require('~/utils/time');
 
 Page({
   behaviors: [loginGuard],
 
   data: {
-    posts: [],
+    signups: [],
     loading: true,
     loadError: false,
   },
 
   onShow() {
-    if (this.checkLoginGuard()) this.loadFavorites();
+    if (this.checkLoginGuard()) this.loadSignups();
   },
 
   onLoginGuardPassed() {
-    this.loadFavorites();
+    this.loadSignups();
   },
 
-  async loadFavorites() {
+  async loadSignups() {
     const app = getApp();
     const openid = app.globalData.openid || 'local-openid';
     const result = await withMockFallback(
-      () => getCollectedPosts(openid),
-      () => getFavoritePosts()
+      () => getMySignups(openid),
+      () => []
     );
     this.setData({
-      posts: (Array.isArray(result) ? result : []).map((item) => ({ ...item, timeText: formatTime(item.createdAt || item.time) })),
+      signups: Array.isArray(result) ? result : [],
       loading: false,
       loadError: Boolean(result && result.__loadError),
     });
@@ -40,6 +38,10 @@ Page({
   },
 
   goDetail(e) {
-    wx.navigateTo({ url: `/pages/detail/index?id=${e.currentTarget.dataset.id}` });
+    wx.navigateTo({ url: `/pages/activityDetail/index?id=${e.currentTarget.dataset.id}` });
+  },
+
+  goActivities() {
+    wx.navigateTo({ url: '/pages/activities/index' });
   },
 });

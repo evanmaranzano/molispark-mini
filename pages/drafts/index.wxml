@@ -12,7 +12,7 @@
       <view class="draft-card" wx:for="{{drafts}}" wx:key="_id">
         <view class="draft-card__title">{{item.title}}</view>
         <view class="draft-card__desc">{{item.desc}}</view>
-        <view class="draft-card__time">{{item.time || item.updatedAt}}</view>
+        <view class="draft-card__time">{{item.timeText || item.time}}</view>
         <view class="draft-card__actions">
           <view class="draft-card__button draft-card__button--outline" data-id="{{item._id || item.id}}" bindtap="editDraft">继续编辑</view>
           <view class="draft-card__button draft-card__button--gray" data-id="{{item._id || item.id}}" bindtap="deleteDraft">删除</view>

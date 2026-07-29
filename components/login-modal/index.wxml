@@ -6,6 +6,7 @@
 
     <block wx:if="{{!needSetup}}">
       <button class="login-modal__btn login-modal__btn--primary" bindtap="onLogin">微信一键登录</button>
+      <button class="login-modal__btn login-modal__btn--phone" open-type="getPhoneNumber" bindgetphonenumber="onGetPhoneNumber">手机号快捷登录</button>
     </block>
 
     <block wx:else>

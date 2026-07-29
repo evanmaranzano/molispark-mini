@@ -8,6 +8,7 @@ import {
   isLiked,
   normalizeContent,
   recordHistory,
+  setFeatured,
   toggleCollect,
   toggleLike,
   updatePost,
@@ -16,11 +17,14 @@ import { withMockFallbackOne } from '~/utils/mockFallback';
 import { getPostById as mockGetPostById } from '~/mock/community';
 import { getTempFileURL } from '~/utils/storage';
 import { isCloudReady } from '~/utils/cloud';
+const { getSession } = require('~/utils/auth');
+const { formatTime } = require('~/utils/time');
 
 function withNameInitial(list = []) {
   return list.map((item) => ({
     ...item,
     nameInitial: item.name ? item.name.slice(0, 1) : '',
+    timeText: formatTime(item.createdAt || item.time),
   }));
 }
 
@@ -28,6 +32,7 @@ function withAuthorInitial(post) {
   return {
     ...post,
     authorInitial: post.author ? post.author.slice(0, 1) : '',
+    timeText: formatTime(post.createdAt || post.time),
   };
 }
 
@@ -40,6 +45,7 @@ Page({
     commentText: '',
     showCommentInput: false,
     loadError: false,
+    isAdmin: false,
     actionList: [
       { key: 'like', label: '点赞', icon: '👍' },
       { key: 'collect', label: '收藏', icon: '⭐' },
@@ -67,7 +73,12 @@ Page({
     }
     if (post) {
       post.content = normalizeContent(post.content);
-      this.setData({ post: withAuthorInitial(post), loadError: false });
+      const session = getSession();
+    this.setData({
+      post: withAuthorInitial(post),
+      loadError: false,
+      isAdmin: Boolean(session && session.profile && session.profile.role === 'admin'),
+    });
       this.resolveImages(post.images);
       this.incrementViews(post);
       this.recordHistory();
@@ -136,6 +147,22 @@ Page({
       await recordHistory(this.postId, openid);
     } catch (err) {
       // 静默失败
+    }
+  },
+
+  async toggleFeature() {
+    if (!this.data.isAdmin || !this.data.post) return;
+    const target = !this.data.post.featured;
+    try {
+      const result = await setFeatured(this.postId, target);
+      if (result && result.code) {
+        wx.showToast({ title: result.code === 'FORBIDDEN' ? '无加精权限' : '操作失败', icon: 'none' });
+        return;
+      }
+      this.setData({ 'post.featured': result.featured });
+      wx.showToast({ title: result.featured ? '已加精' : '已取消加精', icon: 'none' });
+    } catch (err) {
+      wx.showToast({ title: '操作失败', icon: 'none' });
     }
   },
 

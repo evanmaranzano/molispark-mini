@@ -5,7 +5,7 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
 
-const VALID_ACTIONS = ['view', 'like', 'unlike', 'collect', 'uncollect', 'comment'];
+const VALID_ACTIONS = ['view', 'like', 'unlike', 'collect', 'uncollect', 'comment', 'feature', 'unfeature'];
 
 function getDateStr() {
   const d = new Date(Date.now() + 8 * 60 * 60 * 1000);
@@ -224,6 +224,28 @@ async function handleComment(postId, openid, content, counts) {
   });
 }
 
+async function isAdmin(openid) {
+  // users 文档主键约定 _id=openid，但历史上可能存在 auto _id + openid 字段的旧档，
+  // 两种查法都试，任一命中 role='admin' 即视为管理员（与 login 的 where({openid}) 对齐）。
+  try {
+    const res = await db.collection('users').where({ openid }).get();
+    if (res.data.some((u) => u.role === 'admin')) return true;
+  } catch (e) {
+    // 继续尝试按 _id 查
+  }
+  try {
+    const res = await db.collection('users').doc(openid).get();
+    return Boolean(res.data && res.data.role === 'admin');
+  } catch (e) {
+    return false;
+  }
+}
+
+async function handleFeature(postId, featured) {
+  await db.collection('posts').doc(postId).update({ data: { featured } });
+  return makeResponse(featured ? 'feature' : 'unfeature', postId, { state: { featured } });
+}
+
 exports.main = async (event = {}) => {
   const { OPENID } = cloud.getWXContext();
   if (!OPENID) return { success: false, code: 'UNAUTHORIZED' };
@@ -245,6 +267,16 @@ exports.main = async (event = {}) => {
   const { post, counts } = postInfo;
   if (post.status && post.status !== 'published') {
     return { success: false, code: 'POST_UNAVAILABLE' };
+  }
+
+  if (action === 'feature' || action === 'unfeature') {
+    if (!(await isAdmin(OPENID))) return { success: false, code: 'FORBIDDEN' };
+    try {
+      return await handleFeature(postId, action === 'feature');
+    } catch (err) {
+      console.error('feature failed:', postId, err.message);
+      return { success: false, code: 'INTERNAL_ERROR' };
+    }
   }
 
   try {

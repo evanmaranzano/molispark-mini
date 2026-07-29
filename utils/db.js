@@ -183,6 +183,8 @@ function seedLocalDb() {
       viewedAt: nowText(),
     })),
     feedback: [],
+    activities: (mock.activities || []).map((item) => ({ ...item })),
+    signups: [],
   };
 }
 
@@ -644,17 +646,177 @@ async function getUserStats(openid) {
   };
 }
 
+async function callActivity(payload) {
+  if (!isCloudReady()) return null;
+  try {
+    const res = await wx.cloud.callFunction({ name: 'activity', data: payload });
+    return res.result;
+  } catch (err) {
+    console.error('callActivity failed:', err);
+    return null;
+  }
+}
+
+async function getActivities(options = {}) {
+  return query('activities', { status: 'published' }, {
+    orderBy: options.orderBy || 'startTime',
+    order: options.order || 'asc',
+    limit: options.limit || 20,
+    skip: options.skip || 0,
+  });
+}
+
+async function getActivityById(id) {
+  return getById('activities', id);
+}
+
+async function getMySignups(openid, options = {}) {
+  return query('signups', { openid: openid || getCurrentOpenid(), status: 'signed' }, {
+    orderBy: 'createdAt',
+    order: 'desc',
+    limit: options.limit || 50,
+  });
+}
+
+async function getSignup(activityId, openid) {
+  const list = await query('signups', { activityId, openid: openid || getCurrentOpenid() }, { limit: 1 });
+  return list[0] || null;
+}
+
+async function signupActivity(activityId, info = {}) {
+  if (isCloudReady()) {
+    const result = await callActivity({
+      action: 'signup',
+      activityId,
+      name: info.name,
+      phone: info.phone,
+      note: info.note,
+    });
+    if (result && result.success) {
+      return { signed: true, signupCount: result.counts.signupCount };
+    }
+    if (result && result.code) {
+      return { signed: false, code: result.code };
+    }
+  }
+
+  // 本地降级：手动维护 signups + signupCount
+  const openid = getCurrentOpenid();
+  const existing = await getSignup(activityId, openid);
+  if (existing && existing.status === 'signed') return { signed: true };
+  const activity = await getActivityById(activityId);
+  if (activity) {
+    const quota = Number(activity.quota) || 0;
+    if (quota > 0 && (activity.signupCount || 0) >= quota) return { signed: false, code: 'QUOTA_FULL' };
+  }
+  if (existing && existing.status === 'cancelled') {
+    await updateById('signups', existing._id, { ...info, status: 'signed', updatedAt: serverDate() });
+  } else {
+    await add('signups', {
+      activityId,
+      openid,
+      name: info.name || '',
+      phone: info.phone || '',
+      note: info.note || '',
+      status: 'signed',
+      activityTitle: activity ? activity.title || '' : '',
+      activityTime: activity ? activity.startTime || '' : '',
+      activityLocation: activity ? activity.location || '' : '',
+      createdAt: serverDate(),
+      updatedAt: serverDate(),
+    });
+  }
+  await updateById('activities', activityId, { signupCount: _.inc(1) });
+  return { signed: true };
+}
+
+async function cancelSignup(activityId) {
+  if (isCloudReady()) {
+    const result = await callActivity({ action: 'cancel', activityId });
+    if (result && result.success) {
+      return { signed: false, signupCount: result.counts.signupCount };
+    }
+    if (result && result.code) {
+      return { signed: true, code: result.code };
+    }
+  }
+
+  const openid = getCurrentOpenid();
+  const existing = await getSignup(activityId, openid);
+  if (!existing || existing.status === 'cancelled') return { signed: false };
+  await updateById('signups', existing._id, { status: 'cancelled', updatedAt: serverDate() });
+  await updateById('activities', activityId, { signupCount: _.inc(-1) });
+  return { signed: false };
+}
+
+// 加精/取消加精（管理员）：云走 interact feature/unfeature，本地降级直接改 posts.featured
+async function setFeatured(postId, featured) {
+  if (isCloudReady()) {
+    const result = await callInteract({ action: featured ? 'feature' : 'unfeature', postId });
+    if (result && result.success) return { featured: result.state.featured };
+    return { code: (result && result.code) || 'INTERNAL_ERROR' };
+  }
+  await updateById('posts', postId, { featured });
+  return { featured };
+}
+
+// 发布活动（管理员）：云走 activity create，本地降级直接写 activities 集合
+async function createActivity(data = {}) {
+  const quota = Math.max(0, Number(data.quota) || 0);
+  if (isCloudReady()) {
+    const result = await callActivity({ action: 'create', ...data, quota });
+    if (result && result.success) return { activityId: result.data.activityId };
+    return { code: (result && result.code) || 'INTERNAL_ERROR' };
+  }
+  const res = await add('activities', {
+    title: data.title || '',
+    desc: data.desc || '',
+    location: data.location || '',
+    startTime: data.startTime || '',
+    endTime: data.endTime || '',
+    quota,
+    signupCount: 0,
+    coverStyle: data.coverStyle || 'book',
+    heroTitle: data.heroTitle || '',
+    status: 'published',
+    createdAt: serverDate(),
+    updatedAt: serverDate(),
+  });
+  return { activityId: res._id };
+}
+
+// 删除活动（管理员）：云走 activity remove，本地降级清 signups + 删 activities
+async function removeActivity(activityId) {
+  if (isCloudReady()) {
+    const result = await callActivity({ action: 'remove', activityId });
+    if (result && result.success) return { removed: true };
+    return { code: (result && result.code) || 'INTERNAL_ERROR' };
+  }
+  await removeWhere('signups', { activityId });
+  await removeById('activities', activityId);
+  return { removed: true };
+}
+
 module.exports = {
   _,
   $,
   add,
   aggregate,
   callInteract,
+  callActivity,
+  cancelSignup,
+  createActivity,
   col,
   count,
   createPost,
   db: null,
   deletePost,
+  getActivities,
+  getActivityById,
+  getMySignups,
+  getSignup,
+  setFeatured,
+  signupActivity,
   getById,
   getCloudDb,
   getCollectedPosts,
@@ -669,6 +831,7 @@ module.exports = {
   markMessageRead,
   normalizeContent,
   query,
+  removeActivity,
   recordHistory,
   removeById,
   removeWhere,

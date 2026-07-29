@@ -4,7 +4,6 @@
     "pages/release/index",
     "pages/my/index",
     "pages/detail/index",
-    "pages/forum/index",
     "pages/zones/index",
     "pages/message/index",
     "pages/publishForm/index",
@@ -12,7 +11,11 @@
     "pages/myPosts/index",
     "pages/favorites/index",
     "pages/history/index",
-    "pages/feedback/index"
+    "pages/feedback/index",
+    "pages/activities/index",
+    "pages/activityDetail/index",
+    "pages/activityPublish/index",
+    "pages/myActivities/index"
   ],
   "subpackages": [
     {

@@ -3,7 +3,7 @@
   <view class="message-hero">
     <view class="message-hero__eyebrow">Inbox Center</view>
     <view class="message-hero__title">消息</view>
-    <view class="message-hero__desc">把论坛回复、星球通知和私信会话收进一个可快速处理的消息面板。</view>
+    <view class="message-hero__desc">把互动通知、星球提醒和私信会话收进一个可快速处理的消息面板。</view>
 
     <view class="message-hero__stats">
       <view class="message-hero__stat" wx:for="{{summaryCards}}" wx:key="label">

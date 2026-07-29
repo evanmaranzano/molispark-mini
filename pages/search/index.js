@@ -1,6 +1,7 @@
 import { getPosts } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { getPublishedPosts, searchKeywords, searchPosts } from '~/mock/community';
+const { formatTime } = require('~/utils/time');
 
 function buildKeywordItems(list, currentValue) {
   return list.map((item) => ({
@@ -11,7 +12,8 @@ function buildKeywordItems(list, currentValue) {
 }
 
 function toPostList(result) {
-  return Array.isArray(result) ? result : [];
+  const list = Array.isArray(result) ? result : [];
+  return list.map((item) => ({ ...item, timeText: formatTime(item.createdAt || item.time) }));
 }
 
 Page({

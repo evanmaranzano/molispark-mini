@@ -11,6 +11,7 @@ const posts = [
     likes: 256,
     comments: 78,
     status: 'published',
+    featured: true,
     coverStyle: 'book',
     content: [
       '很多人学习一项新技能时，往往把时间花在“搜资料”和“收藏资料”上，却没有真正进入实践。',
@@ -69,11 +70,12 @@ const posts = [
     author: '知行小编',
     time: '3 天前',
     category: '自我提升',
-    type: '专区',
+    type: '精选',
     views: 632,
     likes: 118,
     comments: 31,
     status: 'published',
+    featured: true,
     coverStyle: 'book',
     content: [
       '深度思考不是“想得久”，而是能持续围绕一个问题推进，而不被即时反馈打断。',
@@ -140,8 +142,8 @@ const drafts = [
 ];
 
 const quickActions = [
-  { key: 'forum', title: '论坛', desc: '交流讨论', icon: 'chat', color: '#2fb67d', path: '/pages/forum/index' },
-  { key: 'zones', title: '专区', desc: '精选内容', icon: 'diamond', color: '#ffb74a', path: '/pages/zones/index' },
+  { key: 'zones', title: '精选', desc: '加精好文', icon: 'diamond', color: '#ffb74a', path: '/pages/zones/index' },
+  { key: 'activities', title: '活动', desc: '报名参与', icon: 'star', color: '#b97a43', path: '/pages/activities/index' },
   { key: 'search', title: '头条', desc: '最新动态', icon: 'star', color: '#4f9df7', path: '/pages/search/index' },
 ];
 
@@ -179,11 +181,11 @@ const zones = [
 const messages = [
   {
     id: 'msg-1',
-    name: '论坛助手',
+    name: '互动助手',
     avatarText: '论',
     preview: '你关注的帖子新增了 12 条回复，建议优先查看。',
     time: '8 分钟前',
-    scene: '论坛回复',
+    scene: '互动回复',
     unreadCount: 3,
     postId: 1,
   },
@@ -236,6 +238,8 @@ const myMenus = [
   { title: '我的帖子', desc: '查看已发布与草稿内容', color: '#2fb67d' },
   { title: '我的收藏', desc: '管理收藏的内容详情', color: '#ffb74a' },
   { title: '浏览记录', desc: '继续阅读最近浏览内容', color: '#4f9df7' },
+  { title: '活动报名', desc: '查看最新活动并报名', color: '#b97a43', url: '/pages/activities/index' },
+  { title: '我的报名', desc: '管理已报名的活动', color: '#4aa978', url: '/pages/myActivities/index' },
 ];
 
 const myServices = [
@@ -246,6 +250,67 @@ const myServices = [
 const favoritePostIds = [1, 4];
 const historyPostIds = [1, 2, 3];
 const myPostIds = [1, 5];
+
+// 活动 mock：与 cloudfunctions/seed 的 SEED_ACTIVITIES 对齐，作为离线/降级数据源
+const activities = [
+  {
+    id: 1,
+    _id: 'mock-activity-1',
+    title: '周末共读会：主题阅读实战',
+    desc: '带一本你最近在读的书，现场完成一次主题阅读练习，并分享你的问题清单。',
+    location: '线上 · 腾讯会议',
+    startTime: '2026-08-08 14:00',
+    endTime: '2026-08-08 16:00',
+    quota: 30,
+    signupCount: 12,
+    coverStyle: 'book',
+    heroTitle: 'READ TOGETHER',
+    status: 'published',
+  },
+  {
+    id: 2,
+    _id: 'mock-activity-2',
+    title: 'AI 工具工作坊：搭建个人工作流',
+    desc: '从信息获取、内容整理到任务执行，现场搭一个属于你自己的 AI 工作流。',
+    location: '上海 · 创智天地 3 号楼',
+    startTime: '2026-08-15 10:00',
+    endTime: '2026-08-15 12:00',
+    quota: 20,
+    signupCount: 8,
+    coverStyle: 'ai',
+    heroTitle: 'AI WORKFLOW',
+    status: 'published',
+  },
+  {
+    id: 3,
+    _id: 'mock-activity-3',
+    title: '21 天早起打卡营（第 5 期）',
+    desc: '每天 7:30 前打卡，群内互相监督。完成 21 天打卡可领取结营证书。',
+    location: '线上 · 微信群',
+    startTime: '2026-08-01 07:00',
+    endTime: '2026-08-21 23:59',
+    quota: 0,
+    signupCount: 45,
+    coverStyle: 'note',
+    heroTitle: 'RISE EARLY',
+    status: 'published',
+  },
+  {
+    id: 4,
+    _id: 'mock-activity-4',
+    title: '摩力AI亲子公益沙龙 第三期：不会写代码，也能做游戏？',
+    desc: '小学女创客现场教你！让孩子从「玩家」变成「创作者」，用 WorkBuddy 做一款属于你的小游戏。主办：鼓楼区人工智能产业加速中心公共服务平台、福州摩力创境运营管理有限公司、五凤街道党工委/办事处、广厦社区。',
+    location: '福州市鼓楼区五凤街道铜盘路323号 人工智能产业加速中心二楼共享中心',
+    startTime: '2026-07-25 09:30',
+    endTime: '2026-07-25 11:30',
+    quota: 0,
+    signupCount: 36,
+    cover: '/assets/activities/moli-salon-3.jpg',
+    coverStyle: 'ai',
+    heroTitle: 'AI KIDS MAKER',
+    status: 'published',
+  },
+];
 
 const searchKeywords = ['学习方法', '时间管理', 'AI 工具', '读书笔记', '自我提升'];
 
@@ -299,7 +364,20 @@ function getMyPosts() {
   return getPostsByIds(myPostIds);
 }
 
+function getFeaturedPosts() {
+  return posts.filter((item) => item.featured && item.status === 'published');
+}
+
+function getActivities() {
+  return activities.filter((item) => item.status === 'published');
+}
+
+function getActivityById(id) {
+  return activities.find((item) => item._id === id || String(item.id) === String(id)) || null;
+}
+
 export {
+  activities,
   comments,
   drafts,
   favoritePostIds,
@@ -315,7 +393,10 @@ export {
   zones,
   messages,
   getDraftPosts,
+  getActivities,
+  getActivityById,
   getFavoritePosts,
+  getFeaturedPosts,
   getHistoryPosts,
   getMessageSummary,
   getMyPosts,

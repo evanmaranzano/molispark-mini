@@ -1,0 +1,26 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <status-bar compact />
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">我的报名</view>
+    </view>
+
+    <view wx:if="{{loadError}}" class="empty-hint">报名记录暂时无法加载</view>
+    <block wx:elif="{{!signups.length && !loading}}">
+      <view class="empty-hint">还没有报名任何活动</view>
+      <view class="go-activities" bindtap="goActivities">去看看活动 ›</view>
+    </block>
+    <view class="post-list">
+      <view class="signup-card" wx:for="{{signups}}" wx:key="_id" data-id="{{item.activityId}}" bindtap="goDetail">
+        <view class="signup-card__body">
+          <view class="signup-card__title">{{item.activityTitle}}</view>
+          <view class="signup-card__meta">🕒 {{item.activityTime}}</view>
+          <view class="signup-card__meta">📍 {{item.activityLocation}}</view>
+        </view>
+        <view class="signup-card__status">已报名</view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+<login-modal show="{{showLoginModal}}" bind:logined="onLogined" />

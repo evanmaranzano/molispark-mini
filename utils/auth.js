@@ -92,6 +92,14 @@ function getCachedProfile(openid) {
   });
 }
 
+// 合并写回 session 中的 profile（如手机号登录后补 phoneNumber），不发云请求
+function updateSessionProfile(partial = {}) {
+  const session = getSession();
+  if (!session) return null;
+  session.profile = { ...session.profile, ...partial };
+  return setSession(session);
+}
+
 function updateUserProfile(nickName, avatarFileID) {
   if (!isCloudReady()) {
     const profile = { nickName, avatarUrl: avatarFileID || '' };
@@ -139,5 +147,6 @@ module.exports = {
   loginWithCloud,
   normalizeSession,
   setSession,
+  updateSessionProfile,
   updateUserProfile,
 };

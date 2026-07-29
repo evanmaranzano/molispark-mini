@@ -2,6 +2,7 @@ const { getDrafts, removeById } = require('~/utils/db');
 const { withMockFallback } = require('~/utils/mockFallback');
 const mock = require('~/mock/community');
 const loginGuard = require('~/behaviors/loginGuard');
+const { formatTime } = require('~/utils/time');
 
 Page({
   behaviors: [loginGuard],
@@ -28,7 +29,7 @@ Page({
       () => mock.drafts
     );
     this.setData({
-      drafts: Array.isArray(result) ? result : [],
+      drafts: (Array.isArray(result) ? result : []).map((item) => ({ ...item, timeText: formatTime(item.updatedAt || item.time) })),
       loading: false,
       loadError: Boolean(result && result.__loadError),
     });

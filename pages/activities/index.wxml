@@ -1,0 +1,31 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}">
+  <status-bar compact />
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">活动报名</view>
+    </view>
+
+    <view wx:if="{{isAdmin}}" class="publish-entry" bindtap="goPublish">+ 发布新活动</view>
+
+    <view wx:if="{{loadError}}" class="empty-hint">活动暂时无法加载</view>
+    <view wx:elif="{{!activities.length && !loading}}" class="empty-hint">暂无进行中的活动</view>
+    <view class="post-list">
+      <view class="activity-card" wx:for="{{activities}}" wx:key="_id" data-id="{{item._id || item.id}}" bindtap="goDetail">
+        <image wx:if="{{item.cover}}" class="activity-card__poster" src="{{item.cover}}" mode="aspectFill" />
+        <view wx:else class="activity-card__cover activity-card__cover--{{item.coverStyle}}">
+          <view class="activity-card__cover-title">{{item.heroTitle || item.title}}</view>
+        </view>
+        <view class="activity-card__body">
+          <view class="activity-card__title">{{item.title}}</view>
+          <view class="activity-card__meta">🕒 {{item.timeText}}</view>
+          <view class="activity-card__meta">📍 {{item.location}}</view>
+          <view class="activity-card__foot">
+            <text class="activity-card__quota">{{item.quotaText}}</text>
+            <text class="activity-card__status {{item.full ? 'activity-card__status--full' : ''}}">{{item.full ? '名额已满' : '报名中'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

@@ -3,12 +3,14 @@ import { getPosts, count } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { getPublishedPosts, quickActions } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
+const { formatTime } = require('~/utils/time');
 
 function withAuthorInitial(list = []) {
   const safeList = Array.isArray(list) ? list : [];
   return safeList.map((item) => ({
     ...item,
     authorInitial: item.author ? item.author.slice(0, 1) : '',
+    timeText: formatTime(item.createdAt || item.time),
   }));
 }
 
@@ -110,10 +112,6 @@ Page({
 
   goZones() {
     wx.navigateTo({ url: '/pages/zones/index' });
-  },
-
-  goForum() {
-    wx.navigateTo({ url: '/pages/forum/index' });
   },
 
   goMessages() {
