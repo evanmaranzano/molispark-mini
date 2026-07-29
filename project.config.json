@@ -2,7 +2,20 @@
   "description": "项目配置文件，详见文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html",
   "cloudfunctionRoot": "cloudfunctions/",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      { "type": "folder", "value": "source-assets" },
+      { "type": "folder", "value": "diagrams" },
+      { "type": "folder", "value": "docs" },
+      { "type": "folder", "value": "test" },
+      { "type": "folder", "value": "scripts" },
+      { "type": "folder", "value": "node_modules" },
+      { "type": "file", "value": "mindmap.png" },
+      { "type": "file", "value": "mindmap-raw.json" },
+      { "type": "file", "value": "README.md" },
+      { "type": "file", "value": "CLAUDE.md" },
+      { "type": "file", "value": "AGENTS.md" },
+      { "type": "file", "value": "LICENSE" }
+    ],
     "include": []
   },
   "setting": {
