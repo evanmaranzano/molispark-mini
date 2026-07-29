@@ -9,7 +9,7 @@
  * - 互动类（addComment/toggleLike/toggleCollect）：云优先走 interact 云函数，callInteract 返回
  *   null 或 success=false 时回退本地手动 ±1。v0.2 计划抽 mock fallback 中间层统一处理。
  * - callInteract 云不可用时返回 null（不抛错），降级路径由调用方决定。
- * - v0.1 调试期：add 的 catch 会 console.error 打印降级日志，v0.2 移除。
+ * - v0.2.5：add 降级日志已移除，降级静默进行（allowMockFallback 仍控制是否允许降级）。
  */
 
 const mock = require('~/mock/community');
@@ -279,7 +279,6 @@ async function add(collection, data) {
       return await db.collection(collection).add({ data: toCloudObject(data, db) });
     } catch (err) {
       if (!allowMockFallback()) throw err;
-      console.error(`[db] cloud add to "${collection}" failed, falling back to local:`, err.errMsg || err.message || err);
     }
   }
 
@@ -461,7 +460,6 @@ async function createPost(data) {
     ...data,
     status: 'published',
     author: data.author || profile.nickName || '微信用户',
-    time: '刚刚',
     views: 0,
     likes: 0,
     collectCount: 0,
@@ -625,6 +623,10 @@ async function recordHistory(postId, openid) {
     openid: userOpenid,
     viewedAt: serverDate(),
   });
+}
+
+async function deleteHistory(postId, openid) {
+  return removeWhere('history', { postId, openid: openid || getCurrentOpenid() });
 }
 
 async function getUserStats(openid) {
@@ -810,6 +812,7 @@ module.exports = {
   count,
   createPost,
   db: null,
+  deleteHistory,
   deletePost,
   getActivities,
   getActivityById,

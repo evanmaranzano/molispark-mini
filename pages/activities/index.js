@@ -48,6 +48,11 @@ Page({
     });
   },
 
+  retryLoad() {
+    this.setData({ loadError: false, loading: true });
+    this.loadActivities();
+  },
+
   navigateBack() {
     wx.navigateBack();
   },

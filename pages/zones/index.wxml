@@ -6,7 +6,7 @@
       <view class="sub-topbar__title">精选</view>
     </view>
 
-    <view wx:if="{{loadError}}" class="empty-hint">精选内容暂时无法加载</view>
+    <view wx:if="{{loadError}}" class="empty-hint" bindtap="retryLoad">精选内容暂时无法加载<view class="empty-hint__retry">点击重试</view></view>
     <view wx:elif="{{!posts.length && !loading}}" class="empty-hint">暂无精选内容</view>
     <view class="post-list">
       <view class="post-card" wx:for="{{posts}}" wx:key="_id" data-id="{{item._id || item.id}}" bindtap="goDetail">

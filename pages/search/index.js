@@ -92,6 +92,11 @@ Page({
     wx.navigateTo({ url: `/pages/detail/index?id=${e.currentTarget.dataset.id}` });
   },
 
+  retryLoad() {
+    this.setData({ loadError: false, loading: true });
+    this.loadAll();
+  },
+
   goBack() {
     wx.navigateBack();
   },

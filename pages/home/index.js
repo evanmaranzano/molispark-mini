@@ -106,6 +106,11 @@ Page({
     wx.navigateTo({ url: `/pages/detail/index?id=${id}` });
   },
 
+  retryLoad() {
+    this.setData({ loadError: false, loading: true });
+    this.loadRecommend();
+  },
+
   goSearch() {
     wx.navigateTo({ url: '/pages/search/index' });
   },

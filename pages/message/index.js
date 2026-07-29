@@ -2,6 +2,7 @@ import { getMessages, markMessageRead } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { messages as mockMessages } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
+const { formatTime } = require('~/utils/time');
 
 Page({
   behaviors: [loginGuard],
@@ -48,6 +49,7 @@ Page({
         ...item,
         read,
         avatarText: item.avatarText || (item.fromName ? item.fromName.slice(0, 1) : '消'),
+        timeText: formatTime(item.createdAt) || item.time,
         statusText: read ? '已读完' : '未读',
         showBadge: !read,
       };
@@ -66,6 +68,11 @@ Page({
       { label: '未读', value: String(unread).padStart(2, '0') },
       { label: '会话数', value: String(total).padStart(2, '0') },
     ];
+  },
+
+  retryLoad() {
+    this.setData({ loadError: false, loading: true });
+    this.loadMessages();
   },
 
   async goDetail(e) {

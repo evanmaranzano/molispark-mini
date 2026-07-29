@@ -8,7 +8,7 @@
 
     <view wx:if="{{isAdmin}}" class="publish-entry" bindtap="goPublish">+ 发布新活动</view>
 
-    <view wx:if="{{loadError}}" class="empty-hint">活动暂时无法加载</view>
+    <view wx:if="{{loadError}}" class="empty-hint" bindtap="retryLoad">活动暂时无法加载<view class="empty-hint__retry">点击重试</view></view>
     <view wx:elif="{{!activities.length && !loading}}" class="empty-hint">暂无进行中的活动</view>
     <view class="post-list">
       <view class="activity-card" wx:for="{{activities}}" wx:key="_id" data-id="{{item._id || item.id}}" bindtap="goDetail">

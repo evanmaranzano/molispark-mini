@@ -1,4 +1,4 @@
-import { getCollectedPosts } from '~/utils/db';
+import { getCollectedPosts, toggleCollect } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { getFavoritePosts } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
@@ -35,8 +35,26 @@ Page({
     });
   },
 
+  retryLoad() {
+    this.setData({ loadError: false, loading: true });
+    this.loadFavorites();
+  },
+
   navigateBack() {
     wx.navigateBack();
+  },
+
+  async onUncollect(e) {
+    const { id } = e.currentTarget.dataset;
+    const app = getApp();
+    const openid = app.globalData.openid || 'local-openid';
+    try {
+      await toggleCollect(id, openid, true);
+      this.setData({ posts: this.data.posts.filter((item) => String(item._id || item.id) !== String(id)) });
+      wx.showToast({ title: '已取消收藏', icon: 'none' });
+    } catch (err) {
+      wx.showToast({ title: '操作失败', icon: 'none' });
+    }
   },
 
   goDetail(e) {

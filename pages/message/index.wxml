@@ -19,7 +19,7 @@
       <view class="message-section__hint">{{messageList.length}} 个会话</view>
     </view>
 
-    <view wx:if="{{loadError}}" class="empty-hint">消息暂时无法加载</view>
+    <view wx:if="{{loadError}}" class="empty-hint" bindtap="retryLoad">消息暂时无法加载<view class="empty-hint__retry">点击重试</view></view>
     <view wx:elif="{{!messageList.length && !loading}}" class="empty-hint">暂无消息</view>
     <view class="message-list">
       <view wx:for="{{messageList}}" wx:key="_id" class="message-card" bindtap="goDetail" data-id="{{item.postId}}" data-msg-id="{{item._id || item.id}}">
@@ -27,7 +27,7 @@
         <view class="message-card__body">
           <view class="message-card__top">
             <view class="message-card__name">{{item.fromName || item.name}}</view>
-            <view class="message-card__time">{{item.time || item.createdAt}}</view>
+            <view class="message-card__time">{{item.timeText || item.time}}</view>
           </view>
           <view class="message-card__preview">{{item.preview}}</view>
           <view class="message-card__meta">

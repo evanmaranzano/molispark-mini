@@ -33,6 +33,11 @@ Page({
     });
   },
 
+  retryLoad() {
+    this.setData({ loadError: false, loading: true });
+    this.loadSignups();
+  },
+
   navigateBack() {
     wx.navigateBack();
   },

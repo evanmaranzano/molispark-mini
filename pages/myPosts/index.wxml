@@ -6,7 +6,7 @@
       <view class="sub-topbar__title">我的帖子</view>
     </view>
 
-    <view wx:if="{{loadError}}" class="empty-hint">帖子暂时无法加载</view>
+    <view wx:if="{{loadError}}" class="empty-hint" bindtap="retryLoad">帖子暂时无法加载<view class="empty-hint__retry">点击重试</view></view>
     <view wx:elif="{{!posts.length && !loading}}" class="empty-hint">暂无帖子</view>
     <view class="draft-list">
       <view class="draft-card" wx:for="{{posts}}" wx:key="_id">

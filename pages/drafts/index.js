@@ -35,6 +35,11 @@ Page({
     });
   },
 
+  retryLoad() {
+    this.setData({ loadError: false, loading: true });
+    this.loadDrafts();
+  },
+
   navigateBack() {
     wx.navigateBack();
   },

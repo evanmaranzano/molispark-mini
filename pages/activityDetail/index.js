@@ -191,6 +191,11 @@ Page({
     this.loadSignupState();
   },
 
+  retryLoad() {
+    this.setData({ loadError: false, loading: true });
+    this.loadAll();
+  },
+
   navigateBack() {
     wx.navigateBack();
   },

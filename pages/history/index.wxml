@@ -6,7 +6,7 @@
       <view class="sub-topbar__title">浏览记录</view>
     </view>
 
-    <view wx:if="{{loadError}}" class="empty-hint">浏览记录暂时无法加载</view>
+    <view wx:if="{{loadError}}" class="empty-hint" bindtap="retryLoad">浏览记录暂时无法加载<view class="empty-hint__retry">点击重试</view></view>
     <view wx:elif="{{!posts.length && !loading}}" class="empty-hint">暂无浏览记录</view>
     <view class="post-list">
       <view class="post-card" wx:for="{{posts}}" wx:key="_id" data-id="{{item._id || item.id}}" bindtap="goDetail">
@@ -14,6 +14,7 @@
           <view class="post-card__title">{{item.title}}</view>
           <view class="post-card__desc">{{item.desc}}</view>
           <view class="post-card__meta">{{item.author}} · {{item.timeText || item.time}}</view>
+          <view class="card-action" catchtap="onDelete" data-id="{{item._id || item.id}}">删除记录</view>
         </view>
         <view class="post-card__cover post-card__cover--{{item.coverStyle}}">
           <view class="post-card__cover-title">{{item.heroTitle || item.title}}</view>

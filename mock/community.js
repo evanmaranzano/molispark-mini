@@ -147,36 +147,6 @@ const quickActions = [
   { key: 'search', title: '头条', desc: '最新动态', icon: 'star', color: '#4f9df7', path: '/pages/search/index' },
 ];
 
-const zones = [
-  {
-    id: 'zone-1',
-    title: '高效学习研究所',
-    desc: '掌握科学学习方法，提升学习效率。',
-    members: '12.3 万成员',
-    coverStyle: 'book',
-  },
-  {
-    id: 'zone-2',
-    title: 'AI 实战研究所',
-    desc: '探索 AI 工具与应用，解决真实工作问题。',
-    members: '8.7 万成员',
-    coverStyle: 'ai',
-  },
-  {
-    id: 'zone-3',
-    title: '读书笔记专区',
-    desc: '记录书籍精华，沉淀思考与收获。',
-    members: '15.6 万成员',
-    coverStyle: 'note',
-  },
-  {
-    id: 'zone-4',
-    title: '个人成长营',
-    desc: '建立成长系统，成为更好的自己。',
-    members: '9.4 万成员',
-    coverStyle: 'book',
-  },
-];
 
 const messages = [
   {
@@ -390,7 +360,6 @@ export {
   profile,
   quickActions,
   searchKeywords,
-  zones,
   messages,
   getDraftPosts,
   getActivities,

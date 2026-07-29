@@ -1,4 +1,4 @@
-import { query, _ } from '~/utils/db';
+import { query, _, deleteHistory } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { getHistoryPosts } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
@@ -39,6 +39,24 @@ Page({
       loading: false,
       loadError: Boolean(result && result.__loadError),
     });
+  },
+
+  async onDelete(e) {
+    const { id } = e.currentTarget.dataset;
+    const app = getApp();
+    const openid = app.globalData.openid || 'local-openid';
+    try {
+      await deleteHistory(id, openid);
+      this.setData({ posts: this.data.posts.filter((item) => String(item._id || item.id) !== String(id)) });
+      wx.showToast({ title: '已删除记录', icon: 'none' });
+    } catch (err) {
+      wx.showToast({ title: '操作失败', icon: 'none' });
+    }
+  },
+
+  retryLoad() {
+    this.setData({ loadError: false, loading: true });
+    this.loadHistory();
   },
 
   navigateBack() {

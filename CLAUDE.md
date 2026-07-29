@@ -6,7 +6,7 @@
 - 云开发（cloudfunctions/ 目录已配置）
 - appid: wxba805d188c9a4151
 - 云环境 ID: cloud1-d4gtpsssef2dcbcf8
-- 云数据库 9 集合: posts, comments, likes, collects, messages, feedback, users, activities, signups
+- 云数据库 11 集合: posts, comments, likes, collects, views, history, messages, feedback, users, activities, signups
 - 仓库: evanmaranzano/molispark-mini（main 分支）
 - 权限模型: users.role（'admin'|'member'，默认 member），云控制台手动改 role='admin' 授权；加精走 interact feature/unfeature、发布活动走 activity create，均云函数端校验 admin
 - 迭代进度文档: `docs/v0.1-progress.md`（新会话入口）
@@ -35,7 +35,7 @@
 
 ## 云开发接入
 - 环境 ID 已配置: cloud1-d4gtpsssef2dcbcf8（app.js 第 22 行）
-- 集合需在云开发控制台手动创建（9 个: posts, comments, likes, collects, messages, feedback, users, activities, signups）
+- 集合需在云开发控制台手动创建（11 个: posts, comments, likes, collects, views, history, messages, feedback, users, activities, signups）
 - 首次加载可能 timeout（冷启动），重编译即可
 - 权限设置见 docs/database-schema.md
 - cloudfunctions/login/index.js 用 wx-server-sdk，返回 openid/appid/unionid

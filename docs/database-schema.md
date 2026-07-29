@@ -14,6 +14,8 @@
 | `collects` | `${postId}_${OPENID}` | 仅创建者可读写 | 收藏记录 |
 | `views` | `${postId}_${OPENID}_${YYYYMMDD}` | 仅创建者可读写 | 浏览防刷计数 |
 | `history` | `${postId}_${OPENID}` | 仅创建者可读写 | 浏览历史快照 |
+| `messages` | 自动生成 | 仅创建者可读写 | 消息/通知 |
+| `feedback` | 自动生成 | 仅创建者可读写 | 用户反馈 |
 | `activities` | `seed-activity-N` / 自动生成 | 所有用户可读，仅创建者可写 | 活动 |
 | `signups` | `${activityId}_${OPENID}` | 仅创建者可读写 | 活动报名记录 |
 
@@ -195,6 +197,8 @@
 | `views` | 仅创建者可读 | 仅创建者可写 |
 | `history` | 仅创建者可读 | 仅创建者可写 |
 | `users` | 仅创建者可读 | 仅创建者可写 |
+| `messages` | 仅创建者可读 | 仅创建者可写 |
+| `feedback` | 仅创建者可读 | 仅创建者可写 |
 | `activities` | 所有用户可读 | 仅创建者可写 |
 | `signups` | 仅创建者可读 | 仅创建者可写 |
 
@@ -202,7 +206,9 @@
 
 ---
 
-## 索引建议（v0.2 实施时补建）
+## 索引建议
+
+> 索引只能在云开发控制台手动创建（数据库 → 集合 → 索引管理），v0.2.5 起按下表补建：
 
 | 集合 | 索引字段 | 查询场景 |
 |------|----------|----------|
@@ -219,3 +225,5 @@
 | `activities` | `status` + `startTime` | 活动列表按时间排序 |
 | `signups` | `openid` | 查用户报名列表 |
 | `signups` | `activityId` | 统计活动报名名单 |
+| `messages` | `toOpenid` + `read` | 未读消息计数 |
+| `feedback` | `createdAt` | 反馈按时间排序 |
