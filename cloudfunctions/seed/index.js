@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const cloud = require('wx-server-sdk');
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
@@ -296,13 +298,40 @@ async function seedActivity(activity) {
   }
 }
 
+// 摩力沙龙海报：上传到云存储并把活动 cover 从包内本地路径换成 fileID，主包可随之瘦身。
+// 幂等：cover 已是 cloud:// fileID 时直接跳过。
+async function ensureActivityPoster() {
+  const ACTIVITY_ID = 'seed-activity-4';
+  let doc;
+  try {
+    const res = await db.collection('activities').doc(ACTIVITY_ID).get();
+    doc = res.data;
+  } catch (e) {
+    return { status: 'activity-missing' };
+  }
+  if (doc && typeof doc.cover === 'string' && doc.cover.indexOf('cloud://') === 0) {
+    return { status: 'exists', fileID: doc.cover };
+  }
+  const fileContent = fs.readFileSync(path.join(__dirname, 'moli-salon-3.jpg'));
+  const upload = await cloud.uploadFile({
+    cloudPath: 'images/activities/moli-salon-3.jpg',
+    fileContent,
+  });
+  await db.collection('activities').doc(ACTIVITY_ID).update({
+    data: { cover: upload.fileID, updatedAt: db.serverDate() },
+  });
+  return { status: 'uploaded', fileID: upload.fileID };
+}
+
 exports.main = async () => {
   const results = await Promise.all(SEED_POSTS.map((post) => seedPost(post)));
   const activityResults = await Promise.all(SEED_ACTIVITIES.map((activity) => seedActivity(activity)));
+  const posterResult = await ensureActivityPoster();
   return {
     success: true,
     total: SEED_POSTS.length + SEED_ACTIVITIES.length,
     results,
     activityResults,
+    posterResult,
   };
 };
