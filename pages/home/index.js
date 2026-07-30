@@ -4,6 +4,9 @@ import { withMockFallback } from '~/utils/mockFallback';
 import { getPublishedPosts, quickActions } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
 const { formatTime } = require('~/utils/time');
+const { isCloudReady } = require('~/utils/cloud');
+
+const SALON_POSTER = 'cloud://cloud1-d4gtpsssef2dcbcf8.636c-cloud1-d4gtpsssef2dcbcf8-1423856741/images/activities/moli-salon-3.jpg';
 
 function withAuthorInitial(list = []) {
   const safeList = Array.isArray(list) ? list : [];
@@ -18,6 +21,7 @@ Page({
   behaviors: [loginGuard],
   data: {
     enable: false,
+    salonPoster: SALON_POSTER,
     quickActions,
     recommendList: [],
     unreadCount: 0,
@@ -109,6 +113,16 @@ Page({
   retryLoad() {
     this.setData({ loadError: false, loading: true });
     this.loadRecommend();
+  },
+
+  goSalon() {
+    // 云环境 id 为 seed-activity-4；本地 mock 降级时为 mock-activity-4
+    const id = isCloudReady() ? 'seed-activity-4' : 'mock-activity-4';
+    wx.navigateTo({ url: `/pages/activityDetail/index?id=${id}` });
+  },
+
+  goActivities() {
+    wx.navigateTo({ url: '/pages/activities/index' });
   },
 
   goSearch() {

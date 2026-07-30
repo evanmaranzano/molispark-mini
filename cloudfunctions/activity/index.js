@@ -176,6 +176,9 @@ async function handleCreate(openid, event) {
       endTime: String(event.endTime || '').trim(),
       quota: Math.max(0, Number(event.quota) || 0),
       signupCount: 0,
+      videos: (Array.isArray(event.videos) ? event.videos : [])
+        .filter((v) => typeof v === 'string' && v.length > 0 && v.length <= 512)
+        .slice(0, 3),
       coverStyle: ['book', 'ai', 'note'].includes(event.coverStyle) ? event.coverStyle : 'book',
       heroTitle: String(event.heroTitle || '').trim().slice(0, 30) || title.slice(0, 20).toUpperCase(),
       status: 'published',

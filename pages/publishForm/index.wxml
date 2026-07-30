@@ -37,6 +37,16 @@
         </view>
       </view>
 
+      <view class="form-label">视频（可选，≤50MB）</view>
+      <view class="video-box" wx:if="{{video}}">
+        <video class="video-box__player" src="{{video}}" />
+        <view class="video-box__remove" bindtap="removeVideo">✕ 移除视频</view>
+      </view>
+      <view class="image-item image-item--add video-add" wx:else bindtap="handleChooseVideo">
+        <view class="image-item__plus">🎬</view>
+        <view class="video-add__text">添加视频</view>
+      </view>
+
       <view class="form-actions">
         <view class="form-btn form-btn--light {{savingDraft ? 'form-btn--disabled' : ''}}" bindtap="saveDraft">{{savingDraft ? '保存中...' : '保存草稿'}}</view>
         <view class="form-btn form-btn--primary {{publishing ? 'form-btn--disabled' : ''}}" bindtap="publish">

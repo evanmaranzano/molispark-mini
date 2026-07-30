@@ -45,6 +45,14 @@
           >{{item.label}}</view>
         </view>
       </view>
+      <view class="publish-form__field">
+        <text class="publish-form__label">视频</text>
+        <view wx:if="{{video}}" class="publish-form__video">
+          <text class="publish-form__video-name">已添加 1 个视频</text>
+          <text class="publish-form__video-remove" bindtap="removeVideo">✕ 移除</text>
+        </view>
+        <view wx:else class="publish-form__video-btn" bindtap="handleChooseVideo">🎬 上传视频（≤50MB）</view>
+      </view>
       <button class="publish-form__submit {{submitting ? 'publish-form__submit--disabled' : ''}}" bindtap="onSubmit">{{submitting ? '发布中...' : '发布活动'}}</button>
     </view>
   </view>

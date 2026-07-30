@@ -1,4 +1,5 @@
 import { getActivityById, getSignup, signupActivity, cancelSignup, removeActivity } from '~/utils/db';
+import { getTempFileURL } from '~/utils/storage';
 import { withMockFallbackOne } from '~/utils/mockFallback';
 import { getActivityById as getMockActivityById } from '~/mock/community';
 
@@ -57,6 +58,17 @@ Page({
       loadError: !result,
       isAdmin: this.computeIsAdmin(),
     });
+    if (result) this.resolveVideos(result.videos);
+  },
+
+  async resolveVideos(videos) {
+    if (!videos || !videos.length) return;
+    try {
+      const urls = await getTempFileURL(videos);
+      this.setData({ 'activity.videos': urls });
+    } catch (err) {
+      // 静默失败，保留原 fileID
+    }
   },
 
   computeIsAdmin() {

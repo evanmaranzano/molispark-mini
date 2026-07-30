@@ -59,3 +59,37 @@
   color: #7d8790;
   font-size: 28rpx;
 }
+
+.video-box {
+  margin-top: 12rpx;
+
+  &__player {
+    width: 100%;
+    border-radius: 16rpx;
+  }
+
+  &__remove {
+    margin-top: 12rpx;
+    color: @ink-tertiary;
+    font-size: 22rpx;
+    text-align: center;
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+}
+
+.video-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12rpx;
+
+  &__text {
+    margin-top: 8rpx;
+    color: @ink-tertiary;
+    font-size: 20rpx;
+  }
+}

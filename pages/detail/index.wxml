@@ -22,6 +22,10 @@
         <image wx:for="{{post.images}}" wx:key="*this" class="article-images__item" src="{{item}}" mode="widthFix" />
       </view>
 
+      <view wx:if="{{post.videos && post.videos.length}}" class="article-videos">
+        <video wx:for="{{post.videos}}" wx:key="*this" class="article-videos__item" src="{{item}}" />
+      </view>
+
       <view class="article-content">
         <view class="article-content__paragraph" wx:for="{{post.content}}" wx:key="*this">{{item}}</view>
       </view>

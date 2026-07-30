@@ -56,6 +56,7 @@
 | `type` | string | 帖子类型 |
 | `content` | array | 正文内容块 |
 | `images` | array | 图片 fileID 列表 |
+| `videos` | array | 视频 fileID 列表（≤3 个，单个 ≤50MB） |
 | `coverStyle` | string | 封面样式 |
 | `views` | number | 浏览量（interact view 更新） |
 | `likes` | number | 点赞数（interact like/unlike 更新） |
@@ -154,6 +155,7 @@
 | `quota` | number | 名额上限，`0` 表示不限 |
 | `signupCount` | number | 已报名人数（activity 云函数 signup/cancel 更新） |
 | `cover` | string | 封面海报图（本地资产路径或云存储 fileID，可选；有值时优先于 coverStyle 展示） |
+| `videos` | array | 活动视频 fileID 列表（≤3 个，单个 ≤50MB） |
 | `coverStyle` | string | 封面样式（复用 post-card 封面体系） |
 | `heroTitle` | string | 封面大字 |
 | `status` | string | 状态：`published` / `closed`（停止报名） |

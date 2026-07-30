@@ -1,5 +1,5 @@
 const { createPost, getPostById, saveDraft, updatePost } = require('~/utils/db');
-const { chooseAndUploadImages } = require('~/utils/storage');
+const { chooseAndUploadImages, chooseAndUploadVideo } = require('~/utils/storage');
 const loginGuard = require('~/behaviors/loginGuard');
 
 const MAX_IMAGE_COUNT = 9;
@@ -15,6 +15,7 @@ Page({
     categoryIndex: 0,
     content: '',
     images: [],
+    video: '',
     publishing: false,
     savingDraft: false,
   },
@@ -48,6 +49,7 @@ Page({
           categoryIndex: Math.max(0, this.data.categories.indexOf(category)),
           content: Array.isArray(post.content) ? post.content.join('\n') : String(post.content || ''),
           images: Array.isArray(post.images) ? post.images.slice(0, MAX_IMAGE_COUNT) : [],
+          video: Array.isArray(post.videos) && post.videos[0] ? post.videos[0] : '',
         });
       }
     } catch (err) {
@@ -81,6 +83,20 @@ Page({
     }
   },
 
+  async handleChooseVideo() {
+    try {
+      const fileID = await chooseAndUploadVideo();
+      this.setData({ video: fileID });
+    } catch (err) {
+      if (err.errMsg && err.errMsg.includes('cancel')) return;
+      wx.showToast({ title: err.message === '视频不能超过 50MB' ? err.message : '上传失败', icon: 'none' });
+    }
+  },
+
+  removeVideo() {
+    this.setData({ video: '' });
+  },
+
   removeImage(e) {
     const { index } = e.currentTarget.dataset;
     const images = [...this.data.images];
@@ -105,6 +121,7 @@ Page({
         category,
         content: content.split('\n').filter(Boolean),
         images,
+        videos: this.data.video ? [this.data.video] : [],
         coverStyle: 'note',
       }, openid);
       wx.setStorageSync('homeOper', 'save');
@@ -139,6 +156,7 @@ Page({
         category,
         content: contentArr,
         images: images.slice(0, MAX_IMAGE_COUNT),
+        videos: this.data.video ? [this.data.video] : [],
         type: images.length > 0 ? '图片' : '文章',
         coverStyle: images.length > 0 ? 'ai' : 'book',
         heroTitle: normalizedTitle.slice(0, 20).toUpperCase(),

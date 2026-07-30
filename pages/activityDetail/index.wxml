@@ -29,6 +29,9 @@
           <text class="activity-info__value">{{activity.quotaText}}</text>
         </view>
         <view class="activity-info__desc">{{activity.desc}}</view>
+        <view wx:if="{{activity.videos && activity.videos.length}}" class="activity-info__videos">
+          <video wx:for="{{activity.videos}}" wx:key="*this" class="activity-info__video" src="{{item}}" />
+        </view>
         <view wx:if="{{isAdmin}}" class="activity-info__admin">
           <view class="activity-info__admin-btn" bindtap="onRemove">删除活动</view>
         </view>

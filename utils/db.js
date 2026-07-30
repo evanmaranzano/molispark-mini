@@ -777,6 +777,7 @@ async function createActivity(data = {}) {
     startTime: data.startTime || '',
     endTime: data.endTime || '',
     quota,
+    videos: Array.isArray(data.videos) ? data.videos : [],
     signupCount: 0,
     coverStyle: data.coverStyle || 'book',
     heroTitle: data.heroTitle || '',

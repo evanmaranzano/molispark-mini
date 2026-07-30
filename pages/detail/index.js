@@ -80,6 +80,7 @@ Page({
       isAdmin: Boolean(session && session.profile && session.profile.role === 'admin'),
     });
       this.resolveImages(post.images);
+      this.resolveVideos(post.videos);
       this.incrementViews(post);
       this.recordHistory();
     }
@@ -89,6 +90,16 @@ Page({
     this.setData({ loadError: false });
     this.loadPost();
     this.loadComments();
+  },
+
+  async resolveVideos(videos) {
+    if (!videos || !videos.length) return;
+    try {
+      const urls = await getTempFileURL(videos);
+      this.setData({ 'post.videos': urls });
+    } catch (err) {
+      // 静默失败，保留原 fileID
+    }
   },
 
   async resolveImages(images) {

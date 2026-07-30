@@ -21,13 +21,33 @@
 
     <view class="search-box" bindtap="goSearch">🔍 <text>搜索帖子、精选或内容</text></view>
 
-    <view class="hero-card">
-      <view class="hero-card__content">
-        <view class="hero-card__title">深度思考，<text>\n</text>共同成长</view>
-        <view class="hero-card__desc">与优秀的人一起，探索知识的边界</view>
-        <view class="hero-card__button" bindtap="goZones">了解精选</view>
-      </view>
-    </view>
+    <swiper class="hero-swiper" autoplay circular interval="4500" duration="400" indicator-dots indicator-color="rgba(24,47,35,.15)" indicator-active-color="#286247">
+      <swiper-item>
+        <view class="hero-card">
+          <view class="hero-card__content">
+            <view class="hero-card__title">深度思考，<text>
+</text>共同成长</view>
+            <view class="hero-card__desc">与优秀的人一起，探索知识的边界</view>
+            <view class="hero-card__button" bindtap="goZones">了解精选</view>
+          </view>
+        </view>
+      </swiper-item>
+      <swiper-item bindtap="goSalon">
+        <view class="hero-slide">
+          <image class="hero-slide__poster" src="{{salonPoster}}" mode="aspectFill" />
+          <view class="hero-slide__tag">活动报名中 · 点击查看</view>
+        </view>
+      </swiper-item>
+      <swiper-item bindtap="goActivities">
+        <view class="hero-card">
+          <view class="hero-card__content">
+            <view class="hero-card__title">近期活动</view>
+            <view class="hero-card__desc">沙龙、共读会、打卡营，报名从速</view>
+            <view class="hero-card__button">全部活动</view>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
 
     <view class="feature-panel">
       <view

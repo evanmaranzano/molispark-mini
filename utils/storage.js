@@ -94,10 +94,42 @@ async function chooseAndUploadImages(options = {}, prefix = 'images/posts/') {
   });
 }
 
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
+
+/**
+ * 选择并上传一个视频（≤50MB）
+ * @param {string} prefix 云端路径前缀
+ * @returns {Promise<string>} fileID
+ */
+async function chooseAndUploadVideo(prefix = 'videos/posts/') {
+  return new Promise((resolve, reject) => {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['video'],
+      sourceType: ['album', 'camera'],
+      success: async (res) => {
+        try {
+          const file = res.tempFiles[0];
+          if (file.size > MAX_VIDEO_SIZE) {
+            reject(new Error('视频不能超过 50MB'));
+            return;
+          }
+          const fileID = await uploadFile(file.tempFilePath, `${prefix}${Date.now()}.mp4`);
+          resolve(fileID);
+        } catch (err) {
+          reject(err);
+        }
+      },
+      fail: reject,
+    });
+  });
+}
+
 module.exports = {
   uploadFile,
   uploadImages,
   getTempFileURL,
   deleteFiles,
   chooseAndUploadImages,
+  chooseAndUploadVideo,
 };

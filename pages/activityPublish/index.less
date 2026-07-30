@@ -56,6 +56,35 @@
     gap: 16rpx;
   }
 
+  &__video {
+    display: flex;
+    align-items: center;
+    gap: 20rpx;
+    font-size: 24rpx;
+    color: @ink;
+  }
+
+  &__video-remove {
+    color: @ink-tertiary;
+    font-size: 22rpx;
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  &__video-btn {
+    padding: 16rpx 28rpx;
+    border: 1rpx dashed @line;
+    border-radius: 16rpx;
+    color: @ink-secondary;
+    font-size: 24rpx;
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
   &__cover {
     padding: 14rpx 28rpx;
     border: 1rpx solid @line;

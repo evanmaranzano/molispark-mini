@@ -1,4 +1,5 @@
 import { createActivity } from '~/utils/db';
+const { chooseAndUploadVideo } = require('~/utils/storage');
 import loginGuard from '~/behaviors/loginGuard';
 
 const { getSession } = require('~/utils/auth');
@@ -17,6 +18,7 @@ Page({
     startTime: '',
     endTime: '',
     quota: '',
+    video: '',
     coverStyle: 'book',
     coverOptions: [
       { key: 'book', label: '绿色' },
@@ -40,6 +42,20 @@ Page({
   onInput(e) {
     const { field } = e.currentTarget.dataset;
     this.setData({ [field]: e.detail.value || '' });
+  },
+
+  async handleChooseVideo() {
+    try {
+      const fileID = await chooseAndUploadVideo('videos/activities/');
+      this.setData({ video: fileID });
+    } catch (err) {
+      if (err.errMsg && err.errMsg.includes('cancel')) return;
+      wx.showToast({ title: err.message === '视频不能超过 50MB' ? err.message : '上传失败', icon: 'none' });
+    }
+  },
+
+  removeVideo() {
+    this.setData({ video: '' });
   },
 
   onCoverTap(e) {
@@ -73,6 +89,7 @@ Page({
         endTime: endTime.trim(),
         quota,
         coverStyle,
+        videos: this.data.video ? [this.data.video] : [],
       });
       if (result && result.code) {
         wx.showToast({ title: result.code === 'FORBIDDEN' ? '无发布权限' : '发布失败，请重试', icon: 'none' });
