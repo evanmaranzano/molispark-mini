@@ -3,15 +3,23 @@ import { withMockFallback } from '~/utils/mockFallback';
 import { getActivities as getMockActivities } from '~/mock/community';
 
 const { getSession } = require('~/utils/auth');
+const { isActivityClosed } = require('~/utils/activityStatus');
 
 function decorate(item) {
   const quota = Number(item.quota) || 0;
   const count = item.signupCount || 0;
+  const full = quota > 0 && count >= quota;
+  const ended = isActivityClosed(item);
+  let statusText = '报名中';
+  if (full) statusText = '名额已满';
+  if (ended) statusText = '已结束';
   return {
     ...item,
     timeText: item.startTime || '',
     quotaText: quota > 0 ? `${count}/${quota} 人` : `${count} 人已报名`,
-    full: quota > 0 && count >= quota,
+    full,
+    ended,
+    statusText,
   };
 }
 
@@ -41,8 +49,11 @@ Page({
       () => getActivities(),
       () => getMockActivities()
     );
+    const activities = (Array.isArray(result) ? result : [])
+      .map(decorate)
+      .sort((a, b) => Number(a.ended) - Number(b.ended));
     this.setData({
-      activities: (Array.isArray(result) ? result : []).map(decorate),
+      activities,
       loading: false,
       loadError: Boolean(result && result.__loadError),
     });

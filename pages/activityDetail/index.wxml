@@ -37,7 +37,12 @@
         </view>
       </view>
 
-      <view wx:if="{{signed}}" class="signup-done">
+      <view wx:if="{{activity.ended}}" class="signup-done">
+        <view class="signup-done__badge">活动已结束</view>
+        <view class="signup-done__tip">报名已截止，感谢关注</view>
+      </view>
+
+      <view wx:elif="{{signed}}" class="signup-done">
         <view class="signup-done__badge">✓ 已报名</view>
         <view class="signup-done__tip">报名成功，请按时参加活动</view>
         <view class="signup-done__cancel" bindtap="onCancel">{{submitting ? '处理中...' : '取消报名'}}</view>

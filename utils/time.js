@@ -5,18 +5,23 @@
 
 function toDate(value) {
   if (!value) return null;
-  if (value instanceof Date) return isNaN(value.getTime()) ? null : value;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
   if (typeof value === 'number') {
     const d = new Date(value);
-    return isNaN(d.getTime()) ? null : d;
+    return Number.isNaN(d.getTime()) ? null : d;
   }
   if (typeof value === 'string') {
     // 兼容 'YYYY-MM-DD HH:mm'（iOS new Date 不支持连字符带空格格式）
     const normalized = value.includes(' ') && !value.includes('T') ? value.replace(' ', 'T') : value;
     const d = new Date(normalized);
-    return isNaN(d.getTime()) ? null : d;
+    return Number.isNaN(d.getTime()) ? null : d;
   }
   return null;
+}
+
+function formatDate(date) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
 function formatTime(value) {
@@ -34,11 +39,6 @@ function formatTime(value) {
   if (diff < day) return `${Math.floor(diff / hour)} 小时前`;
   if (diff < 7 * day) return `${Math.floor(diff / day)} 天前`;
   return formatDate(date);
-}
-
-function formatDate(date) {
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
 module.exports = { formatTime, formatDate };

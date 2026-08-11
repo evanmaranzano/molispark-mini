@@ -2,6 +2,7 @@ import { getMessages, markMessageRead } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { messages as mockMessages } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
+
 const { formatTime } = require('~/utils/time');
 
 Page({

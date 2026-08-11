@@ -1,4 +1,5 @@
 const cloud = require('wx-server-sdk');
+const { isActivityClosed } = require('./activityStatus');
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
@@ -45,7 +46,7 @@ async function incSignupCount(activityId, delta, counts) {
 }
 
 async function handleSignup(activityId, openid, activity, counts, event) {
-  if (activity.status && activity.status !== 'published') {
+  if (isActivityClosed(activity)) {
     return makeResponse('signup', activityId, { success: false, code: 'ACTIVITY_CLOSED' });
   }
 

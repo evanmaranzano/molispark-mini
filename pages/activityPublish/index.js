@@ -1,7 +1,7 @@
 import { createActivity } from '~/utils/db';
-const { chooseAndUploadVideo } = require('~/utils/storage');
 import loginGuard from '~/behaviors/loginGuard';
 
+const { chooseAndUploadVideo } = require('~/utils/storage');
 const { getSession } = require('~/utils/auth');
 
 const TIME_RE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;

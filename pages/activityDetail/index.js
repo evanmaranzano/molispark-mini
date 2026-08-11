@@ -4,6 +4,7 @@ import { withMockFallbackOne } from '~/utils/mockFallback';
 import { getActivityById as getMockActivityById } from '~/mock/community';
 
 const { getSession, isProfileComplete } = require('~/utils/auth');
+const { isActivityClosed } = require('~/utils/activityStatus');
 
 const SIGNUP_ERROR_TEXT = {
   QUOTA_FULL: '名额已满',
@@ -83,6 +84,7 @@ Page({
       ...item,
       quotaText: quota > 0 ? `${count}/${quota} 人` : `${count} 人已报名（不限名额）`,
       full: quota > 0 && count >= quota,
+      ended: isActivityClosed(item),
     };
   },
 
@@ -121,6 +123,13 @@ Page({
 
   async onSignup() {
     if (this.data.submitting || this.data.signed) return;
+    if (!this.data.activity || isActivityClosed(this.data.activity)) {
+      if (this.data.activity && !this.data.activity.ended) {
+        this.setData({ 'activity.ended': true });
+      }
+      wx.showToast({ title: '报名已截止', icon: 'none' });
+      return;
+    }
     if (!this.isLoggedIn()) {
       this.setData({ showLoginModal: true });
       return;

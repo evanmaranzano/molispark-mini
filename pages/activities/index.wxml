@@ -22,7 +22,7 @@
           <view class="activity-card__meta">📍 {{item.location}}</view>
           <view class="activity-card__foot">
             <text class="activity-card__quota">{{item.quotaText}}</text>
-            <text class="activity-card__status {{item.full ? 'activity-card__status--full' : ''}}">{{item.full ? '名额已满' : '报名中'}}</text>
+            <text class="activity-card__status {{item.ended ? 'activity-card__status--ended' : item.full ? 'activity-card__status--full' : ''}}">{{item.statusText}}</text>
           </view>
         </view>
       </view>

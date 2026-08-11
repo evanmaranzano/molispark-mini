@@ -11,11 +11,7 @@
   <view class="page-shell">
     <view class="topbar">
       <view class="brand">
-        <view class="brand__logo">☘</view>
-        <view>
-          <view class="brand__name">知行社</view>
-          <view class="brand__sub">连接知识 · 启发成长</view>
-        </view>
+        <image class="brand__logo" src="/images/brand/molispark-logo.png" mode="aspectFit" aria-label="摩力创境" />
       </view>
     </view>
 
@@ -32,10 +28,10 @@
           </view>
         </view>
       </swiper-item>
-      <swiper-item bindtap="goSalon">
+      <swiper-item bindtap="goActivities">
         <view class="hero-slide">
           <image class="hero-slide__poster" src="{{salonPoster}}" mode="aspectFill" />
-          <view class="hero-slide__tag">活动报名中 · 点击查看</view>
+          <view class="hero-slide__tag">摩力创境 · 往期活动回顾</view>
         </view>
       </swiper-item>
       <swiper-item bindtap="goActivities">

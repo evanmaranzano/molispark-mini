@@ -17,6 +17,7 @@ import { withMockFallbackOne } from '~/utils/mockFallback';
 import { getPostById as mockGetPostById } from '~/mock/community';
 import { getTempFileURL } from '~/utils/storage';
 import { isCloudReady } from '~/utils/cloud';
+
 const { getSession } = require('~/utils/auth');
 const { formatTime } = require('~/utils/time');
 
@@ -274,7 +275,7 @@ Page({
   onShareAppMessage() {
     const { post } = this.data;
     return {
-      title: post ? post.title : '知行社',
+      title: post ? post.title : '摩力创境',
       path: `/pages/detail/index?id=${this.postId}`,
     };
   },

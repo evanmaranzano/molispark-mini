@@ -1,6 +1,6 @@
 # 云函数文档
 
-> 知行社小程序 v0.1，5 个云函数（login / updateProfile / interact / seed / activity）。云环境 `cloud1-d4gtpsssef2dcbcf8`，appid `wxba805d188c9a4151`。
+> 摩力创境小程序 v0.1，5 个云函数（login / updateProfile / interact / seed / activity）。云环境 `cloud1-d4gtpsssef2dcbcf8`，appid `wxba805d188c9a4151`。
 
 ## 部署
 
@@ -95,7 +95,7 @@ posts, users, comments, likes, collects, views, history。权限规则与索引�
 
 入参：`{ action: 'signup' | 'cancel', activityId, name?, phone?, note? }`（OPENID 从 context 取，客户端不可传）。
 
-signup 校验：`name` 必填 ≤20 字；`phone` 必须 11 位（`/^1\d{10}$/`）；`note` 选填 ≤100 字；活动 `status != published` → `ACTIVITY_CLOSED`；`quota > 0` 且满员 → `QUOTA_FULL`。
+signup 校验：`name` 必填 ≤20 字；`phone` 必须 11 位（`/^1\d{10}$/`）；`note` 选填 ≤100 字；活动 `status != published`，或按 `Asia/Shanghai`（UTC+8）解析后已到 `endTime`（缺失时回退 `startTime`）→ `ACTIVITY_CLOSED`；`quota > 0` 且满员 → `QUOTA_FULL`。
 
 幂等：`_id = ${activityId}_${OPENID}`。
 - 已 `signed` 重复报名 → 直接返回当前状态，不重复计数；

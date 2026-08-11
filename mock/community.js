@@ -161,7 +161,7 @@ const messages = [
   },
   {
     id: 'msg-2',
-    name: '知行社运营',
+    name: '摩力创境运营',
     avatarText: '社',
     preview: '本周精选专区已更新，新增 4 篇深度内容。',
     time: '1 小时前',

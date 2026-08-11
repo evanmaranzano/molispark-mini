@@ -2,6 +2,7 @@ import { query, _, deleteHistory } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { getHistoryPosts } from '~/mock/community';
 import loginGuard from '~/behaviors/loginGuard';
+
 const { formatTime } = require('~/utils/time');
 
 Page({

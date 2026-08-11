@@ -1,6 +1,7 @@
 import { getPosts } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { getPublishedPosts, searchKeywords, searchPosts } from '~/mock/community';
+
 const { formatTime } = require('~/utils/time');
 
 function buildKeywordItems(list, currentValue) {

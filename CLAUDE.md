@@ -1,4 +1,4 @@
-# 知行社小程序 (molispark/mini)
+# 摩力创境小程序 (molispark/mini)
 
 ## 技术栈
 - 微信小程序 + TDesign miniprogram v1.11.2
@@ -43,7 +43,7 @@
 ## 自定义导航栏
 - 所有页面 `navigationStyle: custom`，隐藏系统导航栏
 - components/status-bar/: 只做状态栏安全区占位，自动读取 statusBarHeight，不渲染 logo
-- 主 Tab 页各自渲染统一的品牌 logo + 知行社文字；子页面标题行紧跟 status-bar，避免重复叠加 env(safe-area-inset-top)
+- 主 Tab 页各自渲染统一的品牌 logo + 摩力创境文字；子页面标题行紧跟 status-bar，避免重复叠加 env(safe-area-inset-top)
 
 ## 自定义 Tab Bar
 - custom-tab-bar/ 组件，3 个 tab: home, release, my

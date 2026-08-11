@@ -1,4 +1,4 @@
-# 知行社小程序 · 数据库 Schema
+# 摩力创境小程序 · 数据库 Schema
 
 > 云环境：`cloud1-d4gtpsssef2dcbcf8`
 > 最后更新：2026-07-28
@@ -151,7 +151,7 @@
 | `desc` | string | 活动简介 |
 | `location` | string | 活动地点 |
 | `startTime` | string | 开始时间，格式 `YYYY-MM-DD HH:mm` |
-| `endTime` | string | 结束时间，格式 `YYYY-MM-DD HH:mm` |
+| `endTime` | string | 结束时间，格式 `YYYY-MM-DD HH:mm`，按 UTC+8 解析；到时自动停止报名 |
 | `quota` | number | 名额上限，`0` 表示不限 |
 | `signupCount` | number | 已报名人数（activity 云函数 signup/cancel 更新） |
 | `cover` | string | 封面海报图（本地资产路径或云存储 fileID，可选；有值时优先于 coverStyle 展示） |
