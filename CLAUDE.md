@@ -4,8 +4,8 @@
 - 微信小程序 + TDesign miniprogram v1.11.2
 - LESS 样式（project.config.json 已启用 `useCompilerPlugins: ["less"]`）
 - 云开发（cloudfunctions/ 目录已配置）
-- appid: wxba805d188c9a4151
-- 云环境 ID: cloud1-d4gtpsssef2dcbcf8
+- appid: wx94825420d37a7652
+- 云环境 ID: cloud1-d6g0v8u009ac081c2
 - 云数据库 11 集合: posts, comments, likes, collects, views, history, messages, feedback, users, activities, signups
 - 仓库: evanmaranzano/molispark-mini（main 分支）
 - 权限模型: users.role（'admin'|'member'，默认 member），云控制台手动改 role='admin' 授权；加精走 interact feature/unfeature、发布活动走 activity create，均云函数端校验 admin
@@ -34,7 +34,7 @@
 - 云数据库用 `_id`，mock 数据用 `id`；wxml 中用 `wx:key="index"` + `item._id || item.id` 兼容
 
 ## 云开发接入
-- 环境 ID 已配置: cloud1-d4gtpsssef2dcbcf8（app.js 第 22 行）
+- 环境 ID 已配置: cloud1-d6g0v8u009ac081c2（app.js 第 36 行）
 - 集合需在云开发控制台手动创建（11 个: posts, comments, likes, collects, views, history, messages, feedback, users, activities, signups）
 - 首次加载可能 timeout（冷启动），重编译即可
 - 权限设置见 docs/database-schema.md
@@ -54,9 +54,9 @@
 - 微信开发者工具中编译运行（无 CLI 构建）
 - npm install 安装依赖后需在开发者工具中"构建 npm"
 - 云函数部署: 右键 cloudfunctions/login → 上传并部署：云端安装依赖
-- DevTools CLI 部署云函数: `& "F:\微信web开发者工具\cli.bat" cloud functions deploy --project "F:\molispark\mini" --env cloud1-d4gtpsssef2dcbcf8 --names <函数名> --remote-npm-install`
-- 绕过 project.config 解析: `& "F:\微信web开发者工具\cli.bat" cloud functions deploy --appid wxba805d188c9a4151 --env cloud1-d4gtpsssef2dcbcf8 --paths "F:\molispark\mini\cloudfunctions\<name>" --remote-npm-install`
-- 页面配置校验: `npm --prefix "F:/molispark/mini" run validate:pages`
+- DevTools CLI 部署云函数: `& "C:\Program Files (x86)\Tencent\微信web开发者工具\cli.bat" cloud functions deploy --project "C:\Users\26566\molispark\mini" --env cloud1-d6g0v8u009ac081c2 --names <函数名> --remote-npm-install`
+- 绕过 project.config 解析: `& "C:\Program Files (x86)\Tencent\微信web开发者工具\cli.bat" cloud functions deploy --appid wx94825420d37a7652 --env cloud1-d6g0v8u009ac081c2 --paths "C:\Users\26566\molispark\mini\cloudfunctions\<name>" --remote-npm-install`
+- 页面配置校验: `npm --prefix "C:/Users/26566/molispark/mini" run validate:pages`
 
 ## 开发者工具坑点
 - `project.config.json` 的 `cloudfunctionRoot` 必须带尾部 `/`（`"cloudfunctions/"` 不是 `"cloudfunctions"`），否则 UI 增量上传可能报 `Cannot read property 'region' of undefined`

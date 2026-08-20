@@ -6,7 +6,7 @@ import loginGuard from '~/behaviors/loginGuard';
 
 const { formatTime } = require('~/utils/time');
 
-const SALON_POSTER = 'cloud://cloud1-d4gtpsssef2dcbcf8.636c-cloud1-d4gtpsssef2dcbcf8-1423856741/images/activities/moli-salon-3.jpg';
+const SALON_POSTER = 'cloud://cloud1-d6g0v8u009ac081c2.636c-cloud1-d6g0v8u009ac081c2-1471977670/images/activities/moli-salon-3.jpg';
 
 function withAuthorInitial(list = []) {
   const safeList = Array.isArray(list) ? list : [];

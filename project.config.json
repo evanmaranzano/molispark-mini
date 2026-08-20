@@ -3,18 +3,54 @@
   "cloudfunctionRoot": "cloudfunctions/",
   "packOptions": {
     "ignore": [
-      { "type": "folder", "value": "source-assets" },
-      { "type": "folder", "value": "diagrams" },
-      { "type": "folder", "value": "docs" },
-      { "type": "folder", "value": "test" },
-      { "type": "folder", "value": "scripts" },
-      { "type": "folder", "value": "node_modules" },
-      { "type": "file", "value": "mindmap.png" },
-      { "type": "file", "value": "mindmap-raw.json" },
-      { "type": "file", "value": "README.md" },
-      { "type": "file", "value": "CLAUDE.md" },
-      { "type": "file", "value": "AGENTS.md" },
-      { "type": "file", "value": "LICENSE" }
+      {
+        "value": "source-assets",
+        "type": "folder"
+      },
+      {
+        "value": "diagrams",
+        "type": "folder"
+      },
+      {
+        "value": "docs",
+        "type": "folder"
+      },
+      {
+        "value": "test",
+        "type": "folder"
+      },
+      {
+        "value": "scripts",
+        "type": "folder"
+      },
+      {
+        "value": "node_modules",
+        "type": "folder"
+      },
+      {
+        "value": "mindmap.png",
+        "type": "file"
+      },
+      {
+        "value": "mindmap-raw.json",
+        "type": "file"
+      },
+      {
+        "value": "README.md",
+        "type": "file"
+      },
+      {
+        "value": "CLAUDE.md",
+        "type": "file"
+      },
+      {
+        "value": "AGENTS.md",
+        "type": "file"
+      },
+      {
+        "value": "LICENSE",
+        "type": "file"
+      }
     ],
     "include": []
   },
@@ -63,11 +99,14 @@
     "compileWorklet": false,
     "localPlugins": false,
     "swc": false,
-    "disableSWC": true
+    "disableSWC": true,
+    "lessSetting": {
+      "commonUseFilePath": "app.less"
+    }
   },
   "compileType": "miniprogram",
   "libVersion": "3.7.8",
-  "appid": "wxba805d188c9a4151",
+  "appid": "wx94825420d37a7652",
   "projectname": "miniprogram-starter",
   "condition": {
     "miniprogram": {

@@ -1,6 +1,6 @@
 # 云函数文档
 
-> 摩力创境小程序 v0.1，5 个云函数（login / updateProfile / interact / seed / activity）。云环境 `cloud1-d4gtpsssef2dcbcf8`，appid `wxba805d188c9a4151`。
+> 摩力创境小程序 v0.1，5 个云函数（login / updateProfile / interact / seed / activity）。云环境 `cloud1-d6g0v8u009ac081c2`，appid `wx94825420d37a7652`。
 
 ## 部署
 
@@ -9,7 +9,7 @@
 - 开发者工具 UI：右键 `cloudfunctions/<name>` → 上传并部署：云端安装依赖
 - CLI（需先在开发者工具开启服务端口 `设置 → 安全设置 → 服务端口`）：
   ```
-  & "F:\微信web开发者工具\cli.bat" cloud functions deploy --appid wxba805d188c9a4151 --env cloud1-d4gtpsssef2dcbcf8 --paths "F:\molispark\mini\cloudfunctions\<name>" --remote-npm-install
+  & "C:\Program Files (x86)\Tencent\微信web开发者工具\cli.bat" cloud functions deploy --appid wx94825420d37a7652 --env cloud1-d6g0v8u009ac081c2 --paths "C:\Users\26566\molispark\mini\cloudfunctions\<name>" --remote-npm-install
   ```
 
 依赖统一为 `wx-server-sdk`（各 package.json 已声明）。

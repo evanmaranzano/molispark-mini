@@ -33,7 +33,7 @@ App({
       return;
     }
 
-    const envId = 'cloud1-d4gtpsssef2dcbcf8';
+    const envId = 'cloud1-d6g0v8u009ac081c2';
     if (!envId || envId === 'your-cloud-env-id') {
       console.warn('请先在 app.js 中替换微信云开发环境 ID');
       return;

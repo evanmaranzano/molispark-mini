@@ -1,7 +1,7 @@
 # 摩力创境小程序 · 版本日志（CHANGELOG）
 
 > 项目：摩力创境小程序（molispark/mini）
-> appid：`wxba805d188c9a4151` · 云环境：`cloud1-d4gtpsssef2dcbcf8` · 仓库：`evanmaranzano/molispark-mini`
+> appid：`wx94825420d37a7652` · 云环境：`cloud1-d6g0v8u009ac081c2` · 仓库：`evanmaranzano/molispark-mini`
 > 技术栈：微信小程序 + TDesign miniprogram v1.11.2 + LESS + 微信云开发
 > 本日志覆盖自首个提交（2023-07-05）至最新提交（2026-08-11）的全部可记录变更，按演进阶段、最新在前组织。
 

@@ -1,6 +1,6 @@
 # 摩力创境小程序 · 数据库 Schema
 
-> 云环境：`cloud1-d4gtpsssef2dcbcf8`
+> 云环境：`cloud1-d6g0v8u009ac081c2`
 > 最后更新：2026-07-28
 
 ## 集合清单

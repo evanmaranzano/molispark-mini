@@ -275,7 +275,7 @@ const activities = [
     endTime: '2026-07-25 11:30',
     quota: 0,
     signupCount: 36,
-    cover: 'cloud://cloud1-d4gtpsssef2dcbcf8.636c-cloud1-d4gtpsssef2dcbcf8-1423856741/images/activities/moli-salon-3.jpg',
+    cover: 'cloud://cloud1-d6g0v8u009ac081c2.636c-cloud1-d6g0v8u009ac081c2-1471977670/images/activities/moli-salon-3.jpg',
     coverStyle: 'ai',
     heroTitle: 'AI KIDS MAKER',
     status: 'published',
