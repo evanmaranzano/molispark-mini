@@ -109,3 +109,6 @@ miniprogram_npm
 .idea
 
 project.private.config.json
+
+# Agent rules: local symlink to ~/.agents/AGENTS.md, never publish
+AGENTS.md
