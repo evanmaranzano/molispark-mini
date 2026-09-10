@@ -2,7 +2,6 @@ import Message from 'tdesign-miniprogram/message/index';
 import { getPosts, count } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { getPublishedPosts, quickActions } from '~/mock/community';
-import loginGuard from '~/behaviors/loginGuard';
 
 const { formatTime } = require('~/utils/time');
 
@@ -18,7 +17,6 @@ function withAuthorInitial(list = []) {
 }
 
 Page({
-  behaviors: [loginGuard],
   data: {
     enable: false,
     salonPoster: SALON_POSTER,
@@ -36,7 +34,6 @@ Page({
 
   onShow() {
     this.syncTabBar();
-    this.checkLoginGuard();
     this.consumeOperResult();
     this.loadUnreadCount();
   },

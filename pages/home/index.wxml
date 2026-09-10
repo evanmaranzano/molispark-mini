@@ -13,6 +13,10 @@
       <view class="brand">
         <image class="brand__logo" src="/images/brand/molispark-logo.png" mode="aspectFit" aria-label="摩力创境" />
       </view>
+      <view class="topbar__msg" bindtap="goMessages" aria-label="消息">
+        <text class="topbar__msg-icon">✉</text>
+        <view wx:if="{{unreadCount > 0}}" class="topbar__badge">{{unreadCount > 99 ? '99+' : unreadCount}}</view>
+      </view>
     </view>
 
     <view class="search-box" bindtap="goSearch">🔍 <text>搜索帖子、精选或内容</text></view>
@@ -89,4 +93,3 @@
   </view>
 </scroll-view>
 <t-message id="t-message" />
-<login-modal show="{{showLoginModal}}" bind:logined="onLogined" />

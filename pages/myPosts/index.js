@@ -21,6 +21,15 @@ Page({
     this.loadPosts();
   },
 
+  onLogined() {
+    this.setData({ showLoginModal: false });
+    if (typeof this.onLoginGuardPassed === 'function') this.onLoginGuardPassed();
+  },
+
+  onLoginModalClose() {
+    this.setData({ showLoginModal: false });
+  },
+
   async loadPosts() {
     const app = getApp();
     const openid = app.globalData.openid || 'local-openid';

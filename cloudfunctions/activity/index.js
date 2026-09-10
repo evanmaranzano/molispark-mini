@@ -161,12 +161,95 @@ async function isAdmin(openid) {
   }
 }
 
+function displayReason(err, fallback) {
+  const code = err && (err.errCode || err.code);
+  const msg = (err && (err.errMsg || err.message)) || '';
+  if (code === 87014 || /87014/.test(String(msg))) return '内容含有违法违规信息';
+  return fallback || '内容未通过安全审核';
+}
+
+// v2 在 openid 无真实小程序访问的场景（如模拟器）会抛 -604101；此时降级 v1 纯文本检测。
+async function msgSecCheckCompat(content, scene, openid) {
+  try {
+    const res = await cloud.openapi.security.msgSecCheck({ version: 2, openid, scene, content });
+    if (res && (res.errCode === -604101 || /604101/.test(String(res.errMsg || '')))) {
+      return cloud.openapi.security.msgSecCheck({ content });
+    }
+    return res;
+  } catch (err) {
+    const code = err && (err.errCode || err.code);
+    const msg = String((err && (err.errMsg || err.message)) || '');
+    if (code === -604101 || /604101/.test(msg)) {
+      return cloud.openapi.security.msgSecCheck({ content });
+    }
+    throw err;
+  }
+}
+
+function guessImageType(fileID) {
+  const m = String(fileID || '').split('?')[0].match(/\.([a-zA-Z0-9]+)$/);
+  const ext = (m ? m[1] : 'png').toLowerCase();
+  if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg';
+  if (ext === 'gif') return 'image/gif';
+  if (ext === 'webp') return 'image/webp';
+  return 'image/png';
+}
+
+async function checkText(text, scene, openid) {
+  const content = typeof text === 'string' ? text : String(text || '');
+  if (!content.trim()) return { pass: true };
+  if (!openid) return { pass: false, reason: '未登录，无法进行安全审核' };
+  try {
+    const res = await msgSecCheckCompat(content, scene, openid);
+    if (!res || res.errCode || (res.result && res.result.suggest && res.result.suggest !== 'pass')) {
+      return { pass: false, reason: displayReason(res, '内容未通过安全审核') };
+    }
+    return { pass: true };
+  } catch (err) {
+    return { pass: false, reason: displayReason(err, '内容未通过安全审核') };
+  }
+}
+
+async function checkOneImage(fileID) {
+  try {
+    const down = await cloud.downloadFile({ fileID });
+    const value = down && down.fileContent;
+    const res = await cloud.openapi.security.imgSecCheck({
+      media: {
+        contentType: guessImageType(fileID),
+        value,
+      },
+    });
+    if (!res || res.errCode) {
+      return { fileID, pass: false, reason: displayReason(res, '图片未通过安全审核') };
+    }
+    return { fileID, pass: true };
+  } catch (err) {
+    return { fileID, pass: false, reason: displayReason(err, '图片未通过安全审核') };
+  }
+}
+
 async function handleCreate(openid, event) {
   const title = String(event.title || '').trim();
   if (!title) return { success: false, code: 'MISSING_TITLE' };
   if (title.length > 50) return { success: false, code: 'TITLE_TOO_LONG' };
   const desc = String(event.desc || '').trim();
   if (desc.length > 500) return { success: false, code: 'DESC_TOO_LONG' };
+
+  const textCheck = await checkText(`${title}\n${desc}`, 3, openid);
+  if (!textCheck.pass) {
+    return { success: false, code: 'CONTENT_REJECTED', reason: textCheck.reason };
+  }
+
+  const images = Array.isArray(event.images) ? event.images.filter(Boolean) : [];
+  if (images.length) {
+    for (let i = 0; i < images.length; i += 1) {
+      const img = await checkOneImage(images[i]);
+      if (!img.pass) {
+        return { success: false, code: 'CONTENT_REJECTED', reason: img.reason || '图片未通过安全审核' };
+      }
+    }
+  }
 
   const res = await db.collection('activities').add({
     data: {

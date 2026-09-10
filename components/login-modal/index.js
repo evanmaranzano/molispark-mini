@@ -9,6 +9,8 @@ const {
 const { isCloudReady } = require('~/utils/cloud');
 const { uploadFile } = require('~/utils/storage');
 
+const AGREE_KEY = 'loginAgreementAccepted';
+
 // 全局登录弹窗：微信一键登录 → 新用户补昵称头像 → 完成后同步 globalData 并 triggerEvent('logined')
 // 复用 my 页登录逻辑（loginWithCloud / updateUserProfile）
 Component({
@@ -29,6 +31,9 @@ Component({
       } catch (e) {
         // 非 tab 页无 getTabBar，忽略
       }
+      if (val) {
+        this.setData({ agreed: !!wx.getStorageSync(AGREE_KEY) });
+      }
     },
   },
 
@@ -38,15 +43,65 @@ Component({
     nickname: '',
     avatarFileID: '',
     submitting: false,
+    agreed: false,
+  },
+
+  lifetimes: {
+    attached() {
+      this.setData({ agreed: !!wx.getStorageSync(AGREE_KEY) });
+    },
   },
 
   methods: {
     noop() {},
 
+    ensureAgreed() {
+      if (this.data.agreed) return true;
+      wx.showToast({ title: '请先阅读并同意用户协议和隐私政策', icon: 'none' });
+      return false;
+    },
+
+    onToggleAgree() {
+      const agreed = !this.data.agreed;
+      this.setData({ agreed });
+      wx.setStorageSync(AGREE_KEY, agreed);
+    },
+
+    goPrivacy(e) {
+      const section = (e.currentTarget.dataset && e.currentTarget.dataset.section) || '';
+      const url = section ? `/pages/privacy/index?section=${section}` : '/pages/privacy/index';
+      wx.navigateTo({ url });
+    },
+
+    onClose() {
+      this.setData({
+        needSetup: false,
+        avatarUrl: '',
+        nickname: '',
+        avatarFileID: '',
+      });
+      try {
+        const pages = getCurrentPages();
+        const page = pages[pages.length - 1];
+        if (page && typeof page.setData === 'function') {
+          page.setData({ showLoginModal: false });
+        }
+        const tabBar = page && typeof page.getTabBar === 'function' && page.getTabBar();
+        if (tabBar) {
+          tabBar.setData({ hidden: false });
+        }
+      } catch (e) {
+        // 忽略
+      }
+      this.triggerEvent('close');
+    },
+
     // 手机号快速验证登录：button open-type="getPhoneNumber" 回调。
     // 先确保微信登录态（拿 openid），再把 code 交给 login 云函数换手机号。
     // 能力受限（个人主体/未开通）时云函数返回 PHONE_FAILED，降级提示走微信登录。
+    // UI 已去掉该按钮，方法保留以免后续开通能力时无法接回。
     onGetPhoneNumber(e) {
+      if (!this.ensureAgreed()) return;
       const code = e && e.detail && e.detail.code;
       if (!code) {
         if (e && e.detail && e.detail.errMsg && e.detail.errMsg.indexOf('deny') === -1) {
@@ -90,6 +145,7 @@ Component({
     },
 
     onLogin() {
+      if (!this.ensureAgreed()) return;
       wx.showLoading({ title: '登录中', mask: true });
       loginWithCloud(getDefaultProfile())
         .then((session) => {

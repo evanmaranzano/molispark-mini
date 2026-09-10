@@ -22,6 +22,15 @@ Page({
     this.loadHistory();
   },
 
+  onLogined() {
+    this.setData({ showLoginModal: false });
+    if (typeof this.onLoginGuardPassed === 'function') this.onLoginGuardPassed();
+  },
+
+  onLoginModalClose() {
+    this.setData({ showLoginModal: false });
+  },
+
   async loadHistory() {
     const app = getApp();
     const openid = app.globalData.openid || 'local-openid';

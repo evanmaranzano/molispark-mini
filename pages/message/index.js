@@ -16,10 +16,20 @@ Page({
 
   onShow() {
     if (this.checkLoginGuard()) this.loadMessages();
+    else this.setData({ loading: false, messageList: [], summaryCards: this.buildSummary(0, 0) });
   },
 
   onLoginGuardPassed() {
     this.loadMessages();
+  },
+
+  onLogined() {
+    this.setData({ showLoginModal: false });
+    this.loadMessages();
+  },
+
+  onLoginModalClose() {
+    this.setData({ showLoginModal: false, loading: false });
   },
 
   async loadMessages() {

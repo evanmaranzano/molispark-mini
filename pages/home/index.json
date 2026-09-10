@@ -2,7 +2,6 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "t-message": "/miniprogram_npm/tdesign-miniprogram/message/message",
-    "status-bar": "/components/status-bar/index",
-    "login-modal": "/components/login-modal/index"
+    "status-bar": "/components/status-bar/index"
   }
 }

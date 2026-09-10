@@ -162,6 +162,43 @@
       background: @ink-tertiary;
     }
   }
+
+  &__agree {
+    display: flex;
+    align-items: flex-start;
+    gap: 12rpx;
+    margin-top: 24rpx;
+  }
+
+  &__check {
+    width: 36rpx;
+    height: 36rpx;
+    margin-top: 4rpx;
+    border: 2rpx solid #c5ced6;
+    border-radius: 8rpx;
+    box-sizing: border-box;
+    color: #fff;
+    font-size: 22rpx;
+    line-height: 32rpx;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  &__check--on {
+    background: @brand;
+    border-color: @brand;
+  }
+
+  &__agree-text {
+    flex: 1;
+    color: @ink-secondary;
+    font-size: 22rpx;
+    line-height: 1.6;
+  }
+
+  &__link {
+    color: @brand;
+  }
 }
 
 .signup-done {

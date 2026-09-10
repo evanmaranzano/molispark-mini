@@ -21,11 +21,11 @@ test('envVersion=develop 判为非生产，允许 mock fallback', () => {
   assert.strictEqual(allowMockFallback(), true);
 });
 
-test('envVersion=trial 判为非生产（审核期可能为 trial），允许 mock fallback', () => {
+test('envVersion=trial 判为非生产，但审核期同样禁止 mock fallback', () => {
   setupWx('trial');
   const { isProduction, allowMockFallback } = require('../utils/runtime');
   assert.strictEqual(isProduction(), false);
-  assert.strictEqual(allowMockFallback(), true);
+  assert.strictEqual(allowMockFallback(), false);
 });
 
 test('envVersion=release 判为生产，禁止 mock fallback', () => {

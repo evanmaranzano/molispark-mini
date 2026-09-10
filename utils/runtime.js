@@ -6,10 +6,9 @@
  *   trial   — 体验版（提审后审核中也可能落到 trial）
  *   release — 正式版（已发布上线）
  *
- * mock fallback 策略（v0.2.0）：develop/trial 允许降级 mock 方便离线调试，
- * release（正式版）禁止静默 fallback，云错误必须显式返回由页面展示。
- * trial 一并允许 fallback 是因为审核期 envVersion 可能仍为 trial，
- * 宁可展示 mock 也不在审核中白屏。
+ * mock fallback 策略：仅 develop 允许降级 mock 方便离线调试。
+ * trial 也按正式版处理，审核期不再展示 mock；trial 与 release 一样走显式错误态，
+ * 云错误必须返回由页面展示，避免审核员看到假数据。
  */
 
 let cachedEnvVersion;
@@ -32,7 +31,7 @@ function isProduction() {
 }
 
 function allowMockFallback() {
-  return !isProduction();
+  return getEnvVersion() === 'develop';
 }
 
 module.exports = { getEnvVersion, isProduction, allowMockFallback };

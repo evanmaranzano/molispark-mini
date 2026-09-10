@@ -12,10 +12,36 @@ function getDateStr() {
   return `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`;
 }
 
-function makeResponse(action, postId, { state, counts, data, success = true, code }) {
+function displayReason(err, fallback) {
+  const code = err && (err.errCode || err.code);
+  const msg = (err && (err.errMsg || err.message)) || '';
+  if (code === 87014 || /87014/.test(String(msg))) return '内容含有违法违规信息';
+  return fallback || '内容未通过安全审核';
+}
+
+// v2 在 openid 无真实小程序访问的场景（如模拟器）会抛 -604101；此时降级 v1 纯文本检测。
+async function msgSecCheckCompat(content, scene, openid) {
+  try {
+    const res = await cloud.openapi.security.msgSecCheck({ version: 2, openid, scene, content });
+    if (res && (res.errCode === -604101 || /604101/.test(String(res.errMsg || '')))) {
+      return cloud.openapi.security.msgSecCheck({ content });
+    }
+    return res;
+  } catch (err) {
+    const code = err && (err.errCode || err.code);
+    const msg = String((err && (err.errMsg || err.message)) || '');
+    if (code === -604101 || /604101/.test(msg)) {
+      return cloud.openapi.security.msgSecCheck({ content });
+    }
+    throw err;
+  }
+}
+
+function makeResponse(action, postId, { state, counts, data, success = true, code, reason }) {
   const res = { success, action, postId };
   if (code) {
     res.code = code;
+    if (reason) res.reason = reason;
     return res;
   }
   if (state) res.state = state;
@@ -188,6 +214,23 @@ async function handleComment(postId, openid, content, counts) {
   const body = content.trim();
   if (!body) return { success: false, code: 'EMPTY_CONTENT' };
   if (body.length > 500) return { success: false, code: 'CONTENT_TOO_LONG' };
+
+  try {
+    const sec = await msgSecCheckCompat(body, 2, openid);
+    if (!sec || sec.errCode || (sec.result && sec.result.suggest && sec.result.suggest !== 'pass')) {
+      return makeResponse('comment', postId, {
+        success: false,
+        code: 'CONTENT_REJECTED',
+        reason: displayReason(sec, '内容未通过安全审核'),
+      });
+    }
+  } catch (err) {
+    return makeResponse('comment', postId, {
+      success: false,
+      code: 'CONTENT_REJECTED',
+      reason: displayReason(err, '内容未通过安全审核'),
+    });
+  }
 
   let authorName = '微信用户';
   try {

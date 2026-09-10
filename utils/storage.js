@@ -79,6 +79,7 @@ async function chooseAndUploadImages(options = {}, prefix = 'images/posts/') {
     wx.chooseMedia({
       count,
       mediaType: ['image'],
+      sizeType: ['compressed'],
       sourceType: options.sourceType || ['album', 'camera'],
       success: async (res) => {
         try {

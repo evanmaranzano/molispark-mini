@@ -62,6 +62,13 @@
           <text class="signup-form__label">备注</text>
           <input class="signup-form__input" placeholder="选填，如饮食禁忌等" maxlength="100" value="{{note}}" bindinput="onNoteInput" />
         </view>
+        <view class="signup-form__agree">
+          <view class="signup-form__check {{contactAgreed ? 'signup-form__check--on' : ''}}" bindtap="onToggleContactAgree">{{contactAgreed ? '✓' : ''}}</view>
+          <view class="signup-form__agree-text">
+            同意提交姓名与手机号用于活动联系，详见
+            <text class="signup-form__link" catchtap="goPrivacy">《隐私政策》</text>
+          </view>
+        </view>
         <button class="signup-form__submit {{activity.full || submitting ? 'signup-form__submit--disabled' : ''}}" bindtap="onSignup">
           {{activity.full ? '名额已满' : submitting ? '提交中...' : '立即报名'}}
         </button>
@@ -69,4 +76,4 @@
     </block>
   </view>
 </scroll-view>
-<login-modal show="{{showLoginModal}}" bind:logined="onLogined" />
+<login-modal show="{{showLoginModal}}" bind:logined="onLogined" bind:close="onLoginModalClose" />

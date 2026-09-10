@@ -1,12 +1,21 @@
 <view class="login-modal" wx:if="{{show}}">
   <view class="login-modal__mask" catchtap="noop"></view>
   <view class="login-modal__sheet" catchtap="noop">
+    <view class="login-modal__close" catchtap="onClose">×</view>
     <view class="login-modal__title">{{needSetup ? '完善资料' : '登录摩力创境'}}</view>
-    <view class="login-modal__desc">{{needSetup ? '设置昵称和头像后即可使用' : '登录后即可浏览、发帖、互动'}}</view>
+    <view class="login-modal__desc">{{needSetup ? '设置昵称和头像后即可使用' : '登录后即可发帖、互动与报名'}}</view>
 
     <block wx:if="{{!needSetup}}">
+      <view class="login-modal__agree">
+        <view class="login-modal__check {{agreed ? 'login-modal__check--on' : ''}}" catchtap="onToggleAgree">{{agreed ? '✓' : ''}}</view>
+        <view class="login-modal__agree-text">
+          已阅读并同意
+          <text class="login-modal__link" catchtap="goPrivacy" data-section="terms">《用户协议》</text>
+          和
+          <text class="login-modal__link" catchtap="goPrivacy" data-section="privacy">《隐私政策》</text>
+        </view>
+      </view>
       <button class="login-modal__btn login-modal__btn--primary" bindtap="onLogin">微信一键登录</button>
-      <button class="login-modal__btn login-modal__btn--phone" open-type="getPhoneNumber" bindgetphonenumber="onGetPhoneNumber">手机号快捷登录</button>
     </block>
 
     <block wx:else>

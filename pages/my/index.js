@@ -1,20 +1,43 @@
 import useToastBehavior from '~/behaviors/useToast';
-import { myMenus, myServices, myStats, profile } from '~/mock/community';
-import { getUserStats } from '~/utils/db';
+import { getUserStats, deleteAccount } from '~/utils/db';
 
 const {
   clearSession,
-  getDefaultProfile,
   getSession,
   isProfileComplete,
-  loginWithCloud,
   updateUserProfile,
 } = require('~/utils/auth');
 const { isCloudReady } = require('~/utils/cloud');
 const { uploadFile } = require('~/utils/storage');
 
+const GUEST_PROFILE = {
+  name: '点击登录',
+  level: '',
+  brief: '登录后查看帖子、收藏与消息',
+  avatarText: '登',
+  avatarUrl: '',
+};
+
+const MENU_LIST = [
+  { title: '我的帖子', desc: '查看已发布与草稿内容', color: '#2fb67d' },
+  { title: '我的收藏', desc: '管理收藏的内容详情', color: '#ffb74a' },
+  { title: '浏览记录', desc: '继续阅读最近浏览内容', color: '#4f9df7' },
+  { title: '活动报名', desc: '查看最新活动并报名', color: '#b97a43', url: '/pages/activities/index' },
+  { title: '我的报名', desc: '管理已报名的活动', color: '#4aa978', url: '/pages/myActivities/index' },
+  { title: '消息中心', desc: '查看互动通知与消息', color: '#6b8afd', url: '/pages/message/index' },
+];
+
+const SERVICE_LIST = [
+  { title: '设置', desc: '清除缓存、关于摩力创境', color: '#dfe5ea', url: '/pages/setting/index' },
+  { title: '隐私政策', desc: '用户协议与隐私政策', color: '#dfe5ea', url: '/pages/privacy/index' },
+  { title: '注销账号', desc: '删除账号及云端个人数据', color: '#dfe5ea' },
+  { title: '帮助与反馈', desc: '提交问题与功能建议', color: '#dfe5ea', url: '/pages/feedback/index' },
+];
+
+const GUEST_ALLOWED = ['隐私政策', '活动报名', '设置', '帮助与反馈'];
+
 function buildProfile(authSession) {
-  if (!authSession) return profile;
+  if (!authSession) return GUEST_PROFILE;
   const nickName = authSession.profile.nickName || '微信用户';
   return {
     name: nickName,
@@ -29,16 +52,17 @@ Page({
   behaviors: [useToastBehavior],
 
   data: {
-    profile,
+    profile: GUEST_PROFILE,
     stats: [
       { label: '我的帖子', value: '0' },
       { label: '收到的赞', value: '0' },
       { label: '我的收藏', value: '0' },
     ],
-    menuList: myMenus,
-    serviceList: myServices,
+    menuList: MENU_LIST,
+    serviceList: SERVICE_LIST,
     isAuthed: false,
     showProfileSetup: false,
+    showLoginModal: false,
     setupAvatarUrl: '',
     setupNickname: '',
     setupAvatarFileID: '',
@@ -48,6 +72,9 @@ Page({
   onShow() {
     this.syncTabBar();
     this.syncAuthState();
+    if (!this.data.isAuthed) {
+      this.setData({ showLoginModal: true });
+    }
   },
 
   syncTabBar() {
@@ -60,12 +87,9 @@ Page({
     const isAuthed = Boolean(authSession && isProfileComplete(authSession.profile));
     const app = getApp();
     if (isAuthed) {
-      // 已填资料：openid + userInfo 写回 globalData，供互动/统计使用
       app.globalData.openid = authSession.openid;
       app.globalData.userInfo = authSession.profile;
     }
-    // 未填资料不清空 globalData.openid：它是登录凭证，detail 页点赞/收藏仍需要。
-    // my 页内容访问（loadStats/菜单）由 isAuthed 门禁，未填资料时 stats 不加载、显示引导。
     this.setData({
       isAuthed,
       profile: buildProfile(isAuthed ? authSession : null),
@@ -73,7 +97,6 @@ Page({
     if (isAuthed) {
       this.loadStats();
     } else {
-      // 未登录/未填资料：stats 重置为 0，避免残留上次登录的数字
       this.setData({
         stats: [
           { label: '我的帖子', value: '0' },
@@ -98,34 +121,25 @@ Page({
         ],
       });
     } catch (err) {
-      // 云数据库未配置时保持 mock 默认值
+      // 云数据库未配置时保持 0
     }
   },
 
-  handleLogin() {
-    wx.showLoading({ title: '登录中', mask: true });
-    const fallbackProfile = getDefaultProfile();
-    loginWithCloud(fallbackProfile)
-      .then((session) => {
-        wx.hideLoading();
-        const cloudProfile = isProfileComplete(session.profile) ? session.profile : null;
-        this.syncAuthState();
-        if (cloudProfile) {
-          wx.showToast({ title: '登录成功', icon: 'success' });
-        } else {
-          this.setData({
-            showProfileSetup: true,
-            setupAvatarUrl: '',
-            setupNickname: '',
-            setupAvatarFileID: '',
-          });
-        }
-      })
-      .catch((error) => {
-        wx.hideLoading();
-        console.error('[handleLogin] error:', error);
-        wx.showToast({ title: `登录失败: ${error && error.message || error && error.errMsg || '未知'}`, icon: 'none', duration: 3000 });
-      });
+  onProfileTap() {
+    if (!this.data.isAuthed) this.handleShowLogin();
+  },
+
+  handleShowLogin() {
+    this.setData({ showLoginModal: true });
+  },
+
+  onLogined() {
+    this.setData({ showLoginModal: false });
+    this.syncAuthState();
+  },
+
+  onLoginModalClose() {
+    this.setData({ showLoginModal: false });
   },
 
   handleEditProfile() {
@@ -199,7 +213,7 @@ Page({
     this.setData({ setupSubmitting: true });
 
     updateUserProfile(nickName, setupAvatarFileID)
-      .then((session) => {
+      .then(() => {
         this.setData({ showProfileSetup: false, setupSubmitting: false });
         this.syncAuthState();
         wx.showToast({ title: '保存成功', icon: 'success' });
@@ -220,17 +234,59 @@ Page({
     wx.showToast({ title: '已退出登录', icon: 'none' });
   },
 
+  handleDeleteAccount() {
+    if (!this.data.isAuthed) {
+      this.setData({ showLoginModal: true });
+      return;
+    }
+    wx.showModal({
+      title: '注销账号',
+      content: '注销后将删除你的个人资料与互动数据，且无法恢复。确定注销吗？',
+      confirmColor: '#e6432d',
+      success: async (res) => {
+        if (!res.confirm) return;
+        wx.showLoading({ title: '注销中', mask: true });
+        try {
+          const result = await deleteAccount();
+          if (result && result.success === false) {
+            wx.hideLoading();
+            wx.showToast({ title: '注销失败', icon: 'none' });
+            return;
+          }
+          clearSession();
+          const app = getApp();
+          app.globalData.openid = '';
+          app.globalData.userInfo = null;
+          wx.hideLoading();
+          wx.showToast({ title: '账号已注销', icon: 'none' });
+          this.syncAuthState();
+        } catch (err) {
+          wx.hideLoading();
+          console.error('deleteAccount failed:', err);
+          wx.showToast({ title: '注销失败', icon: 'none' });
+        }
+      },
+    });
+  },
+
   onMenuTap(e) {
     const { title, url } = e.currentTarget.dataset;
-    // 未填资料（isAuthed=false）不允许查看我的帖子/收藏/历史等个人内容，引导去填资料
-    if (!this.data.isAuthed) {
-      this.setData({ showProfileSetup: true });
+    if (title === '注销账号') {
+      this.handleDeleteAccount();
+      return;
+    }
+    if (!this.data.isAuthed && GUEST_ALLOWED.indexOf(title) === -1) {
+      this.setData({ showLoginModal: true });
       return;
     }
     const routeMap = {
       我的帖子: '/pages/myPosts/index',
       我的收藏: '/pages/favorites/index',
       浏览记录: '/pages/history/index',
+      活动报名: '/pages/activities/index',
+      我的报名: '/pages/myActivities/index',
+      消息中心: '/pages/message/index',
+      隐私政策: '/pages/privacy/index',
     };
     const targetUrl = url || routeMap[title];
     if (targetUrl) {

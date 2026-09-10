@@ -15,7 +15,8 @@
     "pages/activities/index",
     "pages/activityDetail/index",
     "pages/activityPublish/index",
-    "pages/myActivities/index"
+    "pages/myActivities/index",
+    "pages/privacy/index"
   ],
   "subpackages": [
     {
@@ -32,7 +33,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Weixin",
+    "navigationBarTitleText": "摩力创境",
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
@@ -53,6 +54,7 @@
     ]
   },
   "lazyCodeLoading": "requiredComponents",
+  "__usePrivacyCheck__": true,
   "resolveAlias": {
     "~/*": "/*"
   },

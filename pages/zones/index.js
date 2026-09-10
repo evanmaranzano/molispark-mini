@@ -1,13 +1,10 @@
 import { getPosts } from '~/utils/db';
 import { withMockFallback } from '~/utils/mockFallback';
 import { getFeaturedPosts } from '~/mock/community';
-import loginGuard from '~/behaviors/loginGuard';
 
 const { formatTime } = require('~/utils/time');
 
 Page({
-  behaviors: [loginGuard],
-
   data: {
     posts: [],
     loading: true,
@@ -15,10 +12,6 @@ Page({
   },
 
   onShow() {
-    if (this.checkLoginGuard()) this.loadFeatured();
-  },
-
-  onLoginGuardPassed() {
     this.loadFeatured();
   },
 

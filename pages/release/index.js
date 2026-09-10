@@ -26,6 +26,15 @@ Page({
     this.loadDraftCount();
   },
 
+  onLogined() {
+    this.setData({ showLoginModal: false });
+    if (typeof this.onLoginGuardPassed === 'function') this.onLoginGuardPassed();
+  },
+
+  onLoginModalClose() {
+    this.setData({ showLoginModal: false });
+  },
+
   syncTabBar() {
     const tabBar = this.getTabBar && this.getTabBar();
     if (tabBar && tabBar.syncActiveTab) tabBar.syncActiveTab();

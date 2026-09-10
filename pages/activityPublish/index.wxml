@@ -57,4 +57,4 @@
     </view>
   </view>
 </scroll-view>
-<login-modal show="{{showLoginModal}}" bind:logined="onLogined" />
+<login-modal show="{{showLoginModal}}" bind:logined="onLogined" bind:close="onLoginModalClose" />

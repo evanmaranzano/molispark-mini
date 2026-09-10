@@ -2,6 +2,7 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "t-toast": "/miniprogram_npm/tdesign-miniprogram/toast/toast",
-    "status-bar": "/components/status-bar/index"
+    "status-bar": "/components/status-bar/index",
+    "login-modal": "/components/login-modal/index"
   }
 }

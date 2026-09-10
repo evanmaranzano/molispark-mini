@@ -1,17 +1,28 @@
 const { getSession, isProfileComplete } = require('~/utils/auth');
 
-// 登录守卫 behavior：页面 onShow 调 checkLoginGuard()，未完善资料则弹出登录面板
-// 配合 <login-modal show="{{showLoginModal}}" bind:logined="onLogined" /> 使用
+// 登录守卫：浏览不强制；写操作调 requireLogin() 才弹登录。
+// 个人页（消息 / 我的 / 草稿等）可在 onShow 调 checkLoginGuard()，弹窗必须可关闭。
+// 配合 <login-modal show="{{showLoginModal}}" bind:logined="onLogined" bind:close="onLoginModalClose" /> 使用
 module.exports = Behavior({
   data: {
     showLoginModal: false,
   },
 
   methods: {
-    checkLoginGuard() {
+    isLoggedIn() {
       const session = getSession();
-      const ok = isProfileComplete(session ? session.profile : null);
+      return isProfileComplete(session ? session.profile : null);
+    },
+
+    checkLoginGuard() {
+      const ok = this.isLoggedIn();
       this.setData({ showLoginModal: !ok });
+      return ok;
+    },
+
+    requireLogin() {
+      const ok = this.isLoggedIn();
+      if (!ok) this.setData({ showLoginModal: true });
       return ok;
     },
 
@@ -20,6 +31,10 @@ module.exports = Behavior({
       if (typeof this.onLoginGuardPassed === 'function') {
         this.onLoginGuardPassed();
       }
+    },
+
+    onLoginModalClose() {
+      this.setData({ showLoginModal: false });
     },
   },
 });

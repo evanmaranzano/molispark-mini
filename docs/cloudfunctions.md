@@ -1,6 +1,6 @@
 # 云函数文档
 
-> 摩力创境小程序 v0.1，5 个云函数（login / updateProfile / interact / seed / activity）。云环境 `cloud1-d6g0v8u009ac081c2`，appid `wx94825420d37a7652`。
+> 摩力创境小程序 v0.1，7 个云函数（login / updateProfile / interact / seed / activity / content / account）。云环境 `cloud1-d6g0v8u009ac081c2`，appid `wx94825420d37a7652`。
 
 ## 部署
 
@@ -46,6 +46,7 @@
 入参：`{ nickName, avatarUrl, brief }`
 - 无 OPENID → `{ success:false, error:'未登录' }`
 - 无 nickName → `{ success:false, error:'昵称不能为空' }`
+- nickName 非空且相对已存资料有变化时，保存前走 `msgSecCheck`（version 2，scene=1 资料/昵称）；不通过返回 `{ success:false, code:'CONTENT_REJECTED', reason, error }`
 
 成功返回：`{ success:true, openid, nickName, avatarUrl, brief }`
 
@@ -70,7 +71,7 @@
 
 统一返回结构：`{ success, action, postId, state?, counts?, data?, code? }`
 - `counts`: `{ likes, collectCount, commentCount, views }`。成功时返回最新计数，**前端按返回值刷 UI，不本地 ±1**。
-- 失败 code：`UNAUTHORIZED` / `MISSING_POST_ID` / `INVALID_ACTION` / `POST_NOT_FOUND` / `EMPTY_CONTENT`（评论空） / `CONTENT_TOO_LONG`（>500 字） / `COUNT_UPDATE_FAILED` / `INTERNAL_ERROR`
+- 失败 code：`UNAUTHORIZED` / `MISSING_POST_ID` / `INVALID_ACTION` / `POST_NOT_FOUND` / `EMPTY_CONTENT`（评论空） / `CONTENT_TOO_LONG`（>500 字） / `CONTENT_REJECTED`（评论正文 `msgSecCheck` scene=2 不通过，带 `reason`） / `COUNT_UPDATE_FAILED` / `INTERNAL_ERROR`
 
 `COUNT_UPDATE_FAILED`：互动记录已写入但 posts 计数 inc 失败。前端可据此保留本地状态但不刷新展示计数，避免数据漂移。
 
@@ -87,7 +88,7 @@
 
 ## 涉及集合
 
-posts, users, comments, likes, collects, views, history。权限规则与索引建议见 `docs/database-schema.md`。
+posts, users, comments, likes, collects, views, history, reports。权限规则与索引建议见 `docs/database-schema.md`。
 
 ## activity
 
@@ -135,3 +136,50 @@ signup 写入 `signups` 时冗余活动快照（`activityTitle/activityTime/acti
 逻辑：先删该活动全部 `signups` 记录，再删 `activities` 文档（不可恢复）。
 
 返回：`{ success:true, action:'remove', activityId }`。
+
+## content
+
+UGC 内容安全 + 发帖入库 + 举报。环境 `cloud.DYNAMIC_CURRENT_ENV`。文本走 `cloud.openapi.security.msgSecCheck`（version 2，openid 用 `wxContext.OPENID`）；抛出或 `errCode !== 0` 一律 `{ pass:false, reason }`（reason 可展示）。
+
+scene 映射：`1` 昵称/资料、`2` 帖子/评论（默认）、`3` 活动报名；对应开放接口 scene 1–3（4 社交日志原样透传）。
+
+### action='checkText'
+
+入参：`{ action: 'checkText', text, scene }`
+
+返回：`{ pass: boolean, reason?: string }`
+
+### action='checkMedia'
+
+入参：`{ action: 'checkMedia', fileIDs: string[], mediaType }`
+
+- 图片（`mediaType` 非 `video`/`2`）：`cloud.downloadFile` 取 buffer → `imgSecCheck`
+- 视频（`mediaType === 'video'` 或 `2`）：`getTempFileURL` → `mediaCheckAsync`（version 2），`trace_id` 写入对应 result
+
+返回：`{ pass, results }`，`results` 为逐 fileID 的 `{ fileID, pass, reason?, trace_id? }`
+
+### action='publishPost'
+
+入参：`{ action: 'publishPost', title, content, images?, videos?, category }`
+
+逻辑：先 `checkText`（title+content，scene=2），有图再 `checkMedia`（图片）；有视频同样 `checkMedia`。全部通过才 `posts.add`。字段对齐客户端 `createPost`：`status:'published'`，`likes`/`views`/`collectCount`/`commentCount` 为 0，`createdAt`/`updatedAt` 为 `serverDate`，`author` 取 users 昵称。
+
+返回：`{ success, postId }` 或 `{ success:false, code:'CONTENT_REJECTED', reason }`
+
+### action='report'
+
+入参：`{ action: 'report', targetType: 'post'|'comment', targetId, reason, detail? }`
+
+写入 `reports`：`targetType` / `targetId` / `reason` / `detail` / `reporterOpenid` / `status:'open'` / `createdAt`。
+
+返回：`{ success, reportId }`
+
+## account
+
+账号注销。入参：`{ action: 'deleteAccount' }`（OPENID 从 context 取）。
+
+- 删除 `users` 文档（`_id=OPENID`，并清理 `openid`/`_openid` 历史档）
+- 按 openid 删除 `signups` / `likes` / `collects` / `history` / `messages` / `feedback` / `views`
+- `posts` / `comments` 作者昵称、头像匿名化为「已注销用户」与空串（帖子/评论保留）
+
+返回：`{ success, deleted }`，`deleted` 为各类删除/匿名化条数（`users` `signups` `likes` `collects` `history` `messages` `feedback` `views` `posts` `comments`）。

@@ -1,4 +1,5 @@
-const { submitFeedback } = require('~/utils/db');
+const { submitFeedback, callContent } = require('~/utils/db');
+const { isCloudReady } = require('~/utils/cloud');
 
 Page({
   data: {
@@ -26,6 +27,14 @@ Page({
     }
     this.setData({ submitting: true });
     try {
+      if (isCloudReady()) {
+        const check = await callContent('checkText', { text: content, scene: 3 });
+        if (check && check.pass === false) {
+          wx.showToast({ title: check.reason || '内容未通过审核', icon: 'none' });
+          return;
+        }
+      }
+
       const app = getApp();
       const { openid } = app.globalData;
       await submitFeedback(content, openid);

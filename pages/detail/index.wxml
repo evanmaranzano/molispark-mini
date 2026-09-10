@@ -4,7 +4,7 @@
     <view class="topbar">
       <view class="back" bindtap="navigateBack">‹</view>
       <view class="topbar__title">内容详情</view>
-      <view class="topbar__action">•••</view>
+      <view class="topbar__action" bindtap="onMoreTap">•••</view>
     </view>
 
     <view class="article-card">
@@ -57,7 +57,7 @@
     <view class="comment-section">
       <view class="section-title">评论区（{{comments.length}}）</view>
       <view wx:if="{{!comments.length}}" class="empty-hint">暂无评论，快来抢沙发吧</view>
-      <view class="comment" wx:for="{{comments}}" wx:key="_id">
+      <view class="comment" wx:for="{{comments}}" wx:key="_id" data-id="{{item._id || item.id}}" bindlongpress="onCommentLongPress">
         <view class="comment__avatar">{{item.nameInitial}}</view>
         <view class="comment__body">
           <view class="comment__head">
@@ -90,3 +90,5 @@
   />
   <view class="comment-input-bar__btn" bindtap="submitComment">发送</view>
 </view>
+
+<login-modal show="{{showLoginModal}}" bind:logined="onLogined" bind:close="onLoginModalClose" />

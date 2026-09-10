@@ -1,0 +1,43 @@
+<scroll-view class="sub-page" scroll-y show-scrollbar="{{false}}" scroll-into-view="{{scrollInto}}">
+  <status-bar compact />
+  <view class="sub-shell">
+    <view class="sub-topbar">
+      <view class="sub-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="sub-topbar__title">用户协议与隐私政策</view>
+    </view>
+
+    <view class="form-card privacy-article">
+      <view id="terms" class="privacy-section">
+        <view class="privacy-section__title">用户协议</view>
+        <view class="privacy-section__lead">欢迎使用摩力创境。使用本小程序即表示你已阅读并同意以下约定。</view>
+        <view class="privacy-h">1. 服务说明</view>
+        <view class="privacy-p">摩力创境是面向个人成长与知识分享的社区小程序，提供浏览帖子、发布内容、评论互动、活动报名等功能。未登录也可浏览首页、精选、内容详情和活动信息；发帖、点赞、收藏、评论、报名等写操作需登录。</view>
+        <view class="privacy-h">2. 用户行为规范</view>
+        <view class="privacy-p">你应保证发布的内容真实、合法、不侵犯他人权益，不得发布违法违规、侵权、垃圾广告或其他不当信息。我们有权对违规内容进行拦截、删除，并配合监管要求提供必要信息。</view>
+        <view class="privacy-h">3. 账号与注销</view>
+        <view class="privacy-p">你可通过微信授权登录并完善昵称、头像。如需注销，请进入「我的」页面选择「注销账号」，二次确认后将删除云端个人资料及相关互动数据。</view>
+        <view class="privacy-h">4. 免责声明</view>
+        <view class="privacy-p">用户发布的内容仅代表其个人观点。因不可抗力、网络或微信平台调整导致的服务中断，我们将在能力范围内尽快恢复。</view>
+      </view>
+
+      <view id="privacy" class="privacy-section">
+        <view class="privacy-section__title">隐私政策</view>
+        <view class="privacy-section__lead">我们重视你的个人信息保护。以下说明我们收集哪些信息、用于何处、存储在哪里，以及如何删除。</view>
+        <view class="privacy-h">1. 我们收集的信息</view>
+        <view class="privacy-p">头像、昵称：仅在你主动完善资料时收集，用于在帖子、评论、活动报名中展示身份，便于社区识别作者，不会用于广告画像。</view>
+        <view class="privacy-p">活动报名手机号与姓名：仅在你报名线下/线上活动并主动提交时收集，用于主办方与你联系（通知时间地点、签到等），不会用于营销短信。</view>
+        <view class="privacy-p">微信 openid：由微信登录能力生成，用于识别同一用户的发帖、互动与报名记录。</view>
+        <view class="privacy-h">2. 存储位置</view>
+        <view class="privacy-p">上述信息存储于微信云开发（腾讯云）环境 cloud1-d6g0v8u009ac081c2 中，包括云数据库与云存储。头像文件保存在云存储，业务数据保存在云数据库对应用户、帖子、报名等集合。</view>
+        <view class="privacy-h">3. 使用与共享</view>
+        <view class="privacy-p">我们不会向第三方出售你的个人信息。仅为提供本小程序功能、内容安全审核（微信内容安全接口）及法律法规要求时使用。审核不通过的内容不会公开发布。</view>
+        <view class="privacy-h">4. 查询、更正与删除</view>
+        <view class="privacy-p">你可在「我的」中编辑头像和昵称。如需删除账号及云端个人数据，请打开「我的」→「注销账号」，确认后系统将删除用户资料，并清理该账号下的报名、点赞、收藏、浏览、消息等记录；已发布内容的作者信息将匿名化为「已注销用户」。</view>
+        <view class="privacy-h">5. 未成年人</view>
+        <view class="privacy-p">本小程序主要面向成年人的学习成长场景。如你是未成年人，请在监护人同意下使用。</view>
+        <view class="privacy-h">6. 政策更新</view>
+        <view class="privacy-p">如本政策发生重大变更，我们将通过小程序内提示说明。继续使用即视为知悉更新内容。</view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

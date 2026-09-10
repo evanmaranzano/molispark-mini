@@ -1,6 +1,7 @@
 import {
   _,
   addComment,
+  addReport,
   callInteract,
   getComments,
   getPostById,
@@ -17,9 +18,12 @@ import { withMockFallbackOne } from '~/utils/mockFallback';
 import { getPostById as mockGetPostById } from '~/mock/community';
 import { getTempFileURL } from '~/utils/storage';
 import { isCloudReady } from '~/utils/cloud';
+import loginGuard from '~/behaviors/loginGuard';
 
 const { getSession } = require('~/utils/auth');
 const { formatTime } = require('~/utils/time');
+
+const REPORT_REASONS = ['违法违规', '侵权', '垃圾广告', '其他'];
 
 function withNameInitial(list = []) {
   return list.map((item) => ({
@@ -38,6 +42,8 @@ function withAuthorInitial(post) {
 }
 
 Page({
+  behaviors: [loginGuard],
+
   data: {
     post: null,
     comments: [],
@@ -75,11 +81,11 @@ Page({
     if (post) {
       post.content = normalizeContent(post.content);
       const session = getSession();
-    this.setData({
-      post: withAuthorInitial(post),
-      loadError: false,
-      isAdmin: Boolean(session && session.profile && session.profile.role === 'admin'),
-    });
+      this.setData({
+        post: withAuthorInitial(post),
+        loadError: false,
+        isAdmin: Boolean(session && session.profile && session.profile.role === 'admin'),
+      });
       this.resolveImages(post.images);
       this.resolveVideos(post.videos);
       this.incrementViews(post);
@@ -182,6 +188,60 @@ Page({
     wx.navigateBack();
   },
 
+  onLogined() {
+    this.setData({ showLoginModal: false });
+    this.checkInteractionState();
+  },
+
+  onLoginModalClose() {
+    this.setData({ showLoginModal: false });
+  },
+
+  onMoreTap() {
+    wx.showActionSheet({
+      itemList: ['分享', '举报'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          wx.showShareMenu({ withShareTicket: true, menus: ['shareAppMessage', 'shareTimeline'] });
+          wx.showToast({ title: '请点击右上角分享给好友', icon: 'none' });
+          return;
+        }
+        if (res.tapIndex === 1) {
+          this.submitReport('post', this.postId);
+        }
+      },
+    });
+  },
+
+  onCommentLongPress(e) {
+    const id = e.currentTarget.dataset.id;
+    this.submitReport('comment', id);
+  },
+
+  submitReport(targetType, targetId) {
+    if (!this.requireLogin()) return;
+    if (!targetId) {
+      wx.showToast({ title: '无法举报', icon: 'none' });
+      return;
+    }
+    wx.showActionSheet({
+      itemList: REPORT_REASONS,
+      success: async (sheet) => {
+        const reason = REPORT_REASONS[sheet.tapIndex];
+        try {
+          const result = await addReport(targetType, targetId, reason);
+          if (result && result.success === false) {
+            wx.showToast({ title: '举报失败', icon: 'none' });
+            return;
+          }
+          wx.showToast({ title: '已提交举报', icon: 'success' });
+        } catch (err) {
+          wx.showToast({ title: '举报失败', icon: 'none' });
+        }
+      },
+    });
+  },
+
   async handleAction(e) {
     const { key } = e.currentTarget.dataset;
     const app = getApp();
@@ -189,14 +249,17 @@ Page({
 
     if (key === 'share') {
       wx.showShareMenu({ withShareTicket: true, menus: ['shareAppMessage', 'shareTimeline'] });
+      wx.showToast({ title: '请点击右上角分享给好友', icon: 'none' });
       return;
     }
 
     if (key === 'comment') {
+      if (!this.requireLogin()) return;
       this.setData({ showCommentInput: !this.data.showCommentInput });
       return;
     }
 
+    if (!this.requireLogin()) return;
     if (!openid) {
       wx.showToast({ title: '请先登录', icon: 'none' });
       return;
@@ -246,6 +309,7 @@ Page({
       wx.showToast({ title: '请输入评论内容', icon: 'none' });
       return;
     }
+    if (!this.requireLogin()) return;
     const app = getApp();
     const { openid } = app.globalData;
     if (!openid) {
@@ -259,6 +323,10 @@ Page({
         name: profile.nickName || '微信用户',
         body,
       });
+      if (result && result.success === false) {
+        wx.showToast({ title: result.reason || (result.code === 'CONTENT_REJECTED' ? '评论未通过审核' : '评论失败'), icon: 'none' });
+        return;
+      }
       this.setData({ commentText: '', showCommentInput: false });
       if (result && result.commentCount !== undefined) {
         this.setData({ 'post.commentCount': result.commentCount });
@@ -277,6 +345,14 @@ Page({
     return {
       title: post ? post.title : '摩力创境',
       path: `/pages/detail/index?id=${this.postId}`,
+    };
+  },
+
+  onShareTimeline() {
+    const { post } = this.data;
+    return {
+      title: post ? post.title : '摩力创境',
+      query: `id=${this.postId}`,
     };
   },
 });

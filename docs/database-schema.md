@@ -1,7 +1,7 @@
 # 摩力创境小程序 · 数据库 Schema
 
 > 云环境：`cloud1-d6g0v8u009ac081c2`
-> 最后更新：2026-07-28
+> 最后更新：2026-09-10
 
 ## 集合清单
 
@@ -18,6 +18,7 @@
 | `feedback` | 自动生成 | 仅创建者可读写 | 用户反馈 |
 | `activities` | `seed-activity-N` / 自动生成 | 所有用户可读，仅创建者可写 | 活动 |
 | `signups` | `${activityId}_${OPENID}` | 仅创建者可读写 | 活动报名记录 |
+| `reports` | 自动生成 | 仅创建者可写，管理端可读 | 帖子/评论举报 |
 
 > 计数字段（views / likes / collectCount / commentCount）由 `interact` 云函数以 admin 权限更新，客户端不直接写。
 > 活动报名计数（signupCount）由 `activity` 云函数以 admin 权限更新，客户端不直接写。
@@ -188,6 +189,44 @@
 
 ---
 
+## reports
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `_id` | string | 自动生成 |
+| `_openid` | string | 举报人 openid（云函数写入，保证「仅创建者可写」） |
+| `targetType` | string | `post` / `comment` |
+| `targetId` | string | 被举报对象 `_id` |
+| `reason` | string | 举报原因（违法违规 / 侵权 / 垃圾广告 / 其他） |
+| `detail` | string | 补充说明（可选） |
+| `reporterOpenid` | string | 举报人 openid |
+| `status` | string | `open`（待处理）/ 后续可扩展 `done` |
+| `createdAt` | date | 创建时间 |
+
+写入入口：`content` 云函数 `report` action（OPENID 从 context 取，客户端不可传 reporterOpenid）。
+
+权限：仅创建者可写；管理端（云开发控制台 / 云函数 admin）可读，用于审核处理。客户端不开放全表读取。
+
+---
+
+## 注销账号时的数据删除
+
+入口：`account` 云函数 `deleteAccount`（OPENID 从 `getWXContext()` 取）。
+
+users 文档主键约定 `_id = OPENID`，同时兼容历史 `openid` / `_openid` 字段档。
+
+| 处理 | 集合 | 匹配 | 动作 |
+|------|------|------|------|
+| 删除 | `users` | `doc(OPENID)` + `openid` / `_openid` | 删除档案 |
+| 删除 | `signups` `likes` `collects` `history` `feedback` `views` | `openid` 或 `_openid` | 物理删除 |
+| 删除 | `messages` | `openid` / `_openid` / `toOpenid` / `fromOpenid` | 物理删除 |
+| 匿名化 | `posts` | 作者 `openid` / `_openid` | `author`（及头像类字段）改为「已注销用户」/ 空串，帖子本身保留 |
+| 匿名化 | `comments` | 评论者 `openid` / `_openid` | `name`（及头像类字段）改为「已注销用户」/ 空串 |
+
+云函数返回 `{ success, deleted }`，`deleted` 为上述各类处理条数。
+
+---
+
 ## 权限设置建议
 
 | 集合 | 读 | 写 |
@@ -203,6 +242,7 @@
 | `feedback` | 仅创建者可读 | 仅创建者可写 |
 | `activities` | 所有用户可读 | 仅创建者可写 |
 | `signups` | 仅创建者可读 | 仅创建者可写 |
+| `reports` | 管理端可读 | 仅创建者可写 |
 
 > 计数字段更新由云函数完成（admin 权限），客户端权限规则不影响云函数写入。
 
@@ -229,3 +269,5 @@
 | `signups` | `activityId` | 统计活动报名名单 |
 | `messages` | `toOpenid` + `read` | 未读消息计数 |
 | `feedback` | `createdAt` | 反馈按时间排序 |
+| `reports` | `status` + `createdAt` | 待处理举报列表 |
+| `reports` | `targetType` + `targetId` | 按对象查举报 |

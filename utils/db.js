@@ -6,8 +6,8 @@
  * 返回对象经 markLocal() 打上 __fromLocalDb 标记。
  * - 底层 CRUD（add/getById/query/updateById/updateWhere/removeById/removeWhere/count）：
  *   统一「云优先 + try/catch 降级本地」。
- * - 互动类（addComment/toggleLike/toggleCollect）：云优先走 interact 云函数，callInteract 返回
- *   null 或 success=false 时回退本地手动 ±1。v0.2 计划抽 mock fallback 中间层统一处理。
+ * - 互动类（toggleLike/toggleCollect）：云优先走 interact 云函数，callInteract 返回
+ *   null 或 success=false 时回退本地手动 ±1。addComment 云就绪失败则原样返回/抛出，禁止旁路直写。
  * - callInteract 云不可用时返回 null（不抛错），降级路径由调用方决定。
  * - v0.2.5：add 降级日志已移除，降级静默进行（allowMockFallback 仍控制是否允许降级）。
  */
@@ -272,6 +272,32 @@ async function callInteract(payload) {
   }
 }
 
+async function callContent(action, payload = {}) {
+  if (!isCloudReady()) {
+    throw new Error('cloud not ready');
+  }
+  const res = await wx.cloud.callFunction({
+    name: 'content',
+    data: { action, ...payload },
+  });
+  return res.result;
+}
+
+async function addReport(targetType, targetId, reason, detail) {
+  return callContent('report', { targetType, targetId, reason, detail });
+}
+
+async function deleteAccount() {
+  if (!isCloudReady()) {
+    throw new Error('cloud not ready');
+  }
+  const res = await wx.cloud.callFunction({
+    name: 'account',
+    data: { action: 'deleteAccount' },
+  });
+  return res.result;
+}
+
 async function add(collection, data) {
   const db = getCloudDb();
   if (db) {
@@ -469,6 +495,13 @@ async function createPost(data) {
   });
 }
 
+async function publishPost(fields) {
+  if (isCloudReady()) {
+    return callContent('publishPost', fields);
+  }
+  return createPost(fields);
+}
+
 async function updatePost(id, data) {
   return updateById('posts', id, { ...data, updatedAt: serverDate() });
 }
@@ -491,6 +524,8 @@ async function addComment(data) {
     if (result && result.success) {
       return { _id: result.data.commentId, commentCount: result.counts.commentCount };
     }
+    if (result) return result;
+    throw new Error('comment failed');
   }
 
   const result = await add('comments', {
@@ -804,15 +839,19 @@ module.exports = {
   _,
   $,
   add,
+  addReport,
   aggregate,
   callInteract,
+  callContent,
   callActivity,
   cancelSignup,
   createActivity,
   col,
   count,
   createPost,
+  publishPost,
   db: null,
+  deleteAccount,
   deleteHistory,
   deletePost,
   getActivities,

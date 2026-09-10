@@ -1,6 +1,6 @@
 {
-  "name": "tdesign-miniprogram-starter",
-  "version": "0.0.2",
+  "name": "molispark-mini",
+  "version": "0.1.0",
   "main": "index.js",
   "scripts": {
     "test": "node --test test/*.test.js",
@@ -17,7 +17,7 @@
   ],
   "author": "leejim",
   "license": "MIT",
-  "description": "a start-kit for wechat miniprogram powerby TDesign miniprogram",
+  "description": "摩力创境社区小程序",
   "dependencies": {
     "tdesign-miniprogram": "^1.11.2"
   },

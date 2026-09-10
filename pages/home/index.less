@@ -17,8 +17,37 @@
 }
 
 .topbar {
-  min-height: 100rpx;
+  min-height: 88rpx;
   justify-content: space-between;
+
+  &__msg {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72rpx;
+    height: 72rpx;
+  }
+
+  &__msg-icon {
+    font-size: 40rpx;
+    line-height: 1;
+  }
+
+  &__badge {
+    position: absolute;
+    top: 4rpx;
+    right: 0;
+    min-width: 28rpx;
+    height: 28rpx;
+    padding: 0 6rpx;
+    border-radius: 999rpx;
+    background: #e6432d;
+    color: #fff;
+    font-size: 18rpx;
+    line-height: 28rpx;
+    text-align: center;
+  }
 }
 
 .brand {
@@ -26,8 +55,8 @@
 
   &__logo {
     display: block;
-    width: 312rpx;
-    height: 104rpx;
+    width: 250rpx;
+    height: 84rpx;
     margin-left: -12rpx;
   }
 }
@@ -42,7 +71,7 @@
   display: flex;
   align-items: center;
   gap: 10rpx;
-  margin-top: 28rpx;
+  margin-top: 20rpx;
   height: 84rpx;
   padding: 0 24rpx;
   border: 1rpx solid @line;

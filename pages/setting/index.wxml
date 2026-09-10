@@ -6,12 +6,25 @@
       <view class="sub-topbar__title">设置</view>
     </view>
 
-    <view class="menu-card" wx:for="{{groups}}" wx:key="index" wx:for-item="group">
-      <view class="menu-row" wx:for="{{group}}" wx:key="*this" wx:for-item="menuTitle" data-title="{{menuTitle}}" bindtap="handleTap">
+    <view class="menu-card">
+      <view class="menu-row" bindtap="clearCache">
         <view class="menu-row__icon"></view>
         <view class="menu-row__body">
-          <view class="menu-row__title">{{menuTitle}}</view>
-          <view class="menu-row__desc">{{values[menuTitle]}}</view>
+          <view class="menu-row__title">清除本地缓存</view>
+        </view>
+        <view class="menu-row__arrow">›</view>
+      </view>
+      <view class="menu-row" bindtap="goPrivacy">
+        <view class="menu-row__icon"></view>
+        <view class="menu-row__body">
+          <view class="menu-row__title">隐私政策</view>
+        </view>
+        <view class="menu-row__arrow">›</view>
+      </view>
+      <view class="menu-row" bindtap="showAbout">
+        <view class="menu-row__icon"></view>
+        <view class="menu-row__body">
+          <view class="menu-row__title">关于摩力创境</view>
         </view>
         <view class="menu-row__arrow">›</view>
       </view>

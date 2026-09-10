@@ -17,18 +17,39 @@ function toPostList(result) {
   return list.map((item) => ({ ...item, timeText: formatTime(item.createdAt || item.time) }));
 }
 
+function sortPosts(list, sortBy) {
+  const posts = list.slice();
+  if (sortBy === 'hot') {
+    posts.sort((a, b) => (Number(b.viewCount || b.views) || 0) - (Number(a.viewCount || a.views) || 0));
+  } else {
+    posts.sort((a, b) => {
+      const tb = new Date(b.createdAt || b.time || 0).getTime() || 0;
+      const ta = new Date(a.createdAt || a.time || 0).getTime() || 0;
+      return tb - ta;
+    });
+  }
+  return posts;
+}
+
 Page({
   data: {
     activeSearch: '',
     hotKeywords: buildKeywordItems(searchKeywords, ''),
     posts: [],
+    rawPosts: [],
     resultText: '',
     searching: false,
     loadError: false,
+    sortBy: 'latest',
+    sortLabel: '最新⌄',
   },
 
   onLoad() {
     this.loadAll();
+  },
+
+  applyCurrentSort(list) {
+    return sortPosts(list, this.data.sortBy);
   },
 
   async loadAll() {
@@ -38,7 +59,8 @@ Page({
     );
     const posts = toPostList(result);
     this.setData({
-      posts,
+      rawPosts: posts,
+      posts: this.applyCurrentSort(posts),
       resultText: `共 ${posts.length} 篇内容`,
       loadError: Boolean(result && result.__loadError),
     });
@@ -70,11 +92,22 @@ Page({
     );
     const filtered = toPostList(result);
     this.setData({
-      posts: filtered,
+      rawPosts: filtered,
+      posts: this.applyCurrentSort(filtered),
       hotKeywords: buildKeywordItems(searchKeywords, keyword),
       resultText: `找到 ${filtered.length} 篇相关内容`,
       searching: false,
       loadError: Boolean(result && result.__loadError),
+    });
+  },
+
+  toggleSort() {
+    const sortBy = this.data.sortBy === 'latest' ? 'hot' : 'latest';
+    const sortLabel = sortBy === 'latest' ? '最新⌄' : '最热⌄';
+    this.setData({
+      sortBy,
+      sortLabel,
+      posts: sortPosts(this.data.rawPosts, sortBy),
     });
   },
 

@@ -35,7 +35,7 @@
 
     <view class="result-head">
       <text>{{resultText}}</text>
-      <text>最新⌄</text>
+      <text class="result-head__sort" bindtap="toggleSort">{{sortLabel}}</text>
     </view>
 
     <view wx:if="{{loadError}}" class="empty-hint">搜索结果暂时无法加载</view>

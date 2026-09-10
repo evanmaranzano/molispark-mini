@@ -39,6 +39,15 @@ Page({
     this.onShow();
   },
 
+  onLogined() {
+    this.setData({ showLoginModal: false });
+    if (typeof this.onLoginGuardPassed === 'function') this.onLoginGuardPassed();
+  },
+
+  onLoginModalClose() {
+    this.setData({ showLoginModal: false });
+  },
+
   onInput(e) {
     const { field } = e.currentTarget.dataset;
     this.setData({ [field]: e.detail.value || '' });

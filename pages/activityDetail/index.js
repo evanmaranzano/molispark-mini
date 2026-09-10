@@ -28,6 +28,7 @@ Page({
     submitting: false,
     showLoginModal: false,
     isAdmin: false,
+    contactAgreed: false,
   },
 
   onLoad(option) {
@@ -121,6 +122,14 @@ Page({
     this.setData({ note: e.detail.value || '' });
   },
 
+  onToggleContactAgree() {
+    this.setData({ contactAgreed: !this.data.contactAgreed });
+  },
+
+  goPrivacy() {
+    wx.navigateTo({ url: '/pages/privacy/index?section=privacy' });
+  },
+
   async onSignup() {
     if (this.data.submitting || this.data.signed) return;
     if (!this.data.activity || isActivityClosed(this.data.activity)) {
@@ -132,6 +141,10 @@ Page({
     }
     if (!this.isLoggedIn()) {
       this.setData({ showLoginModal: true });
+      return;
+    }
+    if (!this.data.contactAgreed) {
+      wx.showToast({ title: '请先同意提交姓名与手机号用于活动联系', icon: 'none' });
       return;
     }
 
@@ -210,6 +223,10 @@ Page({
   onLogined() {
     this.setData({ showLoginModal: false });
     this.loadSignupState();
+  },
+
+  onLoginModalClose() {
+    this.setData({ showLoginModal: false });
   },
 
   retryLoad() {
