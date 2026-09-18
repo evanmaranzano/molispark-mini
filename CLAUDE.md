@@ -44,6 +44,7 @@
 - 所有页面 `navigationStyle: custom`，隐藏系统导航栏
 - components/status-bar/: 只做状态栏安全区占位，自动读取 statusBarHeight，不渲染 logo
 - 主 Tab 页各自渲染统一的品牌 logo + 摩力创境文字；子页面标题行紧跟 status-bar，避免重复叠加 env(safe-area-inset-top)
+- 系统胶囊（小药丸）安全区：`app.js` 启动时算好 `globalData.capsuleInsetRpx`（胶囊左缘距右屏边 + 8px 间隙，已换算 rpx）；任何位于 topbar 右上角的**可点元素**必须 `style="margin-right: {{capsuleInset}}rpx;"`，页面 data 默认 `capsuleInset: 196`，onLoad 里用 `getApp().globalData.capsuleInsetRpx` 覆盖（现有参照：home 消息入口、detail「•••」）。
 
 ## 自定义 Tab Bar
 - custom-tab-bar/ 组件，3 个 tab: home, release, my

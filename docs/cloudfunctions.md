@@ -166,6 +166,10 @@ scene 映射：`1` 昵称/资料、`2` 帖子/评论（默认）、`3` 活动报
 
 返回：`{ success, postId }` 或 `{ success:false, code:'CONTENT_REJECTED', reason }`
 
+### activity 视频安全审核
+
+`activity` 云函数的 `create` action 对标题/简介先做 `msgSecCheck(scene=3)`，图片走 `imgSecCheck`，视频走 `getTempFileURL` + `mediaCheckAsync(version=2, scene=3)`；任一媒体不通过都返回 `CONTENT_REJECTED`，不会写入 `activities`。
+
 ### action='report'
 
 入参：`{ action: 'report', targetType: 'post'|'comment', targetId, reason, detail? }`

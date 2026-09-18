@@ -323,15 +323,194 @@ async function ensureActivityPoster() {
   return { status: 'uploaded', fileID: upload.fileID };
 }
 
+// AI 日报预置帖：内容来自用户飞书《AI 日报》2026-09-10 ~ 2026-09-14（AI HOT 精选），
+// 用于预填充首页「头条 / 推荐内容 / 精选」。幂等：确定性 _id（seed-daily-N），重复调用只创建一次。
+// featured: true 进入精选页；headline: true 作为首页头条候选（取最新一篇）。
+const COVER_BASE = 'cloud://cloud1-d6g0v8u009ac081c2.636c-cloud1-d6g0v8u009ac081c2-1471977670/images/covers';
+// cover 封面图由 codex 订阅生图（images/covers/daily-N.png，云存储），已随文档写入对应字段。
+const SEED_DAILY_POSTS = [
+  {
+    _id: 'seed-daily-1',
+    title: 'OpenAI 发布 GPT-6 Astra，面向专业工作场景',
+    desc: 'GPT-6 Astra 已在 ChatGPT Work、Codex 和 API 提供；作者实测其计算机使用和图像渲染能力尤为突出，ARC-AGI-3 达 99.9%。',
+    author: 'OpenAI 官方',
+    category: 'AI 工具',
+    type: '日报',
+    cover: `${COVER_BASE}/daily-1.png`,
+    coverStyle: 'ai',
+    heroTitle: 'GPT-6 ASTRA',
+    content: [
+      'OpenAI 发布 GPT-6 Astra，已在 ChatGPT Work、Codex 和 API 提供，定价为每百万输入 token $10、输出 token $50。',
+      '作者评测认为其计算机使用和图像渲染能力尤为突出，ARC-AGI-3 达 99.9%，前代 GPT-5.6 Sol 仅 7.8%。',
+      '来源：OpenAI 官网动态。',
+    ],
+    views: 326,
+    likes: 96,
+    featured: true,
+    headline: false,
+  },
+  {
+    _id: 'seed-daily-2',
+    title: 'DeepSeek 发布 V4.1-Flash：1M 上下文，API 价格同步下调',
+    desc: 'DeepSeek-V4.1-Flash 支持 1M 上下文、FP4 KV 缓存与跨层注意力复用；缓存命中输入降价 7 倍多、输出砍三分之二。',
+    author: 'DeepSeek 官方',
+    category: 'AI 工具',
+    type: '日报',
+    cover: `${COVER_BASE}/daily-2.png`,
+    coverStyle: 'ai',
+    heroTitle: 'DEEPSEEK V4.1',
+    content: [
+      'DeepSeek 发布 DeepSeek-V4.1-Flash，支持 1M 上下文、FP4 KV 缓存与跨层注意力复用，API 价格同步下调。',
+      '实测显示缓存命中输入降价 7 倍多、输出砍三分之二；9 月 14 日中午 12 点起发往 v4-pro 的请求将强制路由到 4.1 Flash 并按低价计费。',
+      '来源：DeepSeek API 更新日志、MarkTechPost。',
+    ],
+    views: 288,
+    likes: 81,
+    featured: false,
+    headline: false,
+  },
+  {
+    _id: 'seed-daily-3',
+    title: 'Anthropic 威胁报告：Claude 被滥用于间谍软件与导弹研发',
+    desc: '报告记录 2025 年 12 月至 2026 年 8 月间 Claude 被滥用的七类行为，包括恶意软件改写与制导软件开发。',
+    author: 'The Decoder',
+    category: 'AI 工具',
+    type: '日报',
+    cover: `${COVER_BASE}/daily-3.png`,
+    coverStyle: 'ai',
+    heroTitle: 'AI THREAT REPORT',
+    content: [
+      'Anthropic 发布威胁情报报告，记录 2025 年 12 月至 2026 年 8 月间 Claude 被滥用的七类行为。',
+      '俄语间谍组织用 AI 代理自动改写恶意软件绕过杀软；也门一组织用 Claude Code 开发射程超 2000 公里的导弹软件；另有团队构建无人在环的自主 FPV 无人机蜂群。',
+      '来源：The Decoder。',
+    ],
+    views: 254,
+    likes: 73,
+    featured: true,
+    headline: false,
+  },
+  {
+    _id: 'seed-daily-4',
+    title: 'OpenAI 详解存储平台 Habitat：支撑超 10 亿 ChatGPT 用户',
+    desc: 'Habitat 每秒处理超 7000 万请求、服务每周超 10 亿用户、管理超 500PB 数据，覆盖近 40 个地区。',
+    author: 'OpenAI 官方博客',
+    category: 'AI 工具',
+    type: '日报',
+    cover: `${COVER_BASE}/daily-4.png`,
+    coverStyle: 'ai',
+    heroTitle: 'OPENAI HABITAT',
+    content: [
+      'OpenAI 发文（系列上篇）讲述其在线存储平台 Habitat 的演进。',
+      'Habitat 现每秒处理超 7000 万请求、服务每周超 10 亿用户、管理超 500PB 数据，覆盖近 40 个地区。',
+      '来源：OpenAI 官网动态（系列上篇）。',
+    ],
+    views: 198,
+    likes: 54,
+    featured: false,
+    headline: false,
+  },
+  {
+    _id: 'seed-daily-5',
+    title: 'Suno 发布 v6 音乐模型：v6 / v6-wild / v6-mini 三版本',
+    desc: '与 Warner Music Group、BMG、Believe 等合作开发；v6-mini 向所有人开放，支持图片、视频和语音备忘录生成音乐。',
+    author: 'Suno 官方博客',
+    category: 'AI 工具',
+    type: '日报',
+    cover: `${COVER_BASE}/daily-5.png`,
+    coverStyle: 'ai',
+    heroTitle: 'SUNO V6',
+    content: [
+      'Suno 发布新一代音乐模型 v6，与 Warner Music Group、BMG、Believe 等行业伙伴合作开发，后续将全面替换旧模型。',
+      'v6 分为三个版本：旗舰 v6 和探索向的 v6-wild 面向 Pro 与 Premier 订阅用户，更快的 v6-mini 向所有人开放；支持图片、视频和语音备忘录生成音乐。',
+      '来源：Suno 官方博客。',
+    ],
+    views: 176,
+    likes: 62,
+    featured: true,
+    headline: false,
+  },
+  {
+    _id: 'seed-daily-6',
+    title: 'Dario Amodei 呼吁 AI 行业放慢前沿速度，Altman 表态认同',
+    desc: '《We Must Pace the Frontier》提出三步计划，承诺向第三方评估者提供员工级系统访问权限；OpenAI 将采取同样做法。',
+    author: 'Anthropic 官方',
+    category: 'AI 工具',
+    type: '日报',
+    cover: `${COVER_BASE}/daily-6.png`,
+    coverStyle: 'ai',
+    heroTitle: 'PACE THE FRONTIER',
+    content: [
+      'Anthropic CEO Dario Amodei 发文《We Must Pace the Frontier》，呼吁 AI 行业放慢前沿速度并公布三步计划，承诺向第三方评估者提供永久的员工级系统访问权限。',
+      'Sam Altman 回应表示同意需要为前沿 AI 发展设定节奏，称 OpenAI 也将开放独立评估者访问；Gary Marcus 则给出「三份赞誉加两分怀疑」的评析。',
+      '来源：Dario Amodei《We Must Pace the Frontier》、Sam Altman 公开回应、Gary Marcus 评析。',
+    ],
+    views: 312,
+    likes: 104,
+    featured: true,
+    headline: true,
+  },
+  {
+    _id: 'seed-daily-7',
+    title: 'Agent 长任务上下文工程：预算控制、压缩、todo-state 与记忆',
+    desc: '解析 Agent harness 层应对长任务上下文溢出与目标丢失的四类机制：上下文预算与卸载、压缩、todo-state 复述和跨会话记忆。',
+    author: 'MarkTechPost',
+    category: 'AI 工具',
+    type: '日报',
+    cover: `${COVER_BASE}/daily-7.png`,
+    coverStyle: 'ai',
+    heroTitle: 'CONTEXT ENGINEERING',
+    content: [
+      '文章解析 Agent harness 层应对长任务中上下文溢出与目标丢失的四类机制。',
+      '四类机制分别是：上下文预算与卸载、压缩、todo-state 复述和跨会话记忆。',
+      '来源：MarkTechPost。',
+    ],
+    views: 149,
+    likes: 45,
+    featured: false,
+    headline: false,
+  },
+];
+
+async function seedDailyPost(post) {
+  const data = {
+    ...post,
+    status: 'published',
+    time: '日报',
+    images: [],
+    videos: [],
+    collectCount: 0,
+    commentCount: 0,
+    _openid: 'seed-author',
+  };
+  delete data._id;
+  try {
+    await db.collection('posts').doc(post._id).get();
+    return { _id: post._id, status: 'exists' };
+  } catch (e) {
+    const now = db.serverDate();
+    try {
+      await db.collection('posts').add({
+        data: { _id: post._id, ...data, createdAt: now, updatedAt: now },
+      });
+      return { _id: post._id, status: 'created' };
+    } catch (err) {
+      await db.collection('posts').doc(post._id).get();
+      return { _id: post._id, status: 'exists' };
+    }
+  }
+}
+
 exports.main = async () => {
   const results = await Promise.all(SEED_POSTS.map((post) => seedPost(post)));
   const activityResults = await Promise.all(SEED_ACTIVITIES.map((activity) => seedActivity(activity)));
+  const dailyResults = await Promise.all(SEED_DAILY_POSTS.map((post) => seedDailyPost(post)));
   const posterResult = await ensureActivityPoster();
   return {
     success: true,
-    total: SEED_POSTS.length + SEED_ACTIVITIES.length,
+    total: SEED_POSTS.length + SEED_ACTIVITIES.length + SEED_DAILY_POSTS.length,
     results,
     activityResults,
+    dailyResults,
     posterResult,
   };
 };

@@ -7,6 +7,8 @@ App({
     cloudReady: false,
     statusBarHeight: 0,
     capsuleTop: 0,
+    // 胶囊（小药丸）菜单安全区：右上角可点元素需右移这么多 rpx 才不会被系统胶囊盖住
+    capsuleInsetRpx: 0,
   },
 
   onLaunch() {
@@ -22,6 +24,10 @@ App({
       this.globalData.statusBarHeight = info.statusBarHeight || 20;
       const capsule = wx.getMenuButtonBoundingClientRect();
       this.globalData.capsuleTop = capsule.top;
+      // 胶囊左缘距屏幕右缘的宽度（含系统右边距），换算 rpx 后再加 8px 间隙
+      const windowWidth = info.windowWidth || 375;
+      const insetPx = Math.max(windowWidth - capsule.left, 0) + 8;
+      this.globalData.capsuleInsetRpx = Math.round((insetPx * 750) / windowWidth);
     } catch (e) {
       this.globalData.statusBarHeight = 20;
     }

@@ -13,7 +13,7 @@
       <view class="brand">
         <image class="brand__logo" src="/images/brand/molispark-logo.png" mode="aspectFit" aria-label="摩力创境" />
       </view>
-      <view class="topbar__msg" bindtap="goMessages" aria-label="消息">
+      <view class="topbar__msg" style="margin-right: {{capsuleInset}}rpx;" bindtap="goMessages" aria-label="消息">
         <text class="topbar__msg-icon">✉</text>
         <view wx:if="{{unreadCount > 0}}" class="topbar__badge">{{unreadCount > 99 ? '99+' : unreadCount}}</view>
       </view>
@@ -22,6 +22,15 @@
     <view class="search-box" bindtap="goSearch">🔍 <text>搜索帖子、精选或内容</text></view>
 
     <swiper class="hero-swiper" autoplay circular interval="4500" duration="400" indicator-dots indicator-color="rgba(24,47,35,.15)" indicator-active-color="#286247">
+      <swiper-item wx:if="{{headlinePost}}" bindtap="handleHeadlineTap" data-id="{{headlinePost._id || headlinePost.id}}">
+        <view class="headline-card">
+          <image wx:if="{{headlinePost.cover}}" class="headline-card__bg" src="{{headlinePost.cover}}" mode="aspectFill" />
+          <view class="headline-card__mask"></view>
+          <view class="headline-card__tag">头条 · 今日精选</view>
+          <view class="headline-card__title">{{headlinePost.title}}</view>
+          <view class="headline-card__meta">{{headlinePost.author}} · {{headlinePost.timeText || '今日'}}</view>
+        </view>
+      </swiper-item>
       <swiper-item>
         <view class="hero-card">
           <view class="hero-card__content">
@@ -34,7 +43,7 @@
       </swiper-item>
       <swiper-item bindtap="goActivities">
         <view class="hero-slide">
-          <image class="hero-slide__poster" src="{{salonPoster}}" mode="aspectFill" />
+          <image class="hero-slide__poster" src="{{salonPoster}}" mode="widthFix" />
           <view class="hero-slide__tag">摩力创境 · 往期活动回顾</view>
         </view>
       </swiper-item>
@@ -85,7 +94,8 @@
             <text>{{item.timeText || item.time}}</text>
           </view>
         </view>
-        <view class="post-card__cover post-card__cover--{{item.coverStyle}}">
+        <image wx:if="{{item.cover}}" class="post-card__cover post-card__cover--image" src="{{item.cover}}" mode="aspectFill" />
+        <view wx:else class="post-card__cover post-card__cover--{{item.coverStyle}}">
           <view class="post-card__cover-title">{{item.heroTitle || item.title}}</view>
         </view>
       </view>

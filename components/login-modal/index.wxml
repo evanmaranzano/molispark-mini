@@ -1,6 +1,6 @@
 <view class="login-modal" wx:if="{{show}}">
   <view class="login-modal__mask" catchtap="noop"></view>
-  <view class="login-modal__sheet" catchtap="noop">
+  <view class="login-modal__sheet">
     <view class="login-modal__close" catchtap="onClose">×</view>
     <view class="login-modal__title">{{needSetup ? '完善资料' : '登录摩力创境'}}</view>
     <view class="login-modal__desc">{{needSetup ? '设置昵称和头像后即可使用' : '登录后即可发帖、互动与报名'}}</view>
@@ -19,12 +19,19 @@
     </block>
 
     <block wx:else>
-      <button class="login-modal__avatar" open-type="chooseAvatar" bindchooseavatar="onAvatarChoose">
-        <image wx:if="{{avatarUrl}}" class="login-modal__avatar-img" src="{{avatarUrl}}" mode="aspectFill" />
-        <view wx:else class="login-modal__avatar-tip">点击选择头像</view>
-      </button>
-      <input class="login-modal__input" type="nickname" maxlength="20" placeholder="请输入昵称" value="{{nickname}}" bindinput="onNicknameInput" />
-      <button class="login-modal__btn login-modal__btn--primary" bindtap="onSubmit">{{submitting ? '保存中...' : '保存并登录'}}</button>
+      <block wx:if="{{privacyAgreed}}">
+        <button class="login-modal__avatar" open-type="chooseAvatar" bindchooseavatar="onAvatarChoose">
+          <image wx:if="{{avatarUrl}}" class="login-modal__avatar-img" src="{{avatarUrl}}" mode="aspectFill" />
+          <view wx:else class="login-modal__avatar-tip">点击选择头像</view>
+        </button>
+        <input class="login-modal__input" type="nickname" maxlength="20" placeholder="请输入昵称" value="{{nickname}}" bindinput="onNicknameInput" />
+        <button class="login-modal__btn login-modal__btn--primary" bindtap="onSubmit">{{submitting ? '保存中...' : '保存并登录'}}</button>
+      </block>
+      <view wx:else class="login-modal__privacy">
+        <view class="login-modal__privacy-text">设置头像和昵称前，请先阅读并同意{{privacyContractName || '《隐私保护指引》'}}</view>
+        <button class="login-modal__btn login-modal__btn--phone" bindtap="onOpenPrivacyContract">查看隐私保护指引</button>
+        <button class="login-modal__btn login-modal__btn--primary login-modal__privacy-agree" open-type="agreePrivacyAuthorization" bindagreeprivacyauthorization="onAgreePrivacyAuthorization">同意并继续</button>
+      </view>
     </block>
   </view>
 </view>

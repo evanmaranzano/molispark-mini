@@ -5,6 +5,8 @@ const {
   isProfileComplete,
   getDefaultProfile,
   getSession,
+  getPrivacySetting,
+  openPrivacyContract,
 } = require('~/utils/auth');
 const { isCloudReady } = require('~/utils/cloud');
 const { uploadFile } = require('~/utils/storage');
@@ -44,6 +46,8 @@ Component({
     avatarFileID: '',
     submitting: false,
     agreed: false,
+    privacyAgreed: false,
+    privacyContractName: '',
   },
 
   lifetimes: {
@@ -134,7 +138,7 @@ Component({
           if (isProfileComplete(profile)) {
             this.finishLogin();
           } else {
-            this.setData({ needSetup: true });
+            this.enterSetup();
           }
         })
         .catch((err) => {
@@ -142,6 +146,28 @@ Component({
           console.error('[login-modal] phone login error:', err);
           wx.showToast({ title: '手机号登录失败，请用微信登录', icon: 'none' });
         });
+    },
+
+    // 进入资料填写：先查微信侧隐私授权状态，未同意时渲染官方同意按钮而非敏感组件，
+    // 避免 chooseAvatar / type=nickname 在未授权时挂载报错 errno:112
+    enterSetup() {
+      this.setData({ needSetup: true, privacyAgreed: false });
+      getPrivacySetting().then((setting) => {
+        this.setData({
+          privacyAgreed: !setting.needAuthorization,
+          privacyContractName: setting.privacyContractName,
+        });
+      });
+    },
+
+    onAgreePrivacyAuthorization() {
+      this.setData({ privacyAgreed: true });
+    },
+
+    onOpenPrivacyContract() {
+      openPrivacyContract().catch(() => {
+        wx.navigateTo({ url: '/pages/privacy/index?section=privacy' });
+      });
     },
 
     onLogin() {
@@ -154,7 +180,7 @@ Component({
           if (isProfileComplete(session.profile)) {
             this.finishLogin();
           } else {
-            this.setData({ needSetup: true });
+            this.enterSetup();
           }
         })
         .catch((err) => {

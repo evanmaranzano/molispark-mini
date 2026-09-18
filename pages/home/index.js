@@ -22,14 +22,21 @@ Page({
     salonPoster: SALON_POSTER,
     quickActions,
     recommendList: [],
+    headlinePost: null,
+    capsuleInset: 196,
     unreadCount: 0,
     loading: true,
     loadError: false,
   },
-
   onLoad(option) {
+    const app = getApp();
+    if (app && app.globalData && app.globalData.capsuleInsetRpx) {
+      this.setData({ capsuleInset: app.globalData.capsuleInsetRpx });
+    }
     this.consumeOperResult(option.oper);
+    this.loadHeadline();
     this.loadRecommend();
+  },
   },
 
   onShow() {
@@ -54,6 +61,17 @@ Page({
       loadError: Boolean(result && result.__loadError),
     });
   },
+  async loadHeadline() {
+    const result = await withMockFallback(
+      () => getPosts({ where: { type: '日报', headline: true }, limit: 1 }),
+      () => getPublishedPosts().filter((item) => item.headline).slice(0, 1)
+    );
+    const item = Array.isArray(result) ? result[0] : null;
+    this.setData({
+      headlinePost: item ? { ...item, timeText: formatTime(item.createdAt || item.time) } : null,
+    });
+  },
+  },
 
   async loadUnreadCount() {
     try {
@@ -70,11 +88,13 @@ Page({
   async onRefresh() {
     this.setData({ enable: true });
     try {
+      await this.loadHeadline();
       await this.loadRecommend();
       await this.loadUnreadCount();
     } finally {
       this.setData({ enable: false });
     }
+  },
   },
 
   consumeOperResult(fallbackOper) {
@@ -104,6 +124,12 @@ Page({
 
   handlePostTap(e) {
     const { id } = e.currentTarget.dataset;
+    wx.navigateTo({ url: `/pages/detail/index?id=${id}` });
+  },
+
+  handleHeadlineTap(e) {
+    const { id } = e.currentTarget.dataset;
+    if (!id) return;
     wx.navigateTo({ url: `/pages/detail/index?id=${id}` });
   },
 

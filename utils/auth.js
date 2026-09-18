@@ -137,6 +137,32 @@ function updateUserProfile(nickName, avatarFileID) {
     });
 }
 
+function getPrivacySetting() {
+  if (typeof wx === 'undefined' || typeof wx.getPrivacySetting !== 'function') {
+    return Promise.resolve({ needAuthorization: false, privacyContractName: '' });
+  }
+  return new Promise((resolve) => {
+    wx.getPrivacySetting({
+      success: (res) => resolve({
+        needAuthorization: !!(res && res.needAuthorization),
+        privacyContractName: (res && res.privacyContractName) || '',
+      }),
+      // 查询失败时按已同步处理，避免阻塞流程；敏感组件仍由微信侧最终裁决
+      fail: () => resolve({ needAuthorization: false, privacyContractName: '' }),
+    });
+  });
+}
+
+function openPrivacyContract() {
+  if (typeof wx !== 'undefined' && typeof wx.openPrivacyContract === 'function') {
+    return new Promise((resolve, reject) => {
+      wx.openPrivacyContract({ success: resolve, fail: reject });
+    });
+  }
+  wx.navigateTo({ url: '/pages/privacy/index?section=privacy' });
+  return Promise.resolve();
+}
+
 module.exports = {
   AUTH_STORAGE_KEY,
   clearSession,
@@ -146,6 +172,8 @@ module.exports = {
   isProfileComplete,
   loginWithCloud,
   normalizeSession,
+  getPrivacySetting,
+  openPrivacyContract,
   setSession,
   updateSessionProfile,
   updateUserProfile,

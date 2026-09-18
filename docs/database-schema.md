@@ -1,7 +1,7 @@
 # 摩力创境小程序 · 数据库 Schema
 
 > 云环境：`cloud1-d6g0v8u009ac081c2`
-> 最后更新：2026-09-10
+> 最后更新：2026-09-14
 
 ## 集合清单
 
@@ -58,12 +58,14 @@
 | `content` | array | 正文内容块 |
 | `images` | array | 图片 fileID 列表 |
 | `videos` | array | 视频 fileID 列表（≤3 个，单个 ≤50MB） |
+| `cover` | string | 封面图片 fileID（云存储，可选；有值时首页/精选/详情优先展示图片，回退 `coverStyle` 渐变） |
 | `coverStyle` | string | 封面样式 |
 | `views` | number | 浏览量（interact view 更新） |
 | `likes` | number | 点赞数（interact like/unlike 更新） |
 | `collectCount` | number | 收藏数（interact collect/uncollect 更新） |
 | `commentCount` | number | 评论数（interact comment 更新） |
 | `featured` | boolean | 是否加精（interact feature/unfeature 更新，精选页按此筛选） |
+| `headline` | boolean | 是否首页头条（seed 预置日报帖使用，首页取 `type='日报'` 且 `headline=true` 的最新一篇） |
 | `status` | string | 状态：`published`（v0.3 扩展 `hidden` / `deleted`） |
 | `createdAt` | date | 创建时间 |
 | `updatedAt` | date | 更新时间 |
@@ -220,10 +222,11 @@ users 文档主键约定 `_id = OPENID`，同时兼容历史 `openid` / `_openid
 | 删除 | `users` | `doc(OPENID)` + `openid` / `_openid` | 删除档案 |
 | 删除 | `signups` `likes` `collects` `history` `feedback` `views` | `openid` 或 `_openid` | 物理删除 |
 | 删除 | `messages` | `openid` / `_openid` / `toOpenid` / `fromOpenid` | 物理删除 |
+| 删除 | `reports` | `reporterOpenid` / `openid` / `_openid` | 物理删除 |
 | 匿名化 | `posts` | 作者 `openid` / `_openid` | `author`（及头像类字段）改为「已注销用户」/ 空串，帖子本身保留 |
 | 匿名化 | `comments` | 评论者 `openid` / `_openid` | `name`（及头像类字段）改为「已注销用户」/ 空串 |
 
-云函数返回 `{ success, deleted }`，`deleted` 为上述各类处理条数。
+头像云文件也会一并删除。云函数返回 `{ success, deleted }`；任一集合或头像文件清理失败时返回 `success:false, code:'DELETE_PARTIAL', failures`，客户端保留登录态以便重试。
 
 ---
 

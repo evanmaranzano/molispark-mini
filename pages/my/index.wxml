@@ -16,7 +16,6 @@
       <view class="profile-card__body">
         <view class="profile-card__name-row">
           <text class="profile-card__name">{{profile.name}}</text>
-          <text wx:if="{{profile.level}}" class="profile-card__level">{{profile.level}}</text>
           <view wx:if="{{isAuthed}}" class="profile-card__edit" catchtap="handleEditProfile">编辑资料</view>
         </view>
         <view class="profile-card__brief">{{profile.brief}}</view>
@@ -75,6 +74,7 @@
     <view class="profile-setup-dialog__title">完善个人资料</view>
     <view class="profile-setup-dialog__subtitle">设置你的头像和昵称</view>
 
+    <block wx:if="{{setupPrivacyAgreed}}">
     <button class="profile-setup-dialog__avatar-btn" open-type="chooseAvatar" bindchooseavatar="onSetupAvatarChoose">
       <image wx:if="{{setupAvatarUrl}}" class="profile-setup-dialog__avatar-img" src="{{setupAvatarUrl}}" mode="aspectFill" />
       <view wx:else class="profile-setup-dialog__avatar-placeholder">
@@ -101,7 +101,16 @@
         {{setupSubmitting ? '保存中...' : '完成'}}
       </view>
     </view>
+    </block>
+    <view wx:else class="profile-setup-dialog__privacy">
+      <view class="profile-setup-dialog__privacy-text">编辑头像和昵称前，请先阅读并同意{{privacyContractName || '《隐私保护指引》'}}</view>
+      <view class="profile-setup-dialog__privacy-actions">
+        <button class="profile-setup-dialog__privacy-btn" bindtap="onOpenPrivacyContract">查看指引</button>
+        <button class="profile-setup-dialog__privacy-btn profile-setup-dialog__privacy-btn--agree" open-type="agreePrivacyAuthorization" bindagreeprivacyauthorization="onSetupAgreePrivacy">同意并继续</button>
+      </view>
+      <view class="profile-setup-dialog__privacy-cancel" bindtap="closeProfileSetup">取消</view>
+    </view>
   </view>
 </view>
 
-<login-modal show="{{showLoginModal}}" bind:logined="onLogined" bind:close="onLoginModalClose" />
+<login-modal id="login-modal" show="{{showLoginModal}}" bind:logined="onLogined" bind:close="onLoginModalClose" />

@@ -12,6 +12,24 @@ function ownerWhere(openid) {
   return _.or([{ openid }, { _openid: openid }]);
 }
 
+function isMissingDocumentError(error) {
+  const code = error && (error.errCode !== undefined ? error.errCode : error.code);
+  const message = String((error && (error.errMsg || error.message)) || '');
+  return code === -1 || String(code) === '-1' || /not[ _-]?found|not exist|不存在|没有找到/i.test(message);
+}
+
+function addFailure(failures, collection, operation, error) {
+  const rawCode = error && (error.errCode !== undefined ? error.errCode : error.code);
+  const code = rawCode === undefined || rawCode === null ? 'UNKNOWN_ERROR' : String(rawCode);
+  const existing = failures.find((item) => item.collection === collection
+    && item.operation === operation && item.code === code);
+  if (existing) {
+    existing.count += 1;
+    return;
+  }
+  failures.push({ collection, operation, code, count: 1 });
+}
+
 async function listOwnedIds(collection, where) {
   const ids = [];
   let skip = 0;
@@ -27,51 +45,80 @@ async function listOwnedIds(collection, where) {
 }
 
 async function removeOwned(collection, where) {
-  const ids = await listOwnedIds(collection, where);
+  const result = { deleted: 0, failures: [] };
+  let ids;
+  try {
+    ids = await listOwnedIds(collection, where);
+  } catch (e) {
+    addFailure(result.failures, collection, 'list', e);
+    return result;
+  }
   for (let i = 0; i < ids.length; i += 1) {
     try {
       await db.collection(collection).doc(ids[i]).remove();
+      result.deleted += 1;
     } catch (e) {
-      // 单条删除失败不中断其余清理
+      if (!isMissingDocumentError(e)) addFailure(result.failures, collection, 'remove', e);
     }
   }
-  return ids.length;
+  return result;
 }
 
 async function anonymizeOwned(collection, openid, data) {
-  const ids = await listOwnedIds(collection, ownerWhere(openid));
+  const result = { deleted: 0, failures: [] };
+  let ids;
+  try {
+    ids = await listOwnedIds(collection, ownerWhere(openid));
+  } catch (e) {
+    addFailure(result.failures, collection, 'list', e);
+    return result;
+  }
   for (let i = 0; i < ids.length; i += 1) {
     try {
       await db.collection(collection).doc(ids[i]).update({ data });
+      result.deleted += 1;
     } catch (e) {
-      // 单条匿名化失败不中断其余清理
+      if (!isMissingDocumentError(e)) addFailure(result.failures, collection, 'anonymize', e);
     }
   }
-  return ids.length;
+  return result;
 }
 
 async function removeUsers(openid) {
-  let deleted = 0;
+  const result = { deleted: 0, failures: [] };
+  let directError = null;
   try {
     await db.collection('users').doc(openid).remove();
-    deleted += 1;
+    result.deleted += 1;
   } catch (e) {
-    // 可能不存在 doc(openid) 主键档
+    if (!isMissingDocumentError(e)) directError = e;
   }
-  const leftover = await listOwnedIds('users', ownerWhere(openid));
+
+  let leftover;
+  try {
+    leftover = await listOwnedIds('users', ownerWhere(openid));
+  } catch (e) {
+    addFailure(result.failures, 'users', 'list', e);
+    if (directError) addFailure(result.failures, 'users', 'remove', directError);
+    return result;
+  }
+
+  const hasDirectDocument = leftover.indexOf(openid) !== -1;
+  if (directError && !hasDirectDocument) addFailure(result.failures, 'users', 'remove', directError);
   for (let i = 0; i < leftover.length; i += 1) {
-    if (leftover[i] === openid) continue;
+    if (leftover[i] === openid && !directError) continue;
     try {
       await db.collection('users').doc(leftover[i]).remove();
-      deleted += 1;
+      result.deleted += 1;
     } catch (e) {
-      // 忽略
+      if (!isMissingDocumentError(e)) addFailure(result.failures, 'users', 'remove', e);
     }
   }
-  return deleted;
+  return result;
 }
 
 async function deleteUserAvatarFiles(openid) {
+  const result = { deleted: 0, failures: [] };
   const fileList = [];
   const seen = {};
   const pushCloudFile = (url) => {
@@ -84,7 +131,7 @@ async function deleteUserAvatarFiles(openid) {
     const res = await db.collection('users').doc(openid).get();
     if (res && res.data) pushCloudFile(res.data.avatarUrl);
   } catch (e) {
-    // 文档可能不存在
+    if (!isMissingDocumentError(e)) addFailure(result.failures, 'users', 'read-avatar', e);
   }
   try {
     let skip = 0;
@@ -97,10 +144,16 @@ async function deleteUserAvatarFiles(openid) {
       skip += list.length;
     }
   } catch (e) {
-    // 忽略查询失败
+    addFailure(result.failures, 'users', 'list-avatar', e);
   }
-  if (!fileList.length) return;
-  await cloud.deleteFile({ fileList });
+  if (!fileList.length) return result;
+  try {
+    await cloud.deleteFile({ fileList });
+    result.deleted = fileList.length;
+  } catch (e) {
+    addFailure(result.failures, 'cloud-storage', 'delete-avatar', e);
+  }
+  return result;
 }
 
 async function handleDeleteAccount(openid) {
@@ -115,17 +168,19 @@ async function handleDeleteAccount(openid) {
     messages: 0,
     feedback: 0,
     views: 0,
+    reports: 0,
     posts: 0,
     comments: 0,
+    avatarFiles: 0,
+  };
+  const failures = [];
+  const applyResult = (key, result) => {
+    deleted[key] = result.deleted;
+    failures.push(...result.failures);
   };
 
-  try {
-    await deleteUserAvatarFiles(openid);
-  } catch (e) {
-    // 头像文件清理失败不中断注销
-  }
-
-  deleted.users = await removeUsers(openid);
+  applyResult('avatarFiles', await deleteUserAvatarFiles(openid));
+  applyResult('users', await removeUsers(openid));
 
   const messageWhere = _.or([
     { openid },
@@ -134,28 +189,40 @@ async function handleDeleteAccount(openid) {
     { fromOpenid: openid },
   ]);
 
-  deleted.signups = await removeOwned('signups', ownerWhere(openid));
-  deleted.likes = await removeOwned('likes', ownerWhere(openid));
-  deleted.collects = await removeOwned('collects', ownerWhere(openid));
-  deleted.history = await removeOwned('history', ownerWhere(openid));
-  deleted.messages = await removeOwned('messages', messageWhere);
-  deleted.feedback = await removeOwned('feedback', ownerWhere(openid));
-  deleted.views = await removeOwned('views', ownerWhere(openid));
+  applyResult('signups', await removeOwned('signups', ownerWhere(openid)));
+  applyResult('likes', await removeOwned('likes', ownerWhere(openid)));
+  applyResult('collects', await removeOwned('collects', ownerWhere(openid)));
+  applyResult('history', await removeOwned('history', ownerWhere(openid)));
+  applyResult('messages', await removeOwned('messages', messageWhere));
+  applyResult('feedback', await removeOwned('feedback', ownerWhere(openid)));
+  applyResult('views', await removeOwned('views', ownerWhere(openid)));
 
-  deleted.posts = await anonymizeOwned('posts', openid, {
+  const reportWhere = _.or([
+    { reporterOpenid: openid },
+    { openid },
+    { _openid: openid },
+  ]);
+  applyResult('reports', await removeOwned('reports', reportWhere));
+
+  applyResult('posts', await anonymizeOwned('posts', openid, {
     author: ANON_NAME,
     authorNickName: ANON_NAME,
     authorAvatarUrl: '',
     avatarUrl: '',
-  });
-  deleted.comments = await anonymizeOwned('comments', openid, {
+  }));
+  applyResult('comments', await anonymizeOwned('comments', openid, {
     name: ANON_NAME,
     authorNickName: ANON_NAME,
     authorAvatarUrl: '',
     avatarUrl: '',
-  });
+  }));
 
-  return { success: true, deleted };
+  const result = { success: failures.length === 0, deleted };
+  if (failures.length) {
+    result.code = 'DELETE_PARTIAL';
+    result.failures = failures;
+  }
+  return result;
 }
 
 exports.main = async (event = {}) => {
@@ -164,5 +231,10 @@ exports.main = async (event = {}) => {
   if (event.action !== 'deleteAccount') {
     return { success: false, code: 'INVALID_ACTION' };
   }
-  return handleDeleteAccount(openid);
+  try {
+    return await handleDeleteAccount(openid);
+  } catch (e) {
+    console.error('delete account failed:', openid, e.message);
+    return { success: false, code: 'DELETE_FAILED' };
+  }
 };

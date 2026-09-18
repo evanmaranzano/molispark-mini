@@ -81,6 +81,80 @@
   font-size: 24rpx;
 }
 
+.headline-card {
+  position: relative;
+  overflow: hidden;
+  margin-top: 24rpx;
+  padding: 26rpx 28rpx 24rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #1f3d2b 0%, #2f5b41 100%);
+  box-shadow: 0 14rpx 30rpx rgba(31, 61, 43, 0.22);
+  color: #f3f8f1;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__mask {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(18, 36, 26, 0.25) 0%, rgba(18, 36, 26, 0.78) 100%);
+  }
+
+  &__tag,
+  &__title,
+  &__desc,
+  &__meta {
+    position: relative;
+    z-index: 1;
+  }
+
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    height: 36rpx;
+    padding: 0 16rpx;
+    border-radius: 999rpx;
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffd98a;
+    font-size: 20rpx;
+    letter-spacing: 2rpx;
+  }
+
+  &__title {
+    margin-top: 16rpx;
+    font-size: 32rpx;
+    font-weight: 600;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  &__desc {
+    margin-top: 10rpx;
+    color: rgba(243, 248, 241, 0.82);
+    font-size: 24rpx;
+    line-height: 1.6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  &__meta {
+    margin-top: 16rpx;
+    color: rgba(243, 248, 241, 0.6);
+    font-size: 20rpx;
+  }
+}
+
 .hero-card {
   position: relative;
   overflow: hidden;
@@ -313,6 +387,11 @@
     background: linear-gradient(135deg, #e9f5e8 0%, #d3ead5 52%, #b9d9c0 100%);
   }
 
+  &__cover--image {
+    padding: 0;
+    background: none;
+  }
+
   &__cover-title {
     position: relative;
     z-index: 1;
@@ -347,6 +426,12 @@
     margin-top: 0;
     height: 100%;
   }
+
+  .headline-card {
+    box-sizing: border-box;
+    margin-top: 0;
+    height: 100%;
+  }
 }
 
 .hero-slide {
@@ -357,8 +442,11 @@
   box-shadow: 0 14rpx 30rpx rgba(49, 103, 75, 0.1);
 
   &__poster {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
   }
 
   &__tag {

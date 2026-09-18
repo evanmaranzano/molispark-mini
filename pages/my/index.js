@@ -6,13 +6,14 @@ const {
   getSession,
   isProfileComplete,
   updateUserProfile,
+  getPrivacySetting,
+  openPrivacyContract,
 } = require('~/utils/auth');
 const { isCloudReady } = require('~/utils/cloud');
 const { uploadFile } = require('~/utils/storage');
 
 const GUEST_PROFILE = {
   name: '点击登录',
-  level: '',
   brief: '登录后查看帖子、收藏与消息',
   avatarText: '登',
   avatarUrl: '',
@@ -41,7 +42,6 @@ function buildProfile(authSession) {
   const nickName = authSession.profile.nickName || '微信用户';
   return {
     name: nickName,
-    level: '已登录',
     brief: '微信登录用户',
     avatarText: nickName.slice(0, 1) || '微',
     avatarUrl: authSession.profile.avatarUrl || '',
@@ -63,6 +63,8 @@ Page({
     isAuthed: false,
     showProfileSetup: false,
     showLoginModal: false,
+    setupPrivacyAgreed: false,
+    privacyContractName: '',
     setupAvatarUrl: '',
     setupNickname: '',
     setupAvatarFileID: '',
@@ -145,6 +147,14 @@ Page({
   handleEditProfile() {
     const authSession = getSession();
     if (!authSession) return;
+    // 未同意隐私授权时不渲染 chooseAvatar / type=nickname，避免挂载即报 errno:112
+    this.setData({ setupPrivacyAgreed: false });
+    getPrivacySetting().then((setting) => {
+      this.setData({
+        setupPrivacyAgreed: !setting.needAuthorization,
+        privacyContractName: setting.privacyContractName,
+      });
+    });
     const avatarUrl = authSession.profile.avatarUrl || '';
     this.setData({
       showProfileSetup: true,
@@ -197,6 +207,17 @@ Page({
       setupAvatarUrl: '',
       setupNickname: '',
       setupAvatarFileID: '',
+      setupPrivacyAgreed: false,
+    });
+  },
+
+  onSetupAgreePrivacy() {
+    this.setData({ setupPrivacyAgreed: true });
+  },
+
+  onOpenPrivacyContract() {
+    openPrivacyContract().catch(() => {
+      wx.navigateTo({ url: '/pages/privacy/index?section=privacy' });
     });
   },
 
@@ -250,7 +271,10 @@ Page({
           const result = await deleteAccount();
           if (result && result.success === false) {
             wx.hideLoading();
-            wx.showToast({ title: '注销失败', icon: 'none' });
+            wx.showToast({
+              title: result.code === 'DELETE_PARTIAL' ? '部分数据清理失败，请重试' : '注销失败',
+              icon: 'none',
+            });
             return;
           }
           clearSession();

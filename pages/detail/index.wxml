@@ -4,7 +4,7 @@
     <view class="topbar">
       <view class="back" bindtap="navigateBack">‹</view>
       <view class="topbar__title">内容详情</view>
-      <view class="topbar__action" bindtap="onMoreTap">•••</view>
+      <view class="topbar__action" style="margin-right: {{capsuleInset}}rpx;" bindtap="onMoreTap">•••</view>
     </view>
 
     <view class="article-card">
@@ -17,6 +17,8 @@
       </view>
 
       <view class="article-title">{{post.title}}</view>
+
+      <image wx:if="{{post.cover}}" class="article-cover" src="{{post.cover}}" mode="widthFix" />
 
       <view wx:if="{{post.images && post.images.length}}" class="article-images">
         <image wx:for="{{post.images}}" wx:key="*this" class="article-images__item" src="{{item}}" mode="widthFix" />

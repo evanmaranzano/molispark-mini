@@ -53,6 +53,7 @@ Page({
     showCommentInput: false,
     loadError: false,
     isAdmin: false,
+    capsuleInset: 196,
     actionList: [
       { key: 'like', label: '点赞', icon: '👍' },
       { key: 'collect', label: '收藏', icon: '⭐' },
@@ -62,6 +63,10 @@ Page({
   },
 
   onLoad(options) {
+    const app = getApp();
+    if (app && app.globalData && app.globalData.capsuleInsetRpx) {
+      this.setData({ capsuleInset: app.globalData.capsuleInsetRpx });
+    }
     this.postId = options.id;
     this.loadPost();
     this.loadComments();

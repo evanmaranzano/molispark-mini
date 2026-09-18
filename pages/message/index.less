@@ -5,26 +5,52 @@
   background: @page-bg;
 }
 
+
+.message-topbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+}
+
+.message-topbar__back {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 88rpx;
+  height: 88rpx;
+  transform: translateY(-50%);
+  font-size: 0;
+  color: transparent;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 28rpx;
+    height: 28rpx;
+    margin-top: -16rpx;
+    border-left: 6rpx solid @brand-dark;
+    border-bottom: 6rpx solid @brand-dark;
+    transform: rotate(45deg);
+  }
+}
+
+.message-topbar__title {
+  color: @brand-dark;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
 .message-hero {
   padding: 0 30rpx 32rpx;
   background: linear-gradient(135deg, #ebf5e9, #d6ead9);
   color: @brand-dark;
 
-  &__eyebrow {
-    font-size: 22rpx;
-    letter-spacing: 8rpx;
-    text-transform: uppercase;
-    color: rgba(40, 98, 71, 0.62);
-  }
-
-  &__title {
-    margin-top: 16rpx;
-    font-size: 58rpx;
-    font-weight: 700;
-  }
-
   &__desc {
-    margin-top: 16rpx;
+    margin-top: 8rpx;
     font-size: 24rpx;
     line-height: 1.7;
     color: @ink-secondary;

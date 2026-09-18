@@ -229,6 +229,37 @@ async function checkOneImage(fileID) {
   }
 }
 
+async function checkOneVideo(fileID, openid) {
+  let trace_id;
+  try {
+    const urlRes = await cloud.getTempFileURL({ fileList: [fileID] });
+    const item = urlRes && urlRes.fileList && urlRes.fileList[0];
+    const mediaUrl = item && item.tempFileURL;
+    if (!mediaUrl) return { fileID, pass: false, reason: '无法获取视频地址' };
+    const res = await cloud.openapi.security.mediaCheckAsync({
+      version: 2,
+      openid,
+      scene: 3,
+      mediaUrl,
+      mediaType: 2,
+    });
+    trace_id = res && (res.trace_id || res.traceId);
+    const result = { fileID, pass: !res || res.errCode ? false : true };
+    if (trace_id) result.trace_id = trace_id;
+    if (!result.pass) result.reason = displayReason(res, '视频未通过安全审核');
+    return result;
+  } catch (err) {
+    const result = {
+      fileID,
+      pass: false,
+      reason: displayReason(err, '视频未通过安全审核'),
+    };
+    trace_id = err && (err.trace_id || err.traceId);
+    if (trace_id) result.trace_id = trace_id;
+    return result;
+  }
+}
+
 async function handleCreate(openid, event) {
   const title = String(event.title || '').trim();
   if (!title) return { success: false, code: 'MISSING_TITLE' };
@@ -236,7 +267,7 @@ async function handleCreate(openid, event) {
   const desc = String(event.desc || '').trim();
   if (desc.length > 500) return { success: false, code: 'DESC_TOO_LONG' };
 
-  const textCheck = await checkText(`${title}\n${desc}`, 3, openid);
+  const textCheck = await checkText(title + '\n' + desc, 3, openid);
   if (!textCheck.pass) {
     return { success: false, code: 'CONTENT_REJECTED', reason: textCheck.reason };
   }
@@ -251,6 +282,18 @@ async function handleCreate(openid, event) {
     }
   }
 
+  const videos = (Array.isArray(event.videos) ? event.videos : [])
+    .filter((v) => typeof v === 'string' && v.length > 0 && v.length <= 512)
+    .slice(0, 3);
+  if (videos.length) {
+    for (let i = 0; i < videos.length; i += 1) {
+      const video = await checkOneVideo(videos[i], openid);
+      if (!video.pass) {
+        return { success: false, code: 'CONTENT_REJECTED', reason: video.reason || '视频未通过安全审核' };
+      }
+    }
+  }
+
   const res = await db.collection('activities').add({
     data: {
       title,
@@ -260,9 +303,7 @@ async function handleCreate(openid, event) {
       endTime: String(event.endTime || '').trim(),
       quota: Math.max(0, Number(event.quota) || 0),
       signupCount: 0,
-      videos: (Array.isArray(event.videos) ? event.videos : [])
-        .filter((v) => typeof v === 'string' && v.length > 0 && v.length <= 512)
-        .slice(0, 3),
+      videos,
       coverStyle: ['book', 'ai', 'note'].includes(event.coverStyle) ? event.coverStyle : 'book',
       heroTitle: String(event.heroTitle || '').trim().slice(0, 30) || title.slice(0, 20).toUpperCase(),
       status: 'published',

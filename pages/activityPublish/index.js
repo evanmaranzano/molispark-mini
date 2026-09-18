@@ -101,7 +101,12 @@ Page({
         videos: this.data.video ? [this.data.video] : [],
       });
       if (result && result.code) {
-        wx.showToast({ title: result.code === 'FORBIDDEN' ? '无发布权限' : '发布失败，请重试', icon: 'none' });
+        const title = result.code === 'FORBIDDEN'
+          ? '无发布权限'
+          : result.code === 'CONTENT_REJECTED'
+            ? (result.reason || '内容未通过安全审核')
+            : '发布失败，请重试';
+        wx.showToast({ title, icon: 'none' });
         return;
       }
       wx.showToast({ title: '发布成功', icon: 'success' });

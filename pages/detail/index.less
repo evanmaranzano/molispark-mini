@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 72rpx;
+  height: 88rpx;
   margin-bottom: 18rpx;
   font-size: 34rpx;
   font-weight: 700;
@@ -42,13 +42,24 @@
   position: absolute;
   left: 0;
   top: 50%;
-  width: 64rpx;
-  height: 64rpx;
+  width: 88rpx;
+  height: 88rpx;
   transform: translateY(-50%);
-  color: @ink;
-  font-size: 46rpx;
-  line-height: 64rpx;
-  text-align: center;
+  font-size: 0;
+  color: transparent;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 28rpx;
+    top: 50%;
+    width: 28rpx;
+    height: 28rpx;
+    margin-top: -16rpx;
+    border-left: 6rpx solid @ink;
+    border-bottom: 6rpx solid @ink;
+    transform: rotate(45deg);
+  }
 }
 
 .article-card,
@@ -108,6 +119,14 @@
   line-height: 1.35;
   color: #17202a;
   font-weight: 800;
+}
+
+.article-cover {
+  display: block;
+  width: 100%;
+  margin-top: 20rpx;
+  border-radius: 20rpx;
+  background: @page-bg;
 }
 
 .article-content__paragraph {

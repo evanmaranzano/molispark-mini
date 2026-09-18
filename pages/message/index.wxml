@@ -1,8 +1,10 @@
 <scroll-view class="message-scroll" scroll-y show-scrollbar="{{false}}">
   <status-bar compact />
   <view class="message-hero">
-    <view class="message-hero__eyebrow">Inbox Center</view>
-    <view class="message-hero__title">消息</view>
+    <view class="message-topbar">
+      <view class="message-topbar__back" bindtap="navigateBack">‹</view>
+      <view class="message-topbar__title">消息</view>
+    </view>
     <view class="message-hero__desc">把互动通知、星球提醒和私信会话收进一个可快速处理的消息面板。</view>
 
     <view class="message-hero__stats">

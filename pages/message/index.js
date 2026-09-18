@@ -14,6 +14,10 @@ Page({
     loadError: false,
   },
 
+  navigateBack() {
+    wx.navigateBack();
+  },
+
   onShow() {
     if (this.checkLoginGuard()) this.loadMessages();
     else this.setData({ loading: false, messageList: [], summaryCards: this.buildSummary(0, 0) });

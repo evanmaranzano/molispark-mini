@@ -15,7 +15,8 @@
           <view class="post-card__desc">{{item.desc}}</view>
           <view class="post-card__meta">{{item.author}} · {{item.timeText || item.time}}</view>
         </view>
-        <view class="post-card__cover post-card__cover--{{item.coverStyle}}">
+        <image wx:if="{{item.cover}}" class="post-card__cover post-card__cover--image" src="{{item.cover}}" mode="aspectFill" />
+        <view wx:else class="post-card__cover post-card__cover--{{item.coverStyle}}">
           <view class="post-card__cover-title">{{item.heroTitle || item.title}}</view>
         </view>
       </view>

@@ -803,7 +803,10 @@ async function createActivity(data = {}) {
   if (isCloudReady()) {
     const result = await callActivity({ action: 'create', ...data, quota });
     if (result && result.success) return { activityId: result.data.activityId };
-    return { code: (result && result.code) || 'INTERNAL_ERROR' };
+    return {
+      code: (result && result.code) || 'INTERNAL_ERROR',
+      reason: result && result.reason,
+    };
   }
   const res = await add('activities', {
     title: data.title || '',
